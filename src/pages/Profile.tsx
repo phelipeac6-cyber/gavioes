@@ -47,7 +47,7 @@ const Profile = () => {
             <Link to="/news" className="hover:text-red-500 transition-colors">
               Noticias
             </Link>
-            <Link to="#" className="hover:text-red-500 transition-colors">
+            <Link to="/store" className="hover:text-red-500 transition-colors">
               Loja
             </Link>
             <Link to="#" className="hover:text-red-500 transition-colors">

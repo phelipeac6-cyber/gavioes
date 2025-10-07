@@ -14,6 +14,7 @@ import HealthData from "./pages/HealthData";
 import Address from "./pages/Address";
 import SocialMedia from "./pages/SocialMedia";
 import EmergencyCard from "./pages/EmergencyCard";
+import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/address" element={<Address />} />
           <Route path="/social" element={<SocialMedia />} />
           <Route path="/emergency-card" element={<EmergencyCard />} />
+          <Route path="/store" element={<Store />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
