@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import gavioesLogo from "@/assets/gavioes-logo.png";
+import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 
 const Index = () => {
   return (
@@ -33,7 +34,7 @@ const Index = () => {
 
       <div className="pt-8">
         <img
-          src="https://esportesdasorte.com/images/logo-white.png"
+          src={esportesDaSorteLogo}
           alt="Esportes da Sorte Logo"
           className="w-40 h-auto"
         />
