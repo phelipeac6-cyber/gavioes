@@ -61,13 +61,13 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           )}
         </Link>
       </header>
-      <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-40">
+      <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-[210px]">
         {children}
       </main>
       {showSponsor && (
         <footer
           className={cn(
-            "fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10 transition-all duration-300 ease-in-out",
+            "fixed bottom-[146px] left-0 right-0 flex justify-center pointer-events-none z-10 transition-all duration-300 ease-in-out",
             isSponsorVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-full"
