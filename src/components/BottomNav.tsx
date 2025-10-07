@@ -1,29 +1,44 @@
 import { NavLink } from "react-router-dom";
-import { Home, Newspaper, Settings as SettingsIcon } from "lucide-react";
-
-const navItems = [
-  { to: "/profile", icon: Home, label: "Início" },
-  { to: "/news", icon: Newspaper, label: "Notícias" },
-  { to: "/settings", icon: SettingsIcon, label: "Ajustes" },
-];
+import { Home, ClipboardList, HeartPulse, User, Bell } from "lucide-react";
 
 export const BottomNav = () => {
+  const getLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `transition-colors ${isActive ? "text-red-600" : "text-gray-900 hover:text-red-500"}`;
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 flex justify-around p-2 z-20">
-      {navItems.map((item) => (
+    <div className="fixed bottom-0 left-0 right-0 h-24 z-20 flex items-end justify-center pointer-events-none">
+      <nav className="relative w-full max-w-md h-16 bg-white rounded-t-3xl shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-around pointer-events-auto">
+        
         <NavLink
-          key={item.to}
-          to={item.to}
-          className={({ isActive }) =>
-            `flex flex-col items-center space-y-1 p-2 rounded-md transition-colors w-1/3 ${
-              isActive ? "text-white" : "text-gray-400 hover:text-white"
-            }`
-          }
+          to="/health"
+          className="absolute left-1/2 -translate-x-1/2 -top-8 w-20 h-20 bg-red-600 rounded-full flex items-center justify-center border-4 border-black shadow-lg transition-transform hover:scale-105"
+          aria-label="Dados de Saúde"
         >
-          <item.icon size={24} />
-          <span className="text-xs">{item.label}</span>
+          <HeartPulse size={32} className="text-white" />
         </NavLink>
-      ))}
-    </nav>
+
+        <div className="flex justify-around items-center w-full h-full">
+          <div className="flex justify-around w-2/5">
+            <NavLink to="/profile" className={getLinkClass} aria-label="Início">
+              <Home size={28} fill="currentColor" />
+            </NavLink>
+            <NavLink to="/news" className={getLinkClass} aria-label="Notícias">
+              <ClipboardList size={28} />
+            </NavLink>
+          </div>
+          
+          <div className="w-1/5" />
+
+          <div className="flex justify-around w-2/5">
+            <NavLink to="/settings" className={getLinkClass} aria-label="Configurações">
+              <User size={28} fill="currentColor" />
+            </NavLink>
+            <NavLink to="#" className={getLinkClass} aria-label="Notificações">
+              <Bell size={28} fill="currentColor" />
+            </NavLink>
+          </div>
+        </div>
+      </nav>
+    </div>
   );
 };
