@@ -11,7 +11,7 @@ interface EventCardProps {
 export const EventCard = ({ event }: EventCardProps) => {
   return (
     <Card className="bg-gray-900/50 border-gray-700 overflow-hidden text-white flex flex-col">
-      <Link to={`#`} className="flex flex-col h-full">
+      <Link to={`/event/${event.id}`} className="flex flex-col h-full">
         <CardHeader className="p-0">
           <img src={event.image} alt={event.title} className="w-full h-40 object-cover" />
         </CardHeader>
