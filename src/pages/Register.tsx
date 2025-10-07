@@ -44,16 +44,16 @@ const Register = () => {
 
             <form className="w-full space-y-4 text-left">
               <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Nome" className="bg-transparent border-gray-400 rounded-lg placeholder:text-gray-400" />
-                <Input placeholder="Sobrenome" className="bg-transparent border-gray-400 rounded-lg placeholder:text-gray-400" />
+                <Input placeholder="Nome" className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
+                <Input placeholder="Sobrenome" className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
               </div>
-              <Input type="email" placeholder="E-mail" className="bg-transparent border-gray-400 rounded-lg placeholder:text-gray-400" />
+              <Input type="email" placeholder="E-mail" className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
               
               <div className="relative">
                 <Input 
                   type={showPassword ? "text" : "password"} 
                   placeholder="Senha" 
-                  className="bg-transparent border-gray-400 rounded-lg pr-10 placeholder:text-gray-400" 
+                  className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
                   {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
@@ -64,7 +64,7 @@ const Register = () => {
                 <Input 
                   type={showConfirmPassword ? "text" : "password"} 
                   placeholder="Confirma Senha" 
-                  className="bg-transparent border-gray-400 rounded-lg pr-10 placeholder:text-gray-400" 
+                  className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
                 />
                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
                   {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
@@ -73,25 +73,33 @@ const Register = () => {
 
               <div>
                 <Label className="text-sm text-gray-400">Sub-Sede</Label>
-                <Input className="bg-transparent border-gray-400 rounded-lg mt-1" />
+                <Input className="bg-transparent border-white rounded-lg mt-1" />
               </div>
 
               <div>
                 <Label className="text-sm text-gray-400">Gênero</Label>
                 <div className="grid grid-cols-2 gap-4 mt-1">
-                  <Button 
+                  <Button
                     type="button"
-                    variant={gender === 'male' ? 'secondary' : 'outline'} 
-                    onClick={() => setGender('male')}
-                    className="border-gray-400 rounded-lg"
+                    variant="ghost"
+                    onClick={() => setGender("male")}
+                    className={`w-full rounded-lg border h-12 transition-colors ${
+                      gender === "male"
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                    }`}
                   >
                     Homem
                   </Button>
-                  <Button 
+                  <Button
                     type="button"
-                    variant={gender === 'female' ? 'secondary' : 'outline'} 
-                    onClick={() => setGender('female')}
-                    className="border-gray-400 rounded-lg"
+                    variant="ghost"
+                    onClick={() => setGender("female")}
+                    className={`w-full rounded-lg border h-12 transition-colors ${
+                      gender === "female"
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                    }`}
                   >
                     Mulher
                   </Button>
