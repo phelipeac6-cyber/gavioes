@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Camera, Eye, EyeOff, User } from "lucide-react";
-import gavioesLogo from "@/assets/gavioes-logo.png";
+import registerBg from "@/assets/gavioes-wallpaper.png";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -16,9 +16,9 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
       <img
-        src={gavioesLogo}
-        alt="Gaviões da Fiel Logo Watermark"
-        className="absolute inset-0 w-full h-full object-contain object-center opacity-10 z-0"
+        src={registerBg}
+        alt="Gaviões da Fiel background"
+        className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
       />
       <div className="relative z-10 flex flex-col min-h-screen">
         <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20">
