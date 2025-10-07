@@ -2,18 +2,13 @@ import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, Instagram, Facebook, MessageCircle } from "lucide-react";
-import gavioesLogo from "@/assets/gavioes-logo.png";
+import newBg from "@/assets/bg.png";
 
 const Profile = () => {
   return (
-    <MainLayout>
-      <div className="relative flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)] overflow-hidden">
-        <img
-          src={gavioesLogo}
-          alt="Gaviões da Fiel Logo"
-          className="absolute inset-0 m-auto w-full max-w-md h-auto opacity-10 z-0"
-        />
-        <div className="relative z-10 flex flex-col items-center space-y-5">
+    <MainLayout bgImage={newBg}>
+      <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
+        <div className="flex flex-col items-center space-y-5">
           <div className="relative">
             <Avatar className="w-28 h-28">
               <AvatarImage
