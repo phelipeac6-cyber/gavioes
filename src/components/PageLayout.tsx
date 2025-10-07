@@ -1,18 +1,47 @@
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useCart } from "@/context/CartContext";
 import { BottomNav } from "./BottomNav";
+import { cn } from "@/lib/utils";
 
 interface PageLayoutProps {
   title: string;
-  children: React.Node;
+  children: React.ReactNode;
   showSponsor?: boolean;
 }
 
 export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutProps) => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
+  const mainRef = useRef<HTMLElement>(null);
+  const [isSponsorVisible, setIsSponsorVisible] = useState(true);
+
+  useEffect(() => {
+    const mainEl = mainRef.current;
+
+    const handleScroll = () => {
+      if (mainEl) {
+        // Hide logo after scrolling down a bit
+        if (mainEl.scrollTop > 20) {
+          setIsSponsorVisible(false);
+        } else {
+          setIsSponsorVisible(true);
+        }
+      }
+    };
+
+    if (mainEl) {
+      mainEl.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (mainEl) {
+        mainEl.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col font-sans">
@@ -32,11 +61,18 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           )}
         </Link>
       </header>
-      <main className="flex-grow p-6 overflow-y-auto pb-40">
+      <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-40">
         {children}
       </main>
       {showSponsor && (
-        <footer className="fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10">
+        <footer
+          className={cn(
+            "fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10 transition-all duration-300 ease-in-out",
+            isSponsorVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-full"
+          )}
+        >
           <img
             src={esportesDaSorteLogo}
             alt="Esportes da Sorte Logo"
