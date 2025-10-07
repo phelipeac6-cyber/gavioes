@@ -1,49 +1,50 @@
-import { PageLayout } from "@/components/PageLayout";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ArrowLeft } from "lucide-react";
+import registerBg from "@/assets/gavioes-wallpaper.png";
+import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 
 const Address = () => {
+  const navigate = useNavigate();
+
   return (
-    <PageLayout title="Endereço">
-      <form className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="cep">CEP</Label>
-          <Input id="cep" type="text" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="street">Rua</Label>
-          <Input id="street" type="text" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="number">Número</Label>
-            <Input id="number" type="text" className="bg-gray-800 border-gray-700 text-white" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="complement">Complemento</Label>
-            <Input id="complement" type="text" className="bg-gray-800 border-gray-700 text-white" />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="neighborhood">Bairro</Label>
-          <Input id="neighborhood" type="text" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="city">Cidade</Label>
-            <Input id="city" type="text" className="bg-gray-800 border-gray-700 text-white" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">Estado</Label>
-            <Input id="state" type="text" className="bg-gray-800 border-gray-700 text-white" />
-          </div>
-        </div>
-        <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 mt-6">
-          Salvar
-        </Button>
-      </form>
-    </PageLayout>
+    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+      <img
+        src={registerBg}
+        alt="Gaviões da Fiel background"
+        className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
+      />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
+          <button onClick={() => navigate(-1)} className="p-2">
+            <ArrowLeft size={24} />
+          </button>
+          <h1 className="text-xl font-bold">Endereço</h1>
+        </header>
+
+        <main className="flex-grow p-6">
+          <form className="w-full max-w-sm mx-auto space-y-5">
+            <Input placeholder="Cep" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Endereço" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Número" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Cidade" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Complemento" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              Salvar
+            </Button>
+          </form>
+        </main>
+
+        <footer className="p-6 flex justify-center">
+          <img
+            src={esportesDaSorteLogo}
+            alt="Esportes da Sorte Logo"
+            className="w-40 h-auto"
+          />
+        </footer>
+      </div>
+    </div>
   );
 };
 
