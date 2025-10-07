@@ -40,11 +40,18 @@ const Cart = () => {
               </div>
             </div>
           ))}
-          <div className="mt-6 pt-6 border-t border-gray-700 text-right">
-            <h2 className="text-2xl font-bold">Total: R$ {cartTotal.toFixed(2)}</h2>
-            <Button asChild className="mt-4 bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12">
-              <Link to="/checkout">Finalizar Compra</Link>
-            </Button>
+          <div className="mt-6 pt-6 border-t border-gray-700">
+            <div className="text-right mb-4">
+              <h2 className="text-2xl font-bold">Total: R$ {cartTotal.toFixed(2)}</h2>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-end gap-4">
+              <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black h-12">
+                <Link to="/store">Continuar Comprando</Link>
+              </Button>
+              <Button asChild className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12">
+                <Link to="/checkout">Finalizar Compra</Link>
+              </Button>
+            </div>
           </div>
         </div>
       )}

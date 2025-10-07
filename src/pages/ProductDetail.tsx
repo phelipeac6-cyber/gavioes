@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,16 +31,21 @@ const ProductDetail = () => {
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-2xl font-semibold text-red-500">R$ {product.price.toFixed(2)}</p>
           <p className="text-gray-300">{product.description}</p>
-          <div className="flex items-center space-x-4">
-            <Input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-20 bg-transparent border-white rounded-lg h-12 text-center"
-              min="1"
-            />
-            <Button onClick={handleAddToCart} className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 flex-grow">
-              Adicionar ao Carrinho
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center space-x-4">
+              <Input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-20 bg-transparent border-white rounded-lg h-12 text-center"
+                min="1"
+              />
+              <Button onClick={handleAddToCart} className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 flex-grow">
+                Adicionar ao Carrinho
+              </Button>
+            </div>
+            <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black h-12">
+              <Link to="/store">Continuar Comprando</Link>
             </Button>
           </div>
         </div>
