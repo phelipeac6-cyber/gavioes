@@ -20,26 +20,18 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
 
   useEffect(() => {
     const mainEl = mainRef.current;
+    if (!mainEl) return;
 
     const handleScroll = () => {
-      if (mainEl) {
-        // Hide logo after scrolling down a bit
-        if (mainEl.scrollTop > 20) {
-          setIsSponsorVisible(false);
-        } else {
-          setIsSponsorVisible(true);
-        }
-      }
+      // Set visibility based on scroll position.
+      // Becomes invisible after scrolling down 10px.
+      setIsSponsorVisible(mainEl.scrollTop <= 10);
     };
 
-    if (mainEl) {
-      mainEl.addEventListener("scroll", handleScroll);
-    }
+    mainEl.addEventListener("scroll", handleScroll);
 
     return () => {
-      if (mainEl) {
-        mainEl.removeEventListener("scroll", handleScroll);
-      }
+      mainEl.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
