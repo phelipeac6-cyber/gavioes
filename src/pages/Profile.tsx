@@ -43,7 +43,7 @@ const Profile = () => {
             </Link>
           </div>
 
-          <nav className="grid grid-cols-3 gap-x-10 gap-y-6 text-lg font-semibold pt-4">
+          <nav className="grid grid-cols-3 gap-x-10 gap-y-6 text-lg font-semibold pt-8">
             <Link to="/news" className="hover:text-red-500 transition-colors">
               Noticias
             </Link>
