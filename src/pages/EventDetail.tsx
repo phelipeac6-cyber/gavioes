@@ -1,16 +1,23 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
 import { events } from "@/data/events";
 import { Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { showSuccess } from "@/utils/toast";
 
 const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const event = events.find(e => e.id === Number(id));
 
   if (!event) {
     return <PageLayout title="Evento não encontrado"><div>Evento não encontrado.</div></PageLayout>;
   }
+
+  const handleConfirmPresence = () => {
+    showSuccess("Presença confirmada com sucesso!");
+    navigate(`/event-confirmation/${event.id}`);
+  };
 
   return (
     <PageLayout title={event.title}>
@@ -31,7 +38,7 @@ const EventDetail = () => {
           <p className="text-gray-300 pt-2">{event.description}</p>
         </div>
         <div className="pt-4">
-           <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12">
+           <Button onClick={handleConfirmPresence} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12">
               Confirmar Presença
             </Button>
         </div>
