@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import gavioesLogo from "@/assets/gavioes-logo.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -27,8 +28,8 @@ const Index = () => {
           className="w-56 md:w-64 h-auto"
         />
 
-        <Button className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 w-full max-w-[280px] h-14">
-          Continuar
+        <Button asChild className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 w-full max-w-[280px] h-14">
+          <Link to="/login">Continuar</Link>
         </Button>
       </div>
 
