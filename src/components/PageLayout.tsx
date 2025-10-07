@@ -19,32 +19,21 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
   const [isSponsorVisible, setIsSponsorVisible] = useState(true);
 
   useEffect(() => {
-    const mainElement = mainRef.current;
+    const mainEl = mainRef.current;
+    if (!mainEl) return;
 
     const handleScroll = () => {
-      if (mainElement) {
-        // Hide the logo as soon as the user scrolls down even a little bit.
-        const isScrolled = mainElement.scrollTop > 10;
-        if (isScrolled) {
-          setIsSponsorVisible(false);
-        } else {
-          setIsSponsorVisible(true);
-        }
-      }
+      // Set visibility based on scroll position.
+      // Becomes invisible after scrolling down 10px.
+      setIsSponsorVisible(mainEl.scrollTop <= 10);
     };
 
-    // We need to attach the listener to the scrolling element.
-    if (mainElement) {
-      mainElement.addEventListener("scroll", handleScroll);
-    }
+    mainEl.addEventListener("scroll", handleScroll);
 
-    // Cleanup function to remove the listener when the component is unmounted.
     return () => {
-      if (mainElement) {
-        mainElement.removeEventListener("scroll", handleScroll);
-      }
+      mainEl.removeEventListener("scroll", handleScroll);
     };
-  }, []); // The empty array ensures this effect runs only once after the component mounts.
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col font-sans">
@@ -64,16 +53,13 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           )}
         </Link>
       </header>
-      
-      {/* This is the main scrollable area */}
       <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-52">
         {children}
       </main>
-
       {showSponsor && (
         <footer
           className={cn(
-            "fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-20 transition-all duration-300 ease-in-out",
+            "fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10 transition-all duration-300 ease-in-out",
             isSponsorVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-full"
