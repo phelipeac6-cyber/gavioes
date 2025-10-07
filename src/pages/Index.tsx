@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import gavioesLogo from "@/assets/gavioes-logo.png";
 
 const Index = () => {
   return (
@@ -20,7 +21,7 @@ const Index = () => {
         </div>
 
         <img
-          src="https://i.imgur.com/9gVfGjB.png"
+          src={gavioesLogo}
           alt="Gaviões da Fiel Logo"
           className="w-56 md:w-64 h-auto"
         />
