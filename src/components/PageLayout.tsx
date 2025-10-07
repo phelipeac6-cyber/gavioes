@@ -2,10 +2,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useCart } from "@/context/CartContext";
+import { BottomNav } from "./BottomNav";
 
 interface PageLayoutProps {
   title: string;
-  children: React.ReactNode;
+  children: React.Node;
   showSponsor?: boolean;
 }
 
@@ -31,11 +32,11 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           )}
         </Link>
       </header>
-      <main className="flex-grow p-6 overflow-y-auto">
+      <main className="flex-grow p-6 overflow-y-auto pb-40">
         {children}
       </main>
       {showSponsor && (
-        <footer className="p-6 flex justify-center">
+        <footer className="fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10">
           <img
             src={esportesDaSorteLogo}
             alt="Esportes da Sorte Logo"
@@ -43,6 +44,7 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           />
         </footer>
       )}
+      <BottomNav />
     </div>
   );
 };
