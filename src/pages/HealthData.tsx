@@ -1,33 +1,52 @@
-import { PageLayout } from "@/components/PageLayout";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ArrowLeft } from "lucide-react";
+import registerBg from "@/assets/gavioes-wallpaper.png";
+import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 
 const HealthData = () => {
+  const navigate = useNavigate();
+
   return (
-    <PageLayout title="Dados de Saúde">
-      <form className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="blood-type">Tipo Sanguíneo</Label>
-          <Input id="blood-type" type="text" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="allergies">Alergias</Label>
-          <Input id="allergies" type="text" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="emergency-contact">Contato de Emergência</Label>
-          <Input id="emergency-contact" type="text" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="emergency-phone">Telefone de Emergência</Label>
-          <Input id="emergency-phone" type="tel" className="bg-gray-800 border-gray-700 text-white" />
-        </div>
-        <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 mt-4">
-          Salvar
-        </Button>
-      </form>
-    </PageLayout>
+    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+      <img
+        src={registerBg}
+        alt="Gaviões da Fiel background"
+        className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
+      />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
+          <button onClick={() => navigate(-1)} className="p-2">
+            <ArrowLeft size={24} />
+          </button>
+          <h1 className="text-xl font-bold">Dados de Saúde</h1>
+        </header>
+
+        <main className="flex-grow p-6">
+          <form className="w-full max-w-sm mx-auto space-y-5">
+            <Input placeholder="Tipo sanguineo ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Diabetes ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Cardíaco ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Pressão ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Faz uso de remédios ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Alergia a medicamento ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Laudo em PDF" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              Salvar
+            </Button>
+          </form>
+        </main>
+
+        <footer className="p-6 flex justify-center">
+          <img
+            src={esportesDaSorteLogo}
+            alt="Esportes da Sorte Logo"
+            className="w-40 h-auto"
+          />
+        </footer>
+      </div>
+    </div>
   );
 };
 
