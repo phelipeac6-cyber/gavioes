@@ -8,28 +8,28 @@ const newsItems = [
     id: 1,
     category: "Entretenimento",
     title: "Com enredo indígena, Gaviões da Fiel define samba para o Carnaval de 2026",
-    image: "https://via.placeholder.com/150/000000/FFFFFF?text=Carnaval",
+    image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop",
     layout: "image-right",
   },
   {
     id: 2,
     category: "Corinthians",
     title: "Gaviões da Fiel terá reunião com Osmar Stabile, presidente do Corinthians",
-    image: "https://via.placeholder.com/150/000000/FFFFFF?text=Torcida",
+    image: "https://images.unsplash.com/photo-1588192225136-3992313982d6?q=80&w=800&auto=format&fit=crop",
     layout: "image-right",
   },
   {
     id: 3,
     category: "Corinthians",
     title: "Corinthians: Memphis se reúne com Gaviões da Fiel e mostra que quer ficar",
-    image: "https://via.placeholder.com/400x250/000000/FFFFFF?text=Memphis",
+    image: "https://images.unsplash.com/photo-1553779429-045a3e4313c8?q=80&w=800&auto=format&fit=crop",
     layout: "image-top",
   },
   {
     id: 4,
     category: "Corinthians",
     title: "Técnico fala sobre a importância da torcida na próxima partida",
-    image: "https://via.placeholder.com/400x250/000000/FFFFFF?text=Técnico",
+    image: "https://images.unsplash.com/photo-1608231387042-6a94445258c6?q=80&w=800&auto=format&fit=crop",
     layout: "image-top",
   },
 ];
@@ -67,7 +67,7 @@ const News = () => {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-auto object-cover rounded-lg mb-4"
+                  className="w-full h-48 object-cover rounded-lg mb-4"
                 />
                 <p className="font-semibold underline decoration-1 underline-offset-4 mb-1">
                   {item.category}
