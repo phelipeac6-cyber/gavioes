@@ -61,7 +61,7 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           )}
         </Link>
       </header>
-      <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-40">
+      <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-52">
         {children}
       </main>
       {showSponsor && (
