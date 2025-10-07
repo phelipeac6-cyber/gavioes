@@ -56,7 +56,7 @@ const Profile = () => {
             <Link to="#" className="hover:text-red-500 transition-colors">
               Chat
             </Link>
-            <Link to="#" className="hover:text-red-500 transition-colors">
+            <Link to="/events" className="hover:text-red-500 transition-colors">
               Eventos
             </Link>
             <Link to="#" className="hover:text-red-500 transition-colors">

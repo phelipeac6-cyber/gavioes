@@ -9,3 +9,12 @@ export interface Product {
 export interface CartItem extends Product {
   quantity: number;
 }
+
+export interface Event {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  image: string;
+  description: string;
+}
