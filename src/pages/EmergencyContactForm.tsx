@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,9 +6,50 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
+import { supabase } from "@/integrations/supabase/client";
+import { showSuccess, showError } from "@/utils/toast";
 
 const EmergencyContactForm = () => {
   const navigate = useNavigate();
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [parentesco, setParentesco] = useState("");
+  const [email, setEmail] = useState("");
+  const [terms, setTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!terms) {
+      showError("Você precisa concordar com a política de privacidade.");
+      return;
+    }
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          contato_emergencia_nome: nome,
+          contato_emergencia_telefone: telefone,
+          contato_emergencia_parentesco: parentesco,
+          contato_emergencia_email: email,
+        })
+        .eq("id", user.id);
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Contato de emergência salvo com sucesso!");
+        navigate("/profile");
+      }
+    } else {
+      showError("Usuário não encontrado. Faça o login novamente.");
+      navigate("/login");
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
@@ -25,21 +67,21 @@ const EmergencyContactForm = () => {
         </header>
 
         <main className="flex-grow p-6">
-          <form className="w-full max-w-sm mx-auto space-y-5">
-            <Input placeholder="Nome" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Telefone com whatsapp" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Grau parentesco" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input type="email" placeholder="E-mail" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+          <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
+            <Input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Telefone com whatsapp" value={telefone} onChange={(e) => setTelefone(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Grau parentesco" value={parentesco} onChange={(e) => setParentesco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
             
             <div className="flex items-center space-x-3 pt-2">
-              <Checkbox id="terms" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" />
+              <Checkbox id="terms" checked={terms} onCheckedChange={(checked) => setTerms(!!checked)} className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" />
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Concordo com a <a href="#" className="underline">privacidade e a política</a>
               </label>
             </div>
 
-            <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
-              Salvar
+            <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              {loading ? "Salvando..." : "Salvar"}
             </Button>
           </form>
         </main>

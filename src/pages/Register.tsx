@@ -6,12 +6,62 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Camera, Eye, EyeOff, User } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
+import { supabase } from "@/integrations/supabase/client";
+import { showSuccess, showError } from "@/utils/toast";
 
 const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [gender, setGender] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [subSede, setSubSede] = useState("");
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      showError("As senhas não coincidem.");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
+    });
+
+    if (error) {
+      showError(error.message);
+    } else {
+      // The trigger will create the profile, now we update it with the extra info
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ sub_sede: subSede, gender: gender })
+          .eq("id", user.id);
+        
+        if (profileError) {
+          showError(profileError.message);
+        } else {
+          showSuccess("Cadastro realizado com sucesso! Complete seu perfil.");
+          navigate("/address");
+        }
+      }
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
@@ -42,17 +92,19 @@ const Register = () => {
               </button>
             </div>
 
-            <form className="w-full space-y-4 text-left">
+            <form onSubmit={handleRegister} className="w-full space-y-4 text-left">
               <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Nome" className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
-                <Input placeholder="Sobrenome" className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
+                <Input placeholder="Nome" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
+                <Input placeholder="Sobrenome" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
               </div>
-              <Input type="email" placeholder="E-mail" className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
+              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
               
               <div className="relative">
                 <Input 
                   type={showPassword ? "text" : "password"} 
                   placeholder="Senha" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
@@ -64,6 +116,8 @@ const Register = () => {
                 <Input 
                   type={showConfirmPassword ? "text" : "password"} 
                   placeholder="Confirma Senha" 
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
                 />
                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
@@ -73,7 +127,7 @@ const Register = () => {
 
               <div>
                 <Label className="text-sm text-gray-400">Sub-Sede</Label>
-                <Input className="bg-transparent border-white rounded-lg mt-1" />
+                <Input value={subSede} onChange={(e) => setSubSede(e.target.value)} className="bg-transparent border-white rounded-lg mt-1" />
               </div>
 
               <div>
@@ -106,8 +160,8 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 !mt-8">
-                Salvar
+              <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 !mt-8">
+                {loading ? "Salvando..." : "Salvar"}
               </Button>
             </form>
             

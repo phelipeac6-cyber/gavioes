@@ -1,12 +1,45 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
+import { supabase } from "@/integrations/supabase/client";
+import { showSuccess, showError } from "@/utils/toast";
 
 const Address = () => {
   const navigate = useNavigate();
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [numero, setNumero] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ cep, endereco, numero, cidade, complemento })
+        .eq("id", user.id);
+
+      if (error) {
+        showError(error.message);
+      } else {
+        showSuccess("Endereço salvo com sucesso!");
+        navigate("/social");
+      }
+    } else {
+      showError("Usuário não encontrado. Faça o login novamente.");
+      navigate("/login");
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
@@ -24,14 +57,14 @@ const Address = () => {
         </header>
 
         <main className="flex-grow p-6">
-          <form className="w-full max-w-sm mx-auto space-y-5">
-            <Input placeholder="Cep" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Endereço" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Número" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Cidade" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Complemento" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
-              Salvar
+          <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
+            <Input placeholder="Cep" value={cep} onChange={(e) => setCep(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Número" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              {loading ? "Salvando..." : "Salvar"}
             </Button>
           </form>
         </main>

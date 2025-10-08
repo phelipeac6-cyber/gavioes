@@ -4,10 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import gavioesLogo from "@/assets/gavioes-logo.png";
+import { supabase } from "@/integrations/supabase/client";
+import { showSuccess, showError } from "@/utils/toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      showError(error.message);
+    } else {
+      showSuccess("Login realizado com sucesso!");
+      navigate("/profile");
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col font-sans">
@@ -27,10 +49,12 @@ const Login = () => {
         <div className="w-full max-w-sm text-left">
           <h1 className="text-4xl font-bold mb-8">Login</h1>
 
-          <form className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-5">
             <Input
               type="email"
               placeholder="E-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
             />
 
@@ -38,6 +62,8 @@ const Login = () => {
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="bg-transparent border-white rounded-lg h-14 pr-12 placeholder:text-gray-400 text-base"
               />
               <button
@@ -56,8 +82,8 @@ const Login = () => {
               </Link>
             </div>
 
-            <Button asChild className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
-              <Link to="/profile">Entrar</Link>
+            <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
 
