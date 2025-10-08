@@ -1,249 +1,307 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/hooks/useSession";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Camera, Eye, EyeOff, User } from "lucide-react";
-import registerBg from "@/assets/gavioes-wallpaper.png";
-import { supabase } from "@/integrations/supabase/client";
-import { showSuccess, showError } from "@/utils/toast";
-import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { UserAvatar } from "@/components/UserAvatar";
 
-// Helper function to convert Data URL to Blob for uploading
-const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
-  const response = await fetch(dataUrl);
-  const blob = await response.blob();
-  return blob;
+type Profile = {
+  id: string;
+  updated_at: string;
+  first_name: string;
+  last_name: string;
+  avatar_url: string | null;
+  whatsapp_number: string | null;
+  cep: string | null;
+  endereco: string | null;
+  numero: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  estado: string | null;
+  complemento: string | null;
+  tipo_sanguineo: string | null;
+  diabetes: string | null;
+  cardiaco: string | null;
+  pressao: string | null;
+  remedios: string | null;
+  alergia_medicamento: string | null;
+  contato_emergencia_nome: string | null;
+  contato_emergencia_telefone: string | null;
+  contato_emergencia_parentesco: string | null;
+  username: string | null;
 };
 
-const Register = () => {
+export default function Register() {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [gender, setGender] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { session, loading: sessionLoading } = useSession();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    whatsapp_number: "",
+    cep: "",
+    endereco: "",
+    numero: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    complemento: "",
+    tipo_sanguineo: "",
+    diabetes: "nao",
+    cardiaco: "nao",
+    pressao: "normal",
+    remedios: "",
+    alergia_medicamento: "",
+    contato_emergencia_nome: "",
+    contato_emergencia_telefone: "",
+    contato_emergencia_parentesco: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [subSede, setSubSede] = useState("");
+  useEffect(() => {
+    if (!sessionLoading && !session) {
+      navigate("/login");
+    }
+  }, [session, sessionLoading, navigate]);
 
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (session?.user) {
+        setLoadingProfile(true);
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
 
-  const handleAvatarClick = async () => {
-    try {
-      const image = await CapacitorCamera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt, // Asks user to choose between Camera and Gallery
-        promptLabelHeader: 'Foto de Perfil',
-        promptLabelPhoto: 'Escolher da Galeria',
-        promptLabelPicture: 'Tirar Foto'
-      });
+        if (error && error.code !== "PGRST116") {
+          console.error("Error fetching profile:", error);
+          toast.error("Erro ao carregar perfil.");
+        }
 
-      if (image.dataUrl) {
-        setAvatarPreview(image.dataUrl);
-        const blob = await dataUrlToBlob(image.dataUrl);
-        setAvatarFile(blob);
+        if (data) {
+          setProfile(data);
+          setFormData((prev) => ({ ...prev, ...data }));
+          setAvatarUrl(data.avatar_url);
+        }
+        setLoadingProfile(false);
       }
-    } catch (error) {
-      console.error("Error selecting image:", error);
-      showError("Não foi possível selecionar a imagem.");
+    };
+
+    fetchProfile();
+  }, [session]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleNextStep = async () => {
+    if (!session?.user) return;
+
+    setIsSubmitting(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ ...formData, updated_at: new Date().toISOString() })
+      .eq("id", session.user.id);
+
+    if (error) {
+      toast.error("Erro ao salvar os dados. Tente novamente.");
+      console.error("Update error:", error);
+    } else {
+      setStep((prev) => prev + 1);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handlePreviousStep = () => {
+    setStep((prev) => prev - 1);
+  };
+
+  const handleAvatarUploaded = async (url: string) => {
+    if (!session?.user) {
+      toast.error("Sessão expirada. Por favor, faça login novamente.");
+      return;
+    }
+    setAvatarUrl(url);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: url, updated_at: new Date().toISOString() })
+      .eq("id", session.user.id);
+
+    if (error) {
+      toast.error("Erro ao salvar a foto de perfil.");
+      console.error("Update error:", error);
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      showError("As senhas não coincidem.");
-      return;
-    }
-    setLoading(true);
+  const handleFinish = async () => {
+    toast.success("Cadastro finalizado com sucesso!");
+    if (session?.user?.id) {
+      const { data: updatedProfile, error } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", session.user.id)
+        .single();
 
-    // 1. Sign up the user
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-        },
-      },
-    });
-
-    if (authError) {
-      showError(authError.message);
-      setLoading(false);
-      return;
-    }
-
-    const user = authData.user;
-    if (!user) {
-      showError("Não foi possível criar o usuário.");
-      setLoading(false);
-      return;
-    }
-
-    let avatarUrl = null;
-
-    // 2. Upload avatar if selected
-    if (avatarFile) {
-      const filePath = `${user.id}/${new Date().getTime()}`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, avatarFile);
-
-      if (uploadError) {
-        showError(`Erro ao enviar avatar: ${uploadError.message}`);
-        // Continue without avatar
+      if (error) {
+        console.error("Error fetching updated profile:", error);
+        navigate("/profile");
+      } else if (updatedProfile?.username) {
+        navigate(`/profile/${updatedProfile.username}`);
       } else {
-        const { data: urlData } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-        avatarUrl = urlData.publicUrl;
+        navigate("/profile");
       }
-    }
-
-    // 3. Update the user's profile with extra info and avatar URL
-    // The trigger already created the profile, so we update it.
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({ 
-        sub_sede: subSede, 
-        gender: gender,
-        avatar_url: avatarUrl 
-      })
-      .eq("id", user.id);
-    
-    if (profileError) {
-      showError(profileError.message);
     } else {
-      showSuccess("Cadastro realizado com sucesso! Complete seu perfil.");
-      navigate("/address");
+      navigate("/login");
     }
+  };
 
-    setLoading(false);
+  if (sessionLoading || loadingProfile) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  const totalSteps = 5;
+  const progress = (step / totalSteps) * 100;
+
+  const renderStep = () => {
+    if (step === 1) {
+      return (
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Informações Pessoais</h2>
+          <p className="text-gray-400 mb-6">
+            Preencha seus dados para continuar.
+          </p>
+          <div className="space-y-4">
+            <Input
+              name="first_name"
+              placeholder="Nome"
+              value={formData.first_name}
+              onChange={handleInputChange}
+              className="bg-gray-800 border-gray-700"
+            />
+            <Input
+              name="last_name"
+              placeholder="Sobrenome"
+              value={formData.last_name}
+              onChange={handleInputChange}
+              className="bg-gray-800 border-gray-700"
+            />
+          </div>
+        </div>
+      );
+    } else if (step === 2) {
+      return (
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Contato</h2>
+          <p className="text-gray-400 mb-6">
+            Como podemos entrar em contato com você?
+          </p>
+          <Input
+            name="whatsapp_number"
+            placeholder="Número do WhatsApp"
+            value={formData.whatsapp_number || ""}
+            onChange={handleInputChange}
+            className="bg-gray-800 border-gray-700"
+          />
+        </div>
+      );
+    } else if (step === 3) {
+      return (
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Endereço</h2>
+          <p className="text-gray-400 mb-6">Onde você mora?</p>
+          <div className="space-y-4">
+            <Input name="cep" placeholder="CEP" value={formData.cep || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <Input name="endereco" placeholder="Endereço" value={formData.endereco || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <div className="flex gap-4">
+              <Input name="numero" placeholder="Número" value={formData.numero || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+              <Input name="bairro" placeholder="Bairro" value={formData.bairro || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            </div>
+            <div className="flex gap-4">
+              <Input name="cidade" placeholder="Cidade" value={formData.cidade || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+              <Input name="estado" placeholder="Estado" value={formData.estado || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            </div>
+            <Input name="complemento" placeholder="Complemento" value={formData.complemento || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+          </div>
+        </div>
+      );
+    } else if (step === 4) {
+      return (
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Informações de Saúde</h2>
+          <p className="text-gray-400 mb-6">
+            Essas informações são importantes em caso de emergência.
+          </p>
+          <div className="space-y-4">
+            <Input name="tipo_sanguineo" placeholder="Tipo Sanguíneo" value={formData.tipo_sanguineo || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <Input name="remedios" placeholder="Remédios que utiliza" value={formData.remedios || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <Input name="alergia_medicamento" placeholder="Alergia a medicamentos" value={formData.alergia_medicamento || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <h3 className="text-lg font-semibold pt-4">Contato de Emergência</h3>
+            <Input name="contato_emergencia_nome" placeholder="Nome do Contato" value={formData.contato_emergencia_nome || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <Input name="contato_emergencia_telefone" placeholder="Telefone do Contato" value={formData.contato_emergencia_telefone || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+            <Input name="contato_emergencia_parentesco" placeholder="Parentesco" value={formData.contato_emergencia_parentesco || ""} onChange={handleInputChange} className="bg-gray-800 border-gray-700" />
+          </div>
+        </div>
+      );
+    } else if (step === 5) {
+      return (
+        <div className="flex flex-col items-center text-center">
+          <h2 className="text-2xl font-bold mb-2">Foto de Perfil</h2>
+          <p className="text-gray-400 mb-6">
+            Carregue uma foto para o seu perfil.
+          </p>
+          <div className="mb-6">
+            <UserAvatar
+              userId={session?.user?.id}
+              initialUrl={avatarUrl}
+              onUpload={handleAvatarUploaded}
+              size={128}
+            />
+          </div>
+          <Button onClick={handleFinish} className="w-full">
+            Finalizar Cadastro
+          </Button>
+        </div>
+      );
+    }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
-      <img
-        src={registerBg}
-        alt="Gaviões da Fiel background"
-        className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
-      />
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20">
-          <button onClick={() => navigate(-1)} className="p-2">
-            <ArrowLeft size={24} />
-          </button>
-          <h1 className="text-xl font-bold">Cadastro</h1>
-        </header>
+    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
+        <Progress value={progress} className="w-full" />
+        
+        <div className="form-content">{renderStep()}</div>
 
-        <main className="flex-grow p-6 overflow-y-auto">
-          <div className="flex flex-col items-center space-y-6 max-w-sm mx-auto">
-            <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="w-24 h-24 border-2 border-gray-700">
-                <AvatarImage src={avatarPreview || ""} alt="User avatar" />
-                <AvatarFallback className="bg-gray-800">
-                  <User size={48} className="text-gray-500" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute bottom-0 right-0 bg-red-600 p-2 rounded-full border-2 border-black">
-                <Camera size={16} className="text-white" />
-              </div>
-            </button>
-
-            <form onSubmit={handleRegister} className="w-full space-y-4 text-left">
-              <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Nome" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
-                <Input placeholder="Sobrenome" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
-              </div>
-              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
-              
-              <div className="relative">
-                <Input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="Senha" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
-                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-              </div>
-
-              <div className="relative">
-                <Input 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  placeholder="Confirma Senha" 
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
-                />
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
-                  {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-              </div>
-
-              <div>
-                <Label className="text-sm text-gray-400">Sub-Sede</Label>
-                <Input value={subSede} onChange={(e) => setSubSede(e.target.value)} className="bg-transparent border-white rounded-lg mt-1" />
-              </div>
-
-              <div>
-                <Label className="text-sm text-gray-400">Gênero</Label>
-                <div className="grid grid-cols-2 gap-4 mt-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setGender("male")}
-                    className={`w-full rounded-lg border h-12 transition-colors ${
-                      gender === "male"
-                        ? "bg-white text-black border-white"
-                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
-                    }`}
-                  >
-                    Homem
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setGender("female")}
-                    className={`w-full rounded-lg border h-12 transition-colors ${
-                      gender === "female"
-                        ? "bg-white text-black border-white"
-                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
-                    }`}
-                  >
-                    Mulher
-                  </Button>
-                </div>
-              </div>
-
-              <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 !mt-8">
-                {loading ? "Salvando..." : "Salvar"}
-              </Button>
-            </form>
-            
-            <p className="text-sm text-center text-gray-400 pt-4">
-              Já tem uma conta?{" "}
-              <Link to="/login" className="font-semibold text-red-500 hover:underline">
-                Entrar
-              </Link>
-            </p>
+        {step < 5 && (
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handlePreviousStep}
+              disabled={step === 1}
+            >
+              Voltar
+            </Button>
+            <Button onClick={handleNextStep} disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Próximo"}
+            </Button>
           </div>
-        </main>
+        )}
       </div>
     </div>
   );
-};
-
-export default Register;
+}
