@@ -59,7 +59,7 @@ const Profile = () => {
             <Link to="/events" className="hover:text-red-500 transition-colors">
               Eventos
             </Link>
-            <Link to="#" className="hover:text-red-500 transition-colors">
+            <Link to="/polls" className="hover:text-red-500 transition-colors">
               Enquete
             </Link>
             <Link to="#" className="hover:text-red-500 transition-colors">
