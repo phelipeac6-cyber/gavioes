@@ -23,7 +23,7 @@ const mainNavItems = [
   { to: "#", icon: BarChart2, label: "Analytics" },
   { to: "#", icon: CreditCard, label: "Pagamentos" },
   { to: "#", icon: Heart, label: "Saúde" },
-  { to: "#", icon: Users, label: "Torcedores" },
+  { to: "/dashboard/torcedores", icon: Users, label: "Torcedores" },
   { to: "#", icon: Megaphone, label: "Campanhas" },
   { to: "#", icon: Package, label: "Produtos" },
   { to: "#", icon: Calendar, label: "Eventos" },

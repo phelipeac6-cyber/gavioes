@@ -33,7 +33,8 @@ import Estatuto from "./pages/Estatuto";
 import Historia from "./pages/Historia";
 import Channels from "./pages/Channels";
 import Chat from "./pages/Chat";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/admin/Dashboard";
+import Torcedores from "./pages/admin/Torcedores";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -76,6 +77,7 @@ const App = () => (
             <Route path="/channels" element={<Channels />} />
             <Route path="/chat/:id" element={<Chat />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/torcedores" element={<Torcedores />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
