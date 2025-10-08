@@ -8,6 +8,7 @@ export const BottomNav = () => {
     `transition-colors ${isActive ? "text-red-600" : "text-gray-900 hover:text-red-500"}`;
 
   const profilePath = loading ? "#" : (profile ? `/profile/${profile.username}` : "/login");
+  const settingsPath = loading ? "#" : (profile ? "/settings" : "/login");
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 z-20 flex items-end justify-center pointer-events-none">
@@ -34,7 +35,7 @@ export const BottomNav = () => {
           <div className="w-1/5" />
 
           <div className="flex justify-around w-2/5">
-            <NavLink to="/settings" className={getLinkClass} aria-label="Configurações">
+            <NavLink to={settingsPath} className={getLinkClass} aria-label="Configurações">
               <User size={28} fill="currentColor" />
             </NavLink>
             <NavLink to="#" className={getLinkClass} aria-label="Notificações">
