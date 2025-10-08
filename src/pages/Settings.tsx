@@ -3,6 +3,8 @@ import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { X, ChevronRight, ShieldCheck, Mail, FileText, LogOut, CheckCircle2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 
 const settingsItems = [
   { to: "/profile", icon: ShieldCheck, label: "Minhas informações" },
@@ -12,6 +14,12 @@ const settingsItems = [
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
 
   return (
     <MainLayout>
@@ -26,12 +34,12 @@ const Settings = () => {
         <div className="bg-white text-black p-4 rounded-2xl flex items-center space-x-4">
           <div className="relative">
             <Avatar className="w-14 h-14">
-              <AvatarImage src="https://github.com/shadcn.png" alt="Alê" />
-              <AvatarFallback>A</AvatarFallback>
+              <AvatarImage src="" alt="User Avatar" />
+              <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <CheckCircle2 size={20} className="absolute -bottom-1 -right-1 text-yellow-400 bg-white rounded-full" fill="white" />
           </div>
-          <span className="font-bold text-xl">Alê</span>
+          <span className="font-bold text-xl truncate">{user?.email}</span>
         </div>
 
         {/* Settings Links Card */}
@@ -53,7 +61,7 @@ const Settings = () => {
 
         {/* Logout Card */}
         <div className="bg-white text-black rounded-2xl">
-          <Button variant="ghost" className="w-full flex items-center justify-start p-4 space-x-4 text-base">
+          <Button onClick={handleLogout} variant="ghost" className="w-full flex items-center justify-start p-4 space-x-4 text-base">
             <LogOut size={24} className="text-gray-700" />
             <span className="font-semibold">Sair</span>
           </Button>
