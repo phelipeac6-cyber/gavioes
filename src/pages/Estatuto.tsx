@@ -7,11 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { showError } from "@/utils/toast";
 
-// Configura o worker do PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url,
-).toString();
+// Configura o worker do PDF.js a partir de um CDN para maior confiabilidade
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const Estatuto = () => {
   const pdfUrl = "/Estatuto-Gavioes.pdf";
