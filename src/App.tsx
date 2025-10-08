@@ -28,6 +28,7 @@ import TicketDetail from "./pages/TicketDetail";
 import TicketCheckout from "./pages/TicketCheckout";
 import TicketConfirmation from "./pages/TicketConfirmation";
 import Polls from "./pages/Polls";
+import Estatuto from "./pages/Estatuto";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/ticket-checkout" element={<TicketCheckout />} />
             <Route path="/ticket-confirmation" element={<TicketConfirmation />} />
             <Route path="/polls" element={<Polls />} />
+            <Route path="/estatuto" element={<Estatuto />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
