@@ -28,9 +28,14 @@ const Index = () => {
           className="w-56 md:w-64 h-auto"
         />
 
-        <Button asChild className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 w-full max-w-[280px] h-14">
-          <Link to="/login">Continuar</Link>
-        </Button>
+        <div className="flex flex-col space-y-4 w-full max-w-[280px]">
+          <Button asChild className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14">
+            <Link to="/login">Continuar</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-white text-white hover:bg-white hover:text-black h-14">
+            <Link to="/dashboard">Acessar Dashboard</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="pt-8">

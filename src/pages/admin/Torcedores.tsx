@@ -30,7 +30,6 @@ const Torcedores = () => {
     const fetchProfiles = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        // In a real app, you might redirect to login
         setError("Você precisa estar logado para ver os torcedores.");
         setLoading(false);
         return;
@@ -43,8 +42,6 @@ const Torcedores = () => {
       if (error) {
         setError(error.message);
       } else {
-        // The auth object doesn't expose email, so we can't easily get it here
-        // without more complex queries or functions.
         setProfiles(data as Profile[]);
       }
       setLoading(false);
@@ -54,9 +51,9 @@ const Torcedores = () => {
   }, []);
 
   return (
-    <DashboardLayout>
-      <main className="p-8">
-        <header className="mb-8">
+    <DashboardLayout pageTitle="Torcedores">
+      <main className="p-4 md:p-8">
+        <header className="hidden md:block mb-8">
           <h1 className="text-4xl font-bold text-gray-800">Torcedores</h1>
           <p className="text-gray-500">Lista de todos os usuários cadastrados</p>
         </header>
@@ -71,34 +68,36 @@ const Torcedores = () => {
           ) : error ? (
             <div className="text-red-500 text-center py-8">{error}</div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Sub-Sede</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {profiles.map((profile) => (
-                  <TableRow key={profile.id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarImage src={profile.avatar_url} />
-                          <AvatarFallback>
-                            <User />
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium text-gray-800">
-                          {profile.first_name} {profile.last_name}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-gray-600">{profile.sub_sede || "Não informado"}</TableCell>
+            <div className="overflow-x-auto">
+              <Table className="min-w-[600px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Sub-Sede</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {profiles.map((profile) => (
+                    <TableRow key={profile.id}>
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <Avatar>
+                            <AvatarImage src={profile.avatar_url} />
+                            <AvatarFallback>
+                              <User />
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium text-gray-800">
+                            {profile.first_name} {profile.last_name}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600">{profile.sub_sede || "Não informado"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </div>
       </main>
