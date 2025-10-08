@@ -11,7 +11,7 @@ import Profile from "./pages/Profile";
 import News from "./pages/News";
 import Settings from "./pages/Settings";
 import Socio from "./pages/Socio";
-import EmergencyContactForm from "./pages/EmergencyContactForm";
+import HealthData from "./pages/HealthData";
 import Address from "./pages/Address";
 import SocialMedia from "./pages/SocialMedia";
 import EmergencyCard from "./pages/EmergencyCard";
@@ -51,7 +51,7 @@ const App = () => (
             <Route path="/news" element={<News />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/socio" element={<Socio />} />
-            <Route path="/emergency-contact-form" element={<EmergencyContactForm />} />
+            <Route path="/health" element={<HealthData />} />
             <Route path="/address" element={<Address />} />
             <Route path="/social" element={<SocialMedia />} />
             <Route path="/emergency-card" element={<EmergencyCard />} />

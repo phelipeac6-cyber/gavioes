@@ -72,7 +72,7 @@ const EmergencyCard = () => {
         </div>
         
         <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black w-full max-w-sm h-12">
-          <Link to="/emergency-contact-form">Editar Dados</Link>
+          <Link to="/health">Editar Dados</Link>
         </Button>
       </div>
     </PageLayout>

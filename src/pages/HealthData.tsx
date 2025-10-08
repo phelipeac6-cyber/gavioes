@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 
-const EmergencyContactForm = () => {
+const HealthData = () => {
   const navigate = useNavigate();
 
   return (
@@ -21,29 +20,18 @@ const EmergencyContactForm = () => {
           <button onClick={() => navigate(-1)} className="p-2">
             <ArrowLeft size={24} />
           </button>
-          <h1 className="text-xl font-bold">Contato Emergência</h1>
+          <h1 className="text-xl font-bold">Dados de Saúde</h1>
         </header>
 
         <main className="flex-grow p-6">
           <form className="w-full max-w-sm mx-auto space-y-5">
-            <Input placeholder="Nome" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Telefone com whatsapp" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Grau parentesco" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input type="email" placeholder="E-mail" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            
-            <div className="flex items-center space-x-2 pt-4">
-              <Checkbox
-                id="terms"
-                className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-              />
-              <label
-                htmlFor="terms"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Concordo com a <a href="#" className="underline">privacidade e a política</a>
-              </label>
-            </div>
-
+            <Input placeholder="Tipo sanguineo ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Diabetes ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Cardíaco ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Pressão ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Faz uso de remédios ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Alergia a medicamento ?" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Laudo em PDF" className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
             <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
               Salvar
             </Button>
@@ -62,4 +50,4 @@ const EmergencyContactForm = () => {
   );
 };
 
-export default EmergencyContactForm;
+export default HealthData;
