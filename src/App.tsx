@@ -15,6 +15,7 @@ import HealthData from "./pages/HealthData";
 import Address from "./pages/Address";
 import SocialMedia from "./pages/SocialMedia";
 import EmergencyCard from "./pages/EmergencyCard";
+import EmergencyContactForm from "./pages/EmergencyContactForm";
 import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/address" element={<Address />} />
             <Route path="/social" element={<SocialMedia />} />
             <Route path="/emergency-card" element={<EmergencyCard />} />
+            <Route path="/emergency-contact-form" element={<EmergencyContactForm />} />
             <Route path="/store" element={<Store />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />

@@ -2,11 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { X, ChevronRight, ShieldCheck, Mail, FileText, LogOut, CheckCircle2 } from "lucide-react";
+import { X, ChevronRight, ShieldCheck, Mail, FileText, LogOut, CheckCircle2, Phone } from "lucide-react";
 
 const settingsItems = [
   { to: "/profile", icon: ShieldCheck, label: "Minhas informações" },
   { to: "/socio", icon: Mail, label: "Gavião socio" },
+  { to: "/emergency-contact-form", icon: Phone, label: "Contato de Emergência" },
   { to: "#", icon: FileText, label: "Política de Privacidade" },
 ];
 
