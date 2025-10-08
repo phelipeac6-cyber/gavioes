@@ -8,6 +8,14 @@ import { ArrowLeft, Camera, Eye, EyeOff, User } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
+import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
+
+// Helper function to convert Data URL to Blob for uploading
+const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
+  const response = await fetch(dataUrl);
+  const blob = await response.blob();
+  return blob;
+};
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,6 +31,32 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [subSede, setSubSede] = useState("");
 
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
+
+  const handleAvatarClick = async () => {
+    try {
+      const image = await CapacitorCamera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Prompt, // Asks user to choose between Camera and Gallery
+        promptLabelHeader: 'Foto de Perfil',
+        promptLabelPhoto: 'Escolher da Galeria',
+        promptLabelPicture: 'Tirar Foto'
+      });
+
+      if (image.dataUrl) {
+        setAvatarPreview(image.dataUrl);
+        const blob = await dataUrlToBlob(image.dataUrl);
+        setAvatarFile(blob);
+      }
+    } catch (error) {
+      console.error("Error selecting image:", error);
+      showError("Não foi possível selecionar a imagem.");
+    }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -30,7 +64,9 @@ const Register = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+
+    // 1. Sign up the user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -41,25 +77,57 @@ const Register = () => {
       },
     });
 
-    if (error) {
-      showError(error.message);
-    } else {
-      // The trigger will create the profile, now we update it with the extra info
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ sub_sede: subSede, gender: gender })
-          .eq("id", user.id);
-        
-        if (profileError) {
-          showError(profileError.message);
-        } else {
-          showSuccess("Cadastro realizado com sucesso! Complete seu perfil.");
-          navigate("/address");
-        }
+    if (authError) {
+      showError(authError.message);
+      setLoading(false);
+      return;
+    }
+
+    const user = authData.user;
+    if (!user) {
+      showError("Não foi possível criar o usuário.");
+      setLoading(false);
+      return;
+    }
+
+    let avatarUrl = null;
+
+    // 2. Upload avatar if selected
+    if (avatarFile) {
+      const filePath = `${user.id}/${new Date().getTime()}`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, avatarFile);
+
+      if (uploadError) {
+        showError(`Erro ao enviar avatar: ${uploadError.message}`);
+        // Continue without avatar
+      } else {
+        const { data: urlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+        avatarUrl = urlData.publicUrl;
       }
     }
+
+    // 3. Update the user's profile with extra info and avatar URL
+    // The trigger already created the profile, so we update it.
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ 
+        sub_sede: subSede, 
+        gender: gender,
+        avatar_url: avatarUrl 
+      })
+      .eq("id", user.id);
+    
+    if (profileError) {
+      showError(profileError.message);
+    } else {
+      showSuccess("Cadastro realizado com sucesso! Complete seu perfil.");
+      navigate("/address");
+    }
+
     setLoading(false);
   };
 
@@ -80,17 +148,17 @@ const Register = () => {
 
         <main className="flex-grow p-6 overflow-y-auto">
           <div className="flex flex-col items-center space-y-6 max-w-sm mx-auto">
-            <div className="relative">
+            <button onClick={handleAvatarClick} className="relative">
               <Avatar className="w-24 h-24 border-2 border-gray-700">
-                <AvatarImage src="" alt="User avatar" />
+                <AvatarImage src={avatarPreview || ""} alt="User avatar" />
                 <AvatarFallback className="bg-gray-800">
                   <User size={48} className="text-gray-500" />
                 </AvatarFallback>
               </Avatar>
-              <button className="absolute bottom-0 right-0 bg-red-600 p-2 rounded-full border-2 border-black">
+              <div className="absolute bottom-0 right-0 bg-red-600 p-2 rounded-full border-2 border-black">
                 <Camera size={16} className="text-white" />
-              </button>
-            </div>
+              </div>
+            </button>
 
             <form onSubmit={handleRegister} className="w-full space-y-4 text-left">
               <div className="grid grid-cols-2 gap-4">
