@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Camera, Eye, EyeOff, User, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
@@ -24,6 +25,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [subSede, setSubSede] = useState("");
+  const [bio, setBio] = useState("");
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -110,7 +112,8 @@ const Register = () => {
       .update({ 
         sub_sede: subSede, 
         gender: gender,
-        avatar_url: avatarUrl 
+        avatar_url: avatarUrl,
+        bio: bio,
       })
       .eq("id", user.id);
     
@@ -172,6 +175,21 @@ const Register = () => {
               </div>
               <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
               
+              <div>
+                <Label htmlFor="bio" className="text-sm text-gray-400">Bio</Label>
+                <Textarea
+                  id="bio"
+                  placeholder="Fale um pouco sobre você..."
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  maxLength={80}
+                  className="bg-transparent border-white rounded-lg mt-1 placeholder:text-gray-400"
+                />
+                <p className="text-right text-xs text-gray-500 mt-1">
+                  {bio.length}/80
+                </p>
+              </div>
+
               <div className="relative">
                 <Input 
                   type={showPassword ? "text" : "password"} 

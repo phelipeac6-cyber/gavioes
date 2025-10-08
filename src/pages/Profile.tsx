@@ -1,175 +1,155 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { MainLayout } from "@/components/MainLayout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Check, Instagram, Facebook, MessageCircle, User } from "lucide-react";
-import newBg from "@/assets/bg.png";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Instagram, Facebook, Globe, MessageSquare, Settings, ArrowLeft, User } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
-type ProfileData = {
-  first_name: string;
-  last_name: string;
+type ProfileType = {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
   avatar_url: string | null;
-  sub_sede: string | null;
+  username: string | null;
   instagram_url: string | null;
   facebook_url: string | null;
+  site_url: string | null;
   whatsapp_number: string | null;
+  bio: string | null;
 };
 
 const Profile = () => {
   const { username } = useParams<{ username: string }>();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (!username) {
-        setError("Nome de usuário não fornecido.");
+        toast.error("Nome de usuário não encontrado.");
         setLoading(false);
         return;
       }
+
       setLoading(true);
       const { data, error } = await supabase
         .from("profiles")
-        .select("first_name, last_name, avatar_url, sub_sede, instagram_url, facebook_url, whatsapp_number")
+        .select("*")
         .eq("username", username)
         .single();
 
-      if (error) {
+      if (error || !data) {
         console.error("Error fetching profile:", error);
-        setError("Perfil não encontrado ou ocorreu um erro.");
-      } else {
-        setProfile(data);
+        toast.error("Perfil não encontrado.");
+        navigate("/");
+        return;
       }
+
+      setProfile(data);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && session.user.id === data.id) {
+        setIsOwnProfile(true);
+      }
+      
       setLoading(false);
     };
 
     fetchProfile();
-  }, [username]);
-
-  const handleExternalLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    window.open(e.currentTarget.href, '_blank', 'noopener,noreferrer');
-  };
+  }, [username, navigate]);
 
   if (loading) {
-    return (
-      <MainLayout bgImage={newBg}>
-        <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
-          <div className="flex flex-col items-center space-y-5">
-            <Skeleton className="w-28 h-28 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-8 w-32" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-            <Skeleton className="h-6 w-40" />
-            <div className="flex items-center space-x-6 pt-2">
-              <Skeleton className="w-8 h-8 rounded-md" />
-              <Skeleton className="w-8 h-8 rounded-md" />
-              <Skeleton className="w-8 h-8 rounded-md" />
-            </div>
-          </div>
-        </div>
-      </MainLayout>
-    );
+    return <ProfileSkeleton />;
   }
 
-  if (error || !profile) {
+  if (!profile) {
     return (
-      <MainLayout bgImage={newBg}>
-        <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
-          <h1 className="text-2xl font-bold text-red-500">{error}</h1>
-          <Link to="/" className="mt-4 text-white underline">Voltar para o início</Link>
-        </div>
-      </MainLayout>
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+        <p>Perfil não encontrado.</p>
+        <Button onClick={() => navigate("/")} className="mt-4">Voltar para Home</Button>
+      </div>
     );
   }
 
   return (
-    <MainLayout bgImage={newBg}>
-      <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
-        <div className="flex flex-col items-center space-y-5">
-          <div className="relative">
-            <Avatar className="w-28 h-28">
-              <AvatarImage
-                src={profile.avatar_url || undefined}
-                alt={`${profile.first_name} ${profile.last_name}`}
-              />
-              <AvatarFallback>
-                <User size={48} />
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-1.5 border-2 border-black">
-              <Check size={18} className="text-black" />
-            </div>
+    <div className="min-h-screen bg-black text-white font-sans">
+      <header className="p-4 flex items-center justify-between sticky top-0 bg-black/80 backdrop-blur-sm z-20">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <ArrowLeft size={24} />
+        </Button>
+        <h1 className="text-xl font-bold">Perfil</h1>
+        {isOwnProfile ? (
+          <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+            <Settings size={24} />
+          </Button>
+        ) : (
+          <div className="w-10 h-10" /> // Placeholder for alignment
+        )}
+      </header>
+
+      <main className="p-6">
+        <div className="flex flex-col items-center text-center">
+          <Avatar className="w-32 h-32 border-4 border-red-600">
+            <AvatarImage src={profile.avatar_url || ""} alt={`${profile.first_name} ${profile.last_name}`} />
+            <AvatarFallback className="bg-gray-800">
+              <User size={64} />
+            </AvatarFallback>
+          </Avatar>
+
+          <h1 className="text-3xl font-bold mt-4">{`${profile.first_name || ''} ${profile.last_name || ''}`}</h1>
+          <p className="text-red-500 font-semibold">@{profile.username}</p>
+
+          <div className="mt-4 text-gray-300 max-w-md mx-auto">
+            <p className="text-center">{profile.bio || "Nenhuma bio fornecida."}</p>
           </div>
 
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold">{profile.first_name} {profile.last_name}</h1>
-            <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
-          </div>
-
-          <p className="font-semibold text-lg">Presidente Gaviões</p>
-
-          <div className="flex items-center space-x-6 pt-2">
+          <div className="flex items-center space-x-6 pt-4">
             {profile.instagram_url && (
-              <a href={profile.instagram_url} onClick={handleExternalLink} className="text-white">
-                <Instagram size={32} />
+              <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer">
+                <Instagram className="text-gray-400 hover:text-white transition-colors" />
               </a>
             )}
             {profile.facebook_url && (
-              <a href={profile.facebook_url} onClick={handleExternalLink}>
-                <div className="bg-white rounded-md p-1">
-                  <Facebook size={24} className="text-black" />
-                </div>
+              <a href={profile.facebook_url} target="_blank" rel="noopener noreferrer">
+                <Facebook className="text-gray-400 hover:text-white transition-colors" />
+              </a>
+            )}
+            {profile.site_url && (
+              <a href={profile.site_url} target="_blank" rel="noopener noreferrer">
+                <Globe className="text-gray-400 hover:text-white transition-colors" />
               </a>
             )}
             {profile.whatsapp_number && (
-              <a href={`https://wa.me/${profile.whatsapp_number.replace(/\D/g, '')}`} onClick={handleExternalLink} className="text-white">
-                <MessageCircle size={32} />
+              <a href={`https://wa.me/${profile.whatsapp_number}`} target="_blank" rel="noopener noreferrer">
+                <MessageSquare className="text-gray-400 hover:text-white transition-colors" />
               </a>
             )}
           </div>
-
-          <nav className="grid grid-cols-3 gap-x-10 gap-y-6 text-lg font-semibold pt-8">
-            <Link to="/news" className="hover:text-red-500 transition-colors">
-              Noticias
-            </Link>
-            <Link to="/store" className="hover:text-red-500 transition-colors">
-              Loja
-            </Link>
-            <Link to="/tickets" className="hover:text-red-500 transition-colors">
-              Ingressos
-            </Link>
-            <Link to="/channels" className="hover:text-red-500 transition-colors">
-              Chat
-            </Link>
-            <Link to="/events" className="hover:text-red-500 transition-colors">
-              Eventos
-            </Link>
-            <Link to="/polls" className="hover:text-red-500 transition-colors">
-              Enquete
-            </Link>
-            <Link to="/estatuto" className="hover:text-red-500 transition-colors">
-              Estatuto
-            </Link>
-            <Link to="/historia" className="hover:text-red-500 transition-colors">
-              Historia
-            </Link>
-            <a
-              href="https://www.youtube.com/watch?v=IOSHNue2Pjs&list=PLNawbhEFSd-dyLhAj5znCA8j1-VsBvtpg"
-              onClick={handleExternalLink}
-              className="hover:text-red-500 transition-colors"
-            >
-              PodCast
-            </a>
-          </nav>
         </div>
-      </div>
-    </MainLayout>
+      </main>
+    </div>
   );
 };
+
+const ProfileSkeleton = () => (
+  <div className="min-h-screen bg-black text-white font-sans p-6 pt-24">
+    <div className="flex flex-col items-center text-center animate-pulse">
+      <Skeleton className="w-32 h-32 rounded-full border-4 border-gray-700" />
+      <Skeleton className="h-8 w-48 mt-4 rounded" />
+      <Skeleton className="h-5 w-32 mt-2 rounded" />
+      <Skeleton className="h-10 w-full max-w-md mt-4 rounded" />
+      <div className="flex items-center space-x-6 pt-4">
+        <Skeleton className="w-6 h-6 rounded" />
+        <Skeleton className="w-6 h-6 rounded" />
+        <Skeleton className="w-6 h-6 rounded" />
+        <Skeleton className="w-6 h-6 rounded" />
+      </div>
+    </div>
+  </div>
+);
 
 export default Profile;
