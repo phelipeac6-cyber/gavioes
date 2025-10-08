@@ -4,17 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Camera, Eye, EyeOff, User } from "lucide-react";
+import { ArrowLeft, Camera, Eye, EyeOff, User, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
 
-// Helper function to convert Data URL to Blob for uploading
 const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
   const response = await fetch(dataUrl);
-  const blob = await response.blob();
-  return blob;
+  return response.blob();
 };
 
 const Register = () => {
@@ -23,6 +21,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [gender, setGender] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -35,12 +34,14 @@ const Register = () => {
   const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
 
   const handleAvatarClick = async () => {
+    if (avatarLoading) return;
+    setAvatarLoading(true);
     try {
       const image = await CapacitorCamera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt, // Asks user to choose between Camera and Gallery
+        source: CameraSource.Prompt,
         promptLabelHeader: 'Foto de Perfil',
         promptLabelPhoto: 'Escolher da Galeria',
         promptLabelPicture: 'Tirar Foto'
@@ -50,10 +51,15 @@ const Register = () => {
         setAvatarPreview(image.dataUrl);
         const blob = await dataUrlToBlob(image.dataUrl);
         setAvatarFile(blob);
+        showSuccess("Imagem selecionada. Será enviada ao salvar.");
       }
     } catch (error) {
       console.error("Error selecting image:", error);
-      showError("Não foi possível selecionar a imagem.");
+      if (error instanceof Error && error.message !== "User cancelled photos app") {
+        showError("Não foi possível selecionar a imagem.");
+      }
+    } finally {
+      setAvatarLoading(false);
     }
   };
 
@@ -65,7 +71,6 @@ const Register = () => {
     }
     setLoading(true);
 
-    // 1. Sign up the user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -92,7 +97,6 @@ const Register = () => {
 
     let avatarUrl = null;
 
-    // 2. Upload avatar if selected
     if (avatarFile) {
       const filePath = `${user.id}/${new Date().getTime()}`;
       const { error: uploadError } = await supabase.storage
@@ -101,7 +105,6 @@ const Register = () => {
 
       if (uploadError) {
         showError(`Erro ao enviar avatar: ${uploadError.message}`);
-        // Continue without avatar
       } else {
         const { data: urlData } = supabase.storage
           .from('avatars')
@@ -110,8 +113,6 @@ const Register = () => {
       }
     }
 
-    // 3. Update the user's profile with extra info and avatar URL
-    // The trigger already created the profile, so we update it.
     const { error: profileError } = await supabase
       .from("profiles")
       .update({ 
@@ -148,11 +149,15 @@ const Register = () => {
 
         <main className="flex-grow p-6 overflow-y-auto">
           <div className="flex flex-col items-center space-y-6 max-w-sm mx-auto">
-            <button onClick={handleAvatarClick} className="relative">
+            <button onClick={handleAvatarClick} className="relative" disabled={avatarLoading}>
               <Avatar className="w-24 h-24 border-2 border-gray-700">
                 <AvatarImage src={avatarPreview || ""} alt="User avatar" />
                 <AvatarFallback className="bg-gray-800">
-                  <User size={48} className="text-gray-500" />
+                  {avatarLoading ? (
+                    <Loader2 size={32} className="animate-spin text-gray-500" />
+                  ) : (
+                    <User size={48} className="text-gray-500" />
+                  )}
                 </AvatarFallback>
               </Avatar>
               <div className="absolute bottom-0 right-0 bg-red-600 p-2 rounded-full border-2 border-black">
