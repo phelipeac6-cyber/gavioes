@@ -5,6 +5,14 @@ import { Check, Instagram, Facebook, MessageCircle } from "lucide-react";
 import newBg from "@/assets/bg.png";
 
 const Profile = () => {
+  // Esta função força a abertura de links externos em uma nova aba
+  const handleExternalLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Impede que o link tente abrir dentro do iframe
+    e.preventDefault();
+    // Abre o URL do link em uma nova aba do navegador
+    window.open(e.currentTarget.href, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <MainLayout bgImage={newBg}>
       <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
@@ -70,8 +78,7 @@ const Profile = () => {
             </Link>
             <a
               href="https://www.youtube.com/watch?v=IOSHNue2Pjs&list=PLNawbhEFSd-dyLhAj5znCA8j1-VsBvtpg"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={handleExternalLink}
               className="hover:text-red-500 transition-colors"
             >
               PodCast
