@@ -17,16 +17,32 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: loginData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
       showError(error.message);
-    } else {
+    } else if (loginData.user) {
       showSuccess("Login realizado com sucesso!");
-      navigate("/profile");
+      
+      // Fetch the profile to get the username
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", loginData.user.id)
+        .single();
+      
+      if (profileError || !profileData?.username) {
+        showError("Não foi possível carregar seu perfil. Redirecionando para a página inicial.");
+        navigate("/");
+      } else {
+        navigate(`/profile/${profileData.username}`);
+      }
+    } else {
+        showError("Ocorreu um erro inesperado. Tente novamente.");
+        navigate("/");
     }
     setLoading(false);
   };

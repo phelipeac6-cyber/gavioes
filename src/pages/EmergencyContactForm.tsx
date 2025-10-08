@@ -42,7 +42,23 @@ const EmergencyContactForm = () => {
         showError(error.message);
       } else {
         showSuccess("Contato de emergência salvo com sucesso!");
-        navigate("/profile");
+        
+        // Fetch the profile to get the username
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError) {
+          showError("Não foi possível encontrar seu perfil. Por favor, faça o login.");
+          navigate("/login");
+        } else if (profileData?.username) {
+          navigate(`/profile/${profileData.username}`);
+        } else {
+          showError("Username não encontrado. Por favor, faça o login.");
+          navigate("/login");
+        }
       }
     } else {
       showError("Usuário não encontrado. Faça o login novamente.");

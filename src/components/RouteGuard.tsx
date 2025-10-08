@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/context/AuthContext';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -10,10 +11,11 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
+  const { profile, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Wait until the device type is determined
-    if (isMobile === undefined) {
+    // Wait until the device type and auth state are determined
+    if (authLoading || isMobile === undefined) {
       return;
     }
 
@@ -21,27 +23,26 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const isIndexRoute = location.pathname === '/';
 
     // --- Desktop Logic ---
-    // If the user is on a desktop device...
     if (!isMobile) {
-      // ...and they are not on the index page or a dashboard page...
       if (!isIndexRoute && !isDashboardRoute) {
-        // ...redirect them to the dashboard.
         navigate('/dashboard', { replace: true });
       }
     }
     // --- Mobile Logic ---
-    // If the user is on a mobile device...
     else {
-      // ...and they try to access a dashboard page...
       if (isDashboardRoute) {
-        // ...redirect them to the main profile page.
-        navigate('/profile', { replace: true });
+        // If user is logged in, redirect to their profile, otherwise to login
+        if (profile?.username) {
+          navigate(`/profile/${profile.username}`, { replace: true });
+        } else {
+          navigate('/login', { replace: true });
+        }
       }
     }
-  }, [isMobile, location.pathname, navigate]);
+  }, [isMobile, location.pathname, navigate, profile, authLoading]);
 
-  // Don't render anything until the device type is known to avoid content flashing
-  if (isMobile === undefined) {
+  // Don't render anything until loading is complete to avoid content flashing
+  if (authLoading || isMobile === undefined) {
     return null;
   }
 
