@@ -4,8 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { X, ChevronRight, ShieldCheck, Mail, FileText, LogOut, CheckCircle2, Phone } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { showSuccess, showError } from "@/utils/toast";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -19,16 +17,6 @@ const Settings = () => {
     { to: "/emergency-contact-form", icon: Phone, label: "Contato de Emergência" },
     { to: "#", icon: FileText, label: "Política de Privacidade" },
   ];
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      showError(error.message);
-    } else {
-      showSuccess("Você saiu com sucesso!");
-      navigate('/login', { replace: true });
-    }
-  };
 
   return (
     <MainLayout>
@@ -70,7 +58,7 @@ const Settings = () => {
 
         {/* Logout Card */}
         <div className="bg-white text-black rounded-2xl">
-          <Button onClick={handleLogout} variant="ghost" className="w-full flex items-center justify-start p-4 space-x-4 text-base">
+          <Button variant="ghost" className="w-full flex items-center justify-start p-4 space-x-4 text-base">
             <LogOut size={24} className="text-gray-700" />
             <span className="font-semibold">Sair</span>
           </Button>
