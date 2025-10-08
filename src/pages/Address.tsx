@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,35 @@ const Address = () => {
   const [cep, setCep] = useState("");
   const [endereco, setEndereco] = useState("");
   const [numero, setNumero] = useState("");
-  const [cidade, setCidade] = useState("");
   const [complemento, setComplemento] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const cleanedCep = cep.replace(/\D/g, "");
+      if (cleanedCep.length === 8) {
+        try {
+          const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
+          const data = await response.json();
+          if (!data.erro) {
+            setEndereco(data.logradouro);
+            setBairro(data.bairro);
+            setCidade(data.localidade);
+            setEstado(data.uf);
+          } else {
+            showError("CEP não encontrado.");
+          }
+        } catch (error) {
+          showError("Não foi possível buscar o CEP.");
+        }
+      }
+    };
+
+    fetchAddress();
+  }, [cep]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +51,7 @@ const Address = () => {
     if (user) {
       const { error } = await supabase
         .from("profiles")
-        .update({ cep, endereco, numero, cidade, complemento })
+        .update({ cep, endereco, numero, complemento, bairro, cidade, estado })
         .eq("id", user.id);
 
       if (error) {
@@ -58,11 +84,14 @@ const Address = () => {
 
         <main className="flex-grow p-6">
           <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
-            <Input placeholder="Cep" value={cep} onChange={(e) => setCep(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} maxLength={9} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
             <Input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
             <Input placeholder="Número" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
             <Input placeholder="Complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="Estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            
             <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
               {loading ? "Salvando..." : "Salvar"}
             </Button>
