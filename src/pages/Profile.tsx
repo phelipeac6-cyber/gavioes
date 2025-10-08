@@ -3,11 +3,8 @@ import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, Instagram, Facebook, MessageCircle } from "lucide-react";
 import newBg from "@/assets/bg.png";
-import { useAuth } from "@/context/AuthContext";
 
 const Profile = () => {
-  const { user } = useAuth();
-
   // Esta função força a abertura de links externos em uma nova aba
   const handleExternalLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // Impede que o link tente abrir dentro do iframe
@@ -23,10 +20,10 @@ const Profile = () => {
           <div className="relative">
             <Avatar className="w-28 h-28">
               <AvatarImage
-                src=""
-                alt="User Avatar"
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400"
+                alt="Alê"
               />
-              <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>A</AvatarFallback>
             </Avatar>
             <div className="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-1.5 border-2 border-black">
               <Check size={18} className="text-black" />
@@ -34,7 +31,7 @@ const Profile = () => {
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold truncate">{user?.email}</h1>
+            <h1 className="text-3xl font-bold">Alê</h1>
             <p className="text-gray-400">Sub-Sede</p>
           </div>
 

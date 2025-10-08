@@ -1,102 +1,69 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import gavioesLogo from "@/assets/gavioes-logo.png";
-import { showError, showSuccess } from "@/utils/toast";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (error) {
-      showError("E-mail ou senha inválidos.");
-    } else {
-      showSuccess("Login realizado com sucesso!");
-      navigate("/profile");
-    }
-  };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans flex flex-col">
-      <header className="p-4">
+    <div className="min-h-screen bg-black text-white flex flex-col font-sans">
+      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10">
         <button onClick={() => navigate(-1)} className="p-2">
           <ArrowLeft size={24} />
         </button>
       </header>
 
-      <main className="flex-grow flex flex-col items-center px-6">
+      <main className="flex-grow flex flex-col items-center p-6">
         <img
           src={gavioesLogo}
           alt="Gaviões da Fiel Logo"
-          className="w-40 h-auto mb-10"
+          className="w-40 h-auto mx-auto mb-10"
         />
-        <h1 className="text-3xl font-bold self-start mb-8">Login</h1>
 
-        <form onSubmit={handleLogin} className="w-full max-w-sm space-y-6">
-          <Input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
-            required
-          />
-          <div className="relative">
+        <div className="w-full max-w-sm text-left">
+          <h1 className="text-4xl font-bold mb-8">Login</h1>
+
+          <form className="space-y-5">
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base pr-12"
-              required
+              type="email"
+              placeholder="E-mail"
+              className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400"
-            >
-              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-            </button>
-          </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="remember" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" />
-              <label htmlFor="remember">Lembrar senha</label>
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Senha"
+                className="bg-transparent border-white rounded-lg h-14 pr-12 placeholder:text-gray-400 text-base"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400"
+              >
+                {showPassword ? <Eye size={22} /> : <EyeOff size={22} />}
+              </button>
             </div>
-            <Link to="#" className="text-red-500 hover:underline">
-              Esqueceu sua senha
-            </Link>
-          </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14"
-            disabled={loading}
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
+            <div className="flex items-center justify-between text-sm pt-2">
+              <span className="text-gray-300">Lembrar senha</span>
+              <Link to="#" className="font-semibold text-red-500 hover:underline">
+                Esqueceu sua senha
+              </Link>
+            </div>
 
-        <div className="mt-8 text-center">
-          <p>
+            <Button asChild className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              <Link to="/profile">Entrar</Link>
+            </Button>
+          </form>
+
+          <p className="text-sm text-center text-gray-400 mt-8">
             Não tem uma conta?{" "}
-            <Link to="/register" className="font-bold hover:underline">
+            <Link to="/register" className="font-bold text-white hover:underline">
               Cadastrar
             </Link>
           </p>
