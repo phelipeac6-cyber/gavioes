@@ -68,9 +68,14 @@ const Profile = () => {
             <Link to="/historia" className="hover:text-red-500 transition-colors">
               Historia
             </Link>
-            <Link to="#" className="hover:text-red-500 transition-colors">
+            <a
+              href="https://www.youtube.com/watch?v=IOSHNue2Pjs&list=PLNawbhEFSd-dyLhAj5znCA8j1-VsBvtpg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-red-500 transition-colors"
+            >
               PodCast
-            </Link>
+            </a>
           </nav>
         </div>
       </div>
