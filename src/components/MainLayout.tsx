@@ -17,16 +17,17 @@ export const MainLayout = ({ children, bgImage }: MainLayoutProps) => {
         />
       )}
       <div className="relative z-10">
-        <div className="pb-40">{children}</div>
+        <div className="pb-24"> {/* Padding for the fixed bottom nav */}
+          {children}
+          <footer className="pt-8 pb-4 flex justify-center">
+            <img
+              src={esportesDaSorteLogo}
+              alt="Esportes da Sorte Logo"
+              className="w-40 h-auto"
+            />
+          </footer>
+        </div>
       </div>
-      
-      <footer className="fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10">
-        <img
-          src={esportesDaSorteLogo}
-          alt="Esportes da Sorte Logo"
-          className="w-40 h-auto"
-        />
-      </footer>
       <BottomNav />
     </div>
   );

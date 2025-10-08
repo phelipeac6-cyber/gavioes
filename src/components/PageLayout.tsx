@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useCart } from "@/context/CartContext";
 import { BottomNav } from "./BottomNav";
-import { cn } from "@/lib/utils";
 
 interface PageLayoutProps {
   title: string;
@@ -15,25 +13,6 @@ interface PageLayoutProps {
 export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutProps) => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
-  const mainRef = useRef<HTMLElement>(null);
-  const [isSponsorVisible, setIsSponsorVisible] = useState(true);
-
-  useEffect(() => {
-    const mainEl = mainRef.current;
-    if (!mainEl) return;
-
-    const handleScroll = () => {
-      // Set visibility based on scroll position.
-      // Becomes invisible after scrolling down 10px.
-      setIsSponsorVisible(mainEl.scrollTop <= 10);
-    };
-
-    mainEl.addEventListener("scroll", handleScroll);
-
-    return () => {
-      mainEl.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col font-sans">
@@ -53,25 +32,18 @@ export const PageLayout = ({ title, children, showSponsor = true }: PageLayoutPr
           )}
         </Link>
       </header>
-      <main ref={mainRef} className="flex-grow p-6 overflow-y-auto pb-52">
+      <main className="flex-grow p-6 overflow-y-auto pb-24">
         {children}
+        {showSponsor && (
+          <footer className="pt-8 flex justify-center">
+            <img
+              src={esportesDaSorteLogo}
+              alt="Esportes da Sorte Logo"
+              className="w-40 h-auto"
+            />
+          </footer>
+        )}
       </main>
-      {showSponsor && (
-        <footer
-          className={cn(
-            "fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-10 transition-all duration-300 ease-in-out",
-            isSponsorVisible
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-full"
-          )}
-        >
-          <img
-            src={esportesDaSorteLogo}
-            alt="Esportes da Sorte Logo"
-            className="w-40 h-auto"
-          />
-        </footer>
-      )}
       <BottomNav />
     </div>
   );
