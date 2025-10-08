@@ -1,9 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { Home, ClipboardList, HeartPulse, User, Bell } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export const BottomNav = () => {
+  const { profile, loading } = useAuth();
   const getLinkClass = ({ isActive }: { isActive: boolean }) =>
     `transition-colors ${isActive ? "text-red-600" : "text-gray-900 hover:text-red-500"}`;
+
+  const profilePath = loading ? "#" : (profile ? `/profile/${profile.username}` : "/login");
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 z-20 flex items-end justify-center pointer-events-none">
@@ -19,7 +23,7 @@ export const BottomNav = () => {
 
         <div className="flex justify-around items-center w-full h-full">
           <div className="flex justify-around w-2/5">
-            <NavLink to="/profile" className={getLinkClass} aria-label="Início">
+            <NavLink to={profilePath} className={getLinkClass} aria-label="Início">
               <Home size={28} fill="currentColor" />
             </NavLink>
             <NavLink to="/news" className={getLinkClass} aria-label="Notícias">

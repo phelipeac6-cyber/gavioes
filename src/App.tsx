@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 import { RouteGuard } from "./components/RouteGuard";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -45,47 +46,49 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <CartProvider>
-        <BrowserRouter>
-          <RouteGuard>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/socio" element={<Socio />} />
-              <Route path="/health" element={<HealthData />} />
-              <Route path="/address" element={<Address />} />
-              <Route path="/social" element={<SocialMedia />} />
-              <Route path="/emergency-card" element={<EmergencyCard />} />
-              <Route path="/emergency-contact-form" element={<EmergencyContactForm />} />
-              <Route path="/store" element={<Store />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-confirmation" element={<OrderConfirmation />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/event/:id" element={<EventDetail />} />
-              <Route path="/event-confirmation/:id" element={<EventConfirmation />} />
-              <Route path="/tickets" element={<Tickets />} />
-              <Route path="/ticket/:id" element={<TicketDetail />} />
-              <Route path="/ticket-checkout" element={<TicketCheckout />} />
-              <Route path="/ticket-confirmation" element={<TicketConfirmation />} />
-              <Route path="/polls" element={<Polls />} />
-              <Route path="/estatuto" element={<Estatuto />} />
-              <Route path="/historia" element={<Historia />} />
-              <Route path="/channels" element={<Channels />} />
-              <Route path="/chat/:id" element={<Chat />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/torcedores" element={<Torcedores />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </RouteGuard>
-        </BrowserRouter>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <RouteGuard>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile/:username" element={<Profile />} />
+                <Route path="/news" element={<News />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/socio" element={<Socio />} />
+                <Route path="/health" element={<HealthData />} />
+                <Route path="/address" element={<Address />} />
+                <Route path="/social" element={<SocialMedia />} />
+                <Route path="/emergency-card" element={<EmergencyCard />} />
+                <Route path="/emergency-contact-form" element={<EmergencyContactForm />} />
+                <Route path="/store" element={<Store />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/event/:id" element={<EventDetail />} />
+                <Route path="/event-confirmation/:id" element={<EventConfirmation />} />
+                <Route path="/tickets" element={<Tickets />} />
+                <Route path="/ticket/:id" element={<TicketDetail />} />
+                <Route path="/ticket-checkout" element={<TicketCheckout />} />
+                <Route path="/ticket-confirmation" element={<TicketConfirmation />} />
+                <Route path="/polls" element={<Polls />} />
+                <Route path="/estatuto" element={<Estatuto />} />
+                <Route path="/historia" element={<Historia />} />
+                <Route path="/channels" element={<Channels />} />
+                <Route path="/chat/:id" element={<Chat />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard/torcedores" element={<Torcedores />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </RouteGuard>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

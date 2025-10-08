@@ -3,16 +3,20 @@ import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { X, ChevronRight, ShieldCheck, Mail, FileText, LogOut, CheckCircle2, Phone } from "lucide-react";
-
-const settingsItems = [
-  { to: "/profile", icon: ShieldCheck, label: "Minhas informações" },
-  { to: "/socio", icon: Mail, label: "Gavião socio" },
-  { to: "/emergency-contact-form", icon: Phone, label: "Contato de Emergência" },
-  { to: "#", icon: FileText, label: "Política de Privacidade" },
-];
+import { useAuth } from "@/context/AuthContext";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { profile, loading } = useAuth();
+
+  const profilePath = loading ? "#" : (profile ? `/profile/${profile.username}` : "/login");
+
+  const settingsItems = [
+    { to: profilePath, icon: ShieldCheck, label: "Minhas informações" },
+    { to: "/socio", icon: Mail, label: "Gavião socio" },
+    { to: "/emergency-contact-form", icon: Phone, label: "Contato de Emergência" },
+    { to: "#", icon: FileText, label: "Política de Privacidade" },
+  ];
 
   return (
     <MainLayout>
@@ -27,12 +31,12 @@ const Settings = () => {
         <div className="bg-white text-black p-4 rounded-2xl flex items-center space-x-4">
           <div className="relative">
             <Avatar className="w-14 h-14">
-              <AvatarImage src="https://github.com/shadcn.png" alt="Alê" />
-              <AvatarFallback>A</AvatarFallback>
+              <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} alt={profile?.first_name} />
+              <AvatarFallback>{profile?.first_name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <CheckCircle2 size={20} className="absolute -bottom-1 -right-1 text-yellow-400 bg-white rounded-full" fill="white" />
           </div>
-          <span className="font-bold text-xl">Alê</span>
+          <span className="font-bold text-xl">{loading ? "Carregando..." : profile?.first_name}</span>
         </div>
 
         {/* Settings Links Card */}

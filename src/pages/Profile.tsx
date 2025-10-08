@@ -1,17 +1,91 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Check, Instagram, Facebook, MessageCircle, User } from "lucide-react";
 import newBg from "@/assets/bg.png";
+import { supabase } from "@/integrations/supabase/client";
+
+type ProfileData = {
+  first_name: string;
+  last_name: string;
+  avatar_url: string | null;
+  sub_sede: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  whatsapp_number: string | null;
+};
 
 const Profile = () => {
-  // Esta função força a abertura de links externos em uma nova aba
+  const { username } = useParams<{ username: string }>();
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!username) {
+        setError("Nome de usuário não fornecido.");
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, avatar_url, sub_sede, instagram_url, facebook_url, whatsapp_number")
+        .eq("username", username)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        setError("Perfil não encontrado ou ocorreu um erro.");
+      } else {
+        setProfile(data);
+      }
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [username]);
+
   const handleExternalLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Impede que o link tente abrir dentro do iframe
     e.preventDefault();
-    // Abre o URL do link em uma nova aba do navegador
     window.open(e.currentTarget.href, '_blank', 'noopener,noreferrer');
   };
+
+  if (loading) {
+    return (
+      <MainLayout bgImage={newBg}>
+        <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
+          <div className="flex flex-col items-center space-y-5">
+            <Skeleton className="w-28 h-28 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <Skeleton className="h-6 w-40" />
+            <div className="flex items-center space-x-6 pt-2">
+              <Skeleton className="w-8 h-8 rounded-md" />
+              <Skeleton className="w-8 h-8 rounded-md" />
+              <Skeleton className="w-8 h-8 rounded-md" />
+            </div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <MainLayout bgImage={newBg}>
+        <div className="flex flex-col items-center justify-center text-center p-6 min-h-[calc(100vh-160px)]">
+          <h1 className="text-2xl font-bold text-red-500">{error}</h1>
+          <Link to="/" className="mt-4 text-white underline">Voltar para o início</Link>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout bgImage={newBg}>
@@ -20,10 +94,12 @@ const Profile = () => {
           <div className="relative">
             <Avatar className="w-28 h-28">
               <AvatarImage
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400"
-                alt="Alê"
+                src={profile.avatar_url || undefined}
+                alt={`${profile.first_name} ${profile.last_name}`}
               />
-              <AvatarFallback>A</AvatarFallback>
+              <AvatarFallback>
+                <User size={48} />
+              </AvatarFallback>
             </Avatar>
             <div className="absolute bottom-0 right-0 bg-yellow-400 rounded-full p-1.5 border-2 border-black">
               <Check size={18} className="text-black" />
@@ -31,24 +107,30 @@ const Profile = () => {
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold">Alê</h1>
-            <p className="text-gray-400">Sub-Sede</p>
+            <h1 className="text-3xl font-bold">{profile.first_name} {profile.last_name}</h1>
+            <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
           </div>
 
           <p className="font-semibold text-lg">Presidente Gaviões</p>
 
           <div className="flex items-center space-x-6 pt-2">
-            <Link to="#" className="text-white">
-              <Instagram size={32} />
-            </Link>
-            <Link to="#">
-              <div className="bg-white rounded-md p-1">
-                <Facebook size={24} className="text-black" />
-              </div>
-            </Link>
-            <Link to="#" className="text-white">
-              <MessageCircle size={32} />
-            </Link>
+            {profile.instagram_url && (
+              <a href={profile.instagram_url} onClick={handleExternalLink} className="text-white">
+                <Instagram size={32} />
+              </a>
+            )}
+            {profile.facebook_url && (
+              <a href={profile.facebook_url} onClick={handleExternalLink}>
+                <div className="bg-white rounded-md p-1">
+                  <Facebook size={24} className="text-black" />
+                </div>
+              </a>
+            )}
+            {profile.whatsapp_number && (
+              <a href={`https://wa.me/${profile.whatsapp_number.replace(/\D/g, '')}`} onClick={handleExternalLink} className="text-white">
+                <MessageCircle size={32} />
+              </a>
+            )}
           </div>
 
           <nav className="grid grid-cols-3 gap-x-10 gap-y-6 text-lg font-semibold pt-8">
