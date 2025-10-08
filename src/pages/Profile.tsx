@@ -50,7 +50,7 @@ const Profile = () => {
             <Link to="/store" className="hover:text-red-500 transition-colors">
               Loja
             </Link>
-            <Link to="#" className="hover:text-red-500 transition-colors">
+            <Link to="/tickets" className="hover:text-red-500 transition-colors">
               Ingressos
             </Link>
             <Link to="#" className="hover:text-red-500 transition-colors">

@@ -18,3 +18,13 @@ export interface Event {
   image: string;
   description: string;
 }
+
+export interface Ticket {
+  id: number;
+  eventName: string;
+  eventDate: string;
+  location: string;
+  price: number;
+  image: string;
+  available: number;
+}

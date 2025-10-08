@@ -23,6 +23,10 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import EventConfirmation from "./pages/EventConfirmation";
+import Tickets from "./pages/Tickets";
+import TicketDetail from "./pages/TicketDetail";
+import TicketCheckout from "./pages/TicketCheckout";
+import TicketConfirmation from "./pages/TicketConfirmation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +58,10 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/event/:id" element={<EventDetail />} />
             <Route path="/event-confirmation/:id" element={<EventConfirmation />} />
+            <Route path="/tickets" element={<Tickets />} />
+            <Route path="/ticket/:id" element={<TicketDetail />} />
+            <Route path="/ticket-checkout" element={<TicketCheckout />} />
+            <Route path="/ticket-confirmation" element={<TicketConfirmation />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
