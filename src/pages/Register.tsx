@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,15 +8,10 @@ import { ArrowLeft, Camera, Eye, EyeOff, User, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
-import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
-
-const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
-  const response = await fetch(dataUrl);
-  return response.blob();
-};
 
 const Register = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [gender, setGender] = useState<string | null>(null);
@@ -31,36 +26,31 @@ const Register = () => {
   const [subSede, setSubSede] = useState("");
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
-  const handleAvatarClick = async () => {
+  const handleAvatarClick = () => {
     if (avatarLoading) return;
-    setAvatarLoading(true);
-    try {
-      const image = await CapacitorCamera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Prompt,
-        promptLabelHeader: 'Foto de Perfil',
-        promptLabelPhoto: 'Escolher da Galeria',
-        promptLabelPicture: 'Tirar Foto'
-      });
+    fileInputRef.current?.click();
+  };
 
-      if (image.dataUrl) {
-        setAvatarPreview(image.dataUrl);
-        const blob = await dataUrlToBlob(image.dataUrl);
-        setAvatarFile(blob);
-        showSuccess("Imagem selecionada. Será enviada ao salvar.");
-      }
-    } catch (error) {
-      console.error("Error selecting image:", error);
-      if (error instanceof Error && error.message !== "User cancelled photos app") {
-        showError("Não foi possível selecionar a imagem.");
-      }
-    } finally {
-      setAvatarLoading(false);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
     }
+    setAvatarLoading(true);
+    const file = event.target.files[0];
+    setAvatarFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result as string);
+      setAvatarLoading(false);
+    };
+    reader.onerror = () => {
+      showError("Erro ao ler o arquivo de imagem.");
+      setAvatarLoading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -98,7 +88,9 @@ const Register = () => {
     let avatarUrl = null;
 
     if (avatarFile) {
-      const filePath = `${user.id}/${new Date().getTime()}`;
+      const fileExt = avatarFile.name.split('.').pop();
+      const filePath = `${user.id}/${new Date().getTime()}.${fileExt}`;
+      
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, avatarFile);
@@ -164,6 +156,14 @@ const Register = () => {
                 <Camera size={16} className="text-white" />
               </div>
             </button>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*"
+            />
 
             <form onSubmit={handleRegister} className="w-full space-y-4 text-left">
               <div className="grid grid-cols-2 gap-4">
