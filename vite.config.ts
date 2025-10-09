@@ -14,12 +14,12 @@ export default defineConfig(() => ({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt", "placeholder.svg"],
+      includeAssets: ["favicon.ico", "robots.txt", "pwa-logo.png"],
       manifest: {
         name: "Gaviões da Fiel",
         short_name: "Gaviões",
         description:
-          "A pulseira exclusiva, pensada para segurança de nossos Gaviões.",
+          "O aplicativo oficial da torcida Gaviões da Fiel.",
         theme_color: "#000000",
         background_color: "#000000",
         display: "standalone",
@@ -27,15 +27,21 @@ export default defineConfig(() => ({
         start_url: "/",
         icons: [
           {
-            src: "placeholder.svg",
+            src: "pwa-logo.png",
             sizes: "192x192",
-            type: "image/svg+xml",
+            type: "image/png",
           },
           {
-            src: "placeholder.svg",
+            src: "pwa-logo.png",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/png",
           },
+          {
+            src: "pwa-logo.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          }
         ],
       },
     }),
