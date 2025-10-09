@@ -40,8 +40,8 @@ const HealthData = () => {
         } else if (profile) {
           setTipoSanguineo(profile.tipo_sanguineo || "");
           setDiabetes(profile.diabetes || "");
-          setCardiaco(profile.cardiaco || "");
-          setPressao(profile.pressao || "");
+          setCardiaco(profile.cardiaco === "Problemas Cardíacos" ? "Sim" : profile.cardiaco || "");
+          setPressao(profile.pressao === "Pressão Alta" ? "Sim" : profile.pressao || "");
           setRemedios(profile.remedios || "");
           setAlergiaMedicamento(profile.alergia_medicamento || "");
         }
@@ -63,8 +63,8 @@ const HealthData = () => {
       .update({
         tipo_sanguineo: tipoSanguineo,
         diabetes: diabetes,
-        cardiaco: cardiaco,
-        pressao: pressao,
+        cardiaco: cardiaco === "Sim" ? "Problemas Cardíacos" : cardiaco,
+        pressao: pressao === "Sim" ? "Pressão Alta" : pressao,
         remedios: remedios,
         alergia_medicamento: alergiaMedicamento,
       })
@@ -74,7 +74,7 @@ const HealthData = () => {
       showError(error.message);
     } else {
       showSuccess("Dados de saúde salvos com sucesso!");
-      navigate("/emergency-contact");
+      navigate("/emergency-contact-form");
     }
 
     setLoading(false);
@@ -133,10 +133,68 @@ const HealthData = () => {
                 </div>
               </div>
 
-              <Input placeholder="Cardíaco ?" value={cardiaco} onChange={(e) => setCardiaco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Pressão ?" value={pressao} onChange={(e) => setPressao(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Faz uso de remédios ?" value={remedios} onChange={(e) => setRemedios(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Alergia a medicamento ?" value={alergiaMedicamento} onChange={(e) => setAlergiaMedicamento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              <div>
+                <Label className="text-sm text-gray-400">Problema Cardíaco?</Label>
+                <div className="grid grid-cols-2 gap-4 mt-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setCardiaco("Sim")}
+                    className={`w-full rounded-lg border h-12 transition-colors ${
+                      cardiaco === "Sim"
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                    }`}
+                  >
+                    Sim
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setCardiaco("Não")}
+                    className={`w-full rounded-lg border h-12 transition-colors ${
+                      cardiaco === "Não"
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                    }`}
+                  >
+                    Não
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-sm text-gray-400">Pressão Alta?</Label>
+                <div className="grid grid-cols-2 gap-4 mt-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setPressao("Sim")}
+                    className={`w-full rounded-lg border h-12 transition-colors ${
+                      pressao === "Sim"
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                    }`}
+                  >
+                    Sim
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setPressao("Não")}
+                    className={`w-full rounded-lg border h-12 transition-colors ${
+                      pressao === "Não"
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                    }`}
+                  >
+                    Não
+                  </Button>
+                </div>
+              </div>
+
+              <Input placeholder="Quais remédios você usa? (separe por vírgula)" value={remedios} onChange={(e) => setRemedios(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              <Input placeholder="Quais alergias a medicamentos? (separe por vírgula)" value={alergiaMedicamento} onChange={(e) => setAlergiaMedicamento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
 
               <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
                 {loading ? "Salvando..." : "Salvar e Continuar"}
