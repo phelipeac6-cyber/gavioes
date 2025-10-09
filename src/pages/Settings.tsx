@@ -8,7 +8,7 @@ import {
   User,
   X,
   Mail,
-  ShieldUser,
+  VCard,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,7 +66,7 @@ const Settings = () => {
         {renderProfileSection()}
 
         <div className="bg-white rounded-2xl divide-y divide-gray-200 text-black">
-          <SettingsLink to="/settings/my-info" text="Minhas informações" icon={ShieldUser} />
+          <SettingsLink to="/settings/my-info" text="Minhas informações" icon={VCard} />
           <SettingsLink to="/socio" text="Gavião socio" icon={Mail} />
           <SettingsLink to="/privacy-policy" text="Política de Privacidade" icon={Shield} />
         </div>
