@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Instagram, Facebook, MessageSquare, User, CheckCircle2 } from "lucide-react";
+import { Instagram, Facebook, MessageSquare, User, CheckCircle2, HeartPulse } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import profileBg from "@/assets/bg.png";
@@ -116,6 +116,13 @@ const Profile = () => {
           )}
         </div>
 
+        <Button asChild className="bg-red-600 text-white font-bold rounded-lg text-lg hover:bg-red-700 h-12 w-full max-w-xs">
+          <Link to={`/emergency-card/${username}`}>
+            <HeartPulse className="mr-2 h-5 w-5" />
+            Carteirinha de Emergência
+          </Link>
+        </Button>
+
         <div className="grid grid-cols-3 gap-x-8 gap-y-4 pt-4">
           <NavLink to="/news">Noticias</NavLink>
           <NavLink to="/store">Loja</NavLink>
@@ -149,6 +156,7 @@ const ProfileSkeleton = () => (
         <Skeleton className="w-10 h-10 rounded-full" />
         <Skeleton className="w-10 h-10 rounded-full" />
       </div>
+      <Skeleton className="h-12 w-full max-w-xs rounded-lg" />
       <div className="grid grid-cols-3 gap-x-8 gap-y-4 pt-4 w-full max-w-xs">
         <Skeleton className="h-7 w-full rounded" />
         <Skeleton className="h-7 w-full rounded" />
