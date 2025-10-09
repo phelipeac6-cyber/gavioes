@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Phone, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/AuthContext";
 
 type ProfileData = {
   first_name: string | null;
@@ -25,24 +26,28 @@ type ProfileData = {
 
 const EmergencyCard = () => {
   const navigate = useNavigate();
+  const { username } = useParams<{ username: string }>();
+  const { profile: loggedInProfile } = useAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isOwner = loggedInProfile?.username === username;
+
   useEffect(() => {
     const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        showError("Você precisa estar logado para ver esta página.");
-        navigate("/login");
+      if (!username) {
+        showError("Nome de usuário não fornecido.");
+        navigate("/");
         return;
       }
 
+      setLoading(true);
       const { data, error } = await supabase
         .from("profiles")
         .select(
           "first_name, avatar_url, sub_sede, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
         )
-        .eq("id", user.id)
+        .eq("username", username)
         .single();
 
       if (error) {
@@ -55,7 +60,7 @@ const EmergencyCard = () => {
     };
 
     fetchProfile();
-  }, [navigate]);
+  }, [navigate, username]);
 
   const getChronicConditions = () => {
     if (!profile) return "Nenhuma";
@@ -87,7 +92,6 @@ const EmergencyCard = () => {
   return (
     <PageLayout title="Carteirinha de Emergência" showSponsor={false}>
       <div className="flex flex-col items-center text-center space-y-8">
-        {/* User Identification */}
         <div className="flex flex-col items-center space-y-3">
           <Avatar className="w-24 h-24 border-4 border-gray-700">
             <AvatarImage src={profile.avatar_url || ""} alt={profile.first_name || ""} />
@@ -100,7 +104,6 @@ const EmergencyCard = () => {
         </div>
 
         <div className="w-full max-w-sm bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 space-y-6 text-left">
-          {/* Health Info */}
           <div>
             <h2 className="text-xl font-bold mb-4 text-red-500">Dados de Saúde</h2>
             <div className="space-y-3">
@@ -115,7 +118,6 @@ const EmergencyCard = () => {
 
           <Separator className="bg-gray-700" />
 
-          {/* Emergency Contact */}
           <div>
             <h2 className="text-xl font-bold mb-4 text-red-500">Contato de Emergência</h2>
             <div className="space-y-3">
@@ -138,9 +140,11 @@ const EmergencyCard = () => {
           </div>
         </div>
         
-        <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black w-full max-w-sm h-12">
-          <Link to="/settings/my-info">Editar Dados</Link>
-        </Button>
+        {isOwner && (
+          <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black w-full max-w-sm h-12">
+            <Link to="/settings/my-info">Editar Dados</Link>
+          </Button>
+        )}
       </div>
     </PageLayout>
   );
