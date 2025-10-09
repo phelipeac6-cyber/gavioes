@@ -46,6 +46,16 @@ import EditAddress from "./pages/EditAddress";
 import EditHealthData from "./pages/EditHealthData";
 import EditEmergencyContact from "./pages/EditEmergencyContact";
 import Notifications from "./pages/Notifications";
+import Cadastros from "./pages/admin/Cadastros";
+import Analytics from "./pages/admin/Analytics";
+import Pagamentos from "./pages/admin/Pagamentos";
+import Saude from "./pages/admin/Saude";
+import Campanhas from "./pages/admin/Campanhas";
+import Produtos from "./pages/admin/Produtos";
+import Eventos from "./pages/admin/Eventos";
+import Ingressos from "./pages/admin/Ingressos";
+import SubSedes from "./pages/admin/SubSedes";
+import Config from "./pages/admin/Config";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +103,16 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/login" element={<AdminLogin />} />
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
+                <Route path="/dashboard/cadastros" element={<Cadastros />} />
+                <Route path="/dashboard/analytics" element={<Analytics />} />
+                <Route path="/dashboard/pagamentos" element={<Pagamentos />} />
+                <Route path="/dashboard/saude" element={<Saude />} />
+                <Route path="/dashboard/campanhas" element={<Campanhas />} />
+                <Route path="/dashboard/produtos" element={<Produtos />} />
+                <Route path="/dashboard/eventos" element={<Eventos />} />
+                <Route path="/dashboard/ingressos" element={<Ingressos />} />
+                <Route path="/dashboard/sub-sedes" element={<SubSedes />} />
+                <Route path="/dashboard/config" element={<Config />} />
                 <Route path="/settings/my-info" element={<MyInfo />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/settings/edit-social" element={<EditSocialMedia />} />
