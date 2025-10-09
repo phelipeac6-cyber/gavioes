@@ -64,7 +64,16 @@ const EmergencyCard = () => {
 
   const getChronicConditions = () => {
     if (!profile) return "Nenhuma";
-    const conditions = [profile.diabetes, profile.cardiaco, profile.pressao].filter(Boolean);
+    const conditions = [];
+    if (profile.diabetes === "Sim") {
+      conditions.push("Diabetes");
+    }
+    if (profile.cardiaco === "Problemas Cardíacos") {
+      conditions.push("Problemas Cardíacos");
+    }
+    if (profile.pressao === "Pressão Alta") {
+      conditions.push("Pressão Alta");
+    }
     return conditions.length > 0 ? conditions.join(", ") : "Nenhuma";
   };
 
