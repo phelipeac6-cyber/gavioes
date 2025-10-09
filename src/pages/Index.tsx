@@ -1,50 +1,47 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "@/components/BottomNav";
+import gavioesWallpaper from "@/assets/gavioes-wallpaper.png";
 import gavioesLogo from "@/assets/gavioes-logo.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center p-6 font-sans text-center">
-      <div className="flex-grow flex flex-col items-center justify-center space-y-8">
-        <div className="space-y-3">
-          <h1
-            className="text-5xl md:text-6xl font-extrabold"
-            style={{ textShadow: "0 0 8px rgba(255,255,255,0.3)" }}
-          >
-            Bem Vindo Gavião
-          </h1>
-          <p className="text-gray-300 max-w-xs mx-auto text-sm">
-            A pulseira exclusiva, pensada para segurança de nossos Gaviões.
-          </p>
-          <p className="font-semibold tracking-wider text-xs pt-2">
-            A CORRENTE JAMAIS SE QUEBRARÁ
-          </p>
-        </div>
+  const { profile, loading } = useAuth();
 
+  return (
+    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+      <img
+        src={gavioesWallpaper}
+        alt="Gaviões da Fiel background"
+        className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
+      />
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 text-center">
         <img
           src={gavioesLogo}
           alt="Gaviões da Fiel Logo"
-          className="w-56 md:w-64 h-auto"
+          className="w-48 h-48 mb-8"
         />
-
-        <div className="flex flex-col space-y-4 w-full max-w-[280px]">
-          <Button asChild className="bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14">
-            <Link to="/login">Continuar</Link>
+        <div className="w-full max-w-sm space-y-5">
+          <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
+            <Link to="/socio">Quero ser Sócio</Link>
           </Button>
           <Button asChild variant="outline" className="border-white text-white hover:bg-white hover:text-black h-14">
-            <Link to="/dashboard">Acessar Dashboard</Link>
+            <Link to="/store">Nossos Produtos</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-white text-white hover:bg-white hover:text-black h-14">
+            <Link to="/events">Eventos</Link>
           </Button>
         </div>
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2">
+          <img
+            src={esportesDaSorteLogo}
+            alt="Esportes da Sorte Logo"
+            className="w-40 h-auto"
+          />
+        </div>
       </div>
-
-      <div className="pt-8">
-        <img
-          src={esportesDaSorteLogo}
-          alt="Esportes da Sorte Logo"
-          className="w-40 h-auto"
-        />
-      </div>
+      <BottomNav />
     </div>
   );
 };
