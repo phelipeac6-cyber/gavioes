@@ -37,6 +37,8 @@ import Channels from "./pages/Channels";
 import Chat from "./pages/Chat";
 import Dashboard from "./pages/admin/Dashboard";
 import Torcedores from "./pages/admin/Torcedores";
+import MyInfo from "./pages/MyInfo";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -82,6 +84,8 @@ const App = () => (
                 <Route path="/chat/:id" element={<Chat />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
+                <Route path="/settings/my-info" element={<MyInfo />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
