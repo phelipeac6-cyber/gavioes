@@ -51,12 +51,11 @@ const Profile = () => {
 
       if (error || !data) {
         console.error("Error fetching profile:", error);
-        toast.error("Perfil não encontrado.");
-        navigate("/");
-        return;
+        // Não redireciona mais, apenas define o perfil como nulo
+        setProfile(null);
+      } else {
+        setProfile(data);
       }
-
-      setProfile(data);
       setLoading(false);
     };
 
@@ -70,9 +69,10 @@ const Profile = () => {
   if (!profile) {
     return (
       <MainLayout bgImage={profileBg}>
-        <div className="min-h-screen flex flex-col items-center justify-center text-white">
-          <p>Perfil não encontrado.</p>
-          <Button onClick={() => navigate("/")} className="mt-4">Voltar para Home</Button>
+        <div className="min-h-screen flex flex-col items-center justify-center text-white text-center p-4">
+          <h1 className="text-2xl font-bold mb-2">Perfil não encontrado</h1>
+          <p className="text-gray-300 mb-4">O usuário "{username}" não existe ou não pôde ser carregado.</p>
+          <Button onClick={() => navigate("/")} className="bg-white text-black hover:bg-gray-200">Voltar para o Início</Button>
         </div>
       </MainLayout>
     );
@@ -149,7 +149,6 @@ const ProfileSkeleton = () => (
         <Skeleton className="w-10 h-10 rounded-full" />
         <Skeleton className="w-10 h-10 rounded-full" />
       </div>
-      <Skeleton className="h-12 w-full max-w-xs rounded-lg" />
       <div className="grid grid-cols-3 gap-x-8 gap-y-4 pt-4 w-full max-w-xs">
         <Skeleton className="h-7 w-full rounded" />
         <Skeleton className="h-7 w-full rounded" />
