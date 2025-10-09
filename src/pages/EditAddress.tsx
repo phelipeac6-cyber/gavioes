@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
@@ -108,13 +109,34 @@ const EditAddress = () => {
             </div>
           ) : (
             <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
-              <Input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={handleCepBlur} maxLength={9} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Número" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              <div className="space-y-2">
+                <Label htmlFor="cep">CEP</Label>
+                <Input id="cep" placeholder="00000-000" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={handleCepBlur} maxLength={9} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="endereco">Endereço</Label>
+                <Input id="endereco" placeholder="Sua rua ou avenida" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="numero">Número</Label>
+                <Input id="numero" placeholder="Ex: 123" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="complemento">Complemento</Label>
+                <Input id="complemento" placeholder="Apto, bloco, etc." value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bairro">Bairro</Label>
+                <Input id="bairro" placeholder="Seu bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cidade">Cidade</Label>
+                <Input id="cidade" placeholder="Sua cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estado">Estado</Label>
+                <Input id="estado" placeholder="Seu estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
               <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
                 {loading ? <Loader2 className="animate-spin" /> : "Salvar Alterações"}
               </Button>

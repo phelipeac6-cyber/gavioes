@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
@@ -87,10 +88,22 @@ const EditEmergencyContact = () => {
             </div>
           ) : (
             <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
-              <Input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Telefone com whatsapp" value={telefone} onChange={(e) => setTelefone(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input placeholder="Grau parentesco" value={parentesco} onChange={(e) => setParentesco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              <div className="space-y-2">
+                <Label htmlFor="nome">Nome</Label>
+                <Input id="nome" placeholder="Nome completo do contato" value={nome} onChange={(e) => setNome(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="telefone">Telefone com Whatsapp</Label>
+                <Input id="telefone" placeholder="(00) 90000-0000" value={telefone} onChange={(e) => setTelefone(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="parentesco">Grau de Parentesco</Label>
+                <Input id="parentesco" placeholder="Ex: Mãe, Irmão, Amigo" value={parentesco} onChange={(e) => setParentesco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input id="email" type="email" placeholder="email@exemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              </div>
               <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
                 {loading ? <Loader2 className="animate-spin" /> : "Salvar Alterações"}
               </Button>

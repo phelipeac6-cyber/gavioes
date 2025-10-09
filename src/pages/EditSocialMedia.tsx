@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
@@ -108,25 +109,30 @@ const EditSocialMedia = () => {
             </div>
           ) : (
             <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-6">
-              <div className="space-y-3">
-                <Input placeholder="Link Facebook" value={facebook} onChange={(e) => setFacebook(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={facebookDisabled} />
-                <div className="flex items-center space-x-2"><Checkbox id="no-facebook" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={facebookDisabled} onCheckedChange={(checked) => setFacebookDisabled(!!checked)} /><label htmlFor="no-facebook" className="text-sm font-medium">Não desejo colocar</label></div>
+              <div className="space-y-2">
+                <Label htmlFor="facebook">Facebook</Label>
+                <Input id="facebook" placeholder="Link do seu perfil" value={facebook} onChange={(e) => setFacebook(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={facebookDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-facebook" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={facebookDisabled} onCheckedChange={(checked) => setFacebookDisabled(!!checked)} /><label htmlFor="no-facebook" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
-              <div className="space-y-3">
-                <Input placeholder="Link Instagram" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={instagramDisabled} />
-                <div className="flex items-center space-x-2"><Checkbox id="no-instagram" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={instagramDisabled} onCheckedChange={(checked) => setInstagramDisabled(!!checked)} /><label htmlFor="no-instagram" className="text-sm font-medium">Não desejo colocar</label></div>
+              <div className="space-y-2">
+                <Label htmlFor="instagram">Instagram</Label>
+                <Input id="instagram" placeholder="Link do seu perfil" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={instagramDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-instagram" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={instagramDisabled} onCheckedChange={(checked) => setInstagramDisabled(!!checked)} /><label htmlFor="no-instagram" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
-              <div className="space-y-3">
-                <Input placeholder="Celular Whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={whatsappDisabled} />
-                <div className="flex items-center space-x-2"><Checkbox id="no-whatsapp" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={whatsappDisabled} onCheckedChange={(checked) => setWhatsappDisabled(!!checked)} /><label htmlFor="no-whatsapp" className="text-sm font-medium">Não desejo colocar</label></div>
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp">Whatsapp</Label>
+                <Input id="whatsapp" placeholder="Seu número com DDD" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={whatsappDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-whatsapp" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={whatsappDisabled} onCheckedChange={(checked) => setWhatsappDisabled(!!checked)} /><label htmlFor="no-whatsapp" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
-              <div className="space-y-3">
-                <Input placeholder="Site" value={site} onChange={(e) => setSite(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={siteDisabled} />
-                <div className="flex items-center space-x-2"><Checkbox id="no-site" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={siteDisabled} onCheckedChange={(checked) => setSiteDisabled(!!checked)} /><label htmlFor="no-site" className="text-sm font-medium">Não desejo colocar</label></div>
+              <div className="space-y-2">
+                <Label htmlFor="site">Site</Label>
+                <Input id="site" placeholder="URL do seu site" value={site} onChange={(e) => setSite(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={siteDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-site" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={siteDisabled} onCheckedChange={(checked) => setSiteDisabled(!!checked)} /><label htmlFor="no-site" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
-              <div className="space-y-3">
-                <Input placeholder="Chave Pix" value={pix} onChange={(e) => setPix(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={pixDisabled} />
-                <div className="flex items-center space-x-2"><Checkbox id="no-pix" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={pixDisabled} onCheckedChange={(checked) => setPixDisabled(!!checked)} /><label htmlFor="no-pix" className="text-sm font-medium">Não desejo colocar</label></div>
+              <div className="space-y-2">
+                <Label htmlFor="pix">Chave Pix</Label>
+                <Input id="pix" placeholder="Sua chave pix" value={pix} onChange={(e) => setPix(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={pixDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-pix" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={pixDisabled} onCheckedChange={(checked) => setPixDisabled(!!checked)} /><label htmlFor="no-pix" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
               <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-10">
                 {loading ? <Loader2 className="animate-spin" /> : "Salvar Alterações"}
