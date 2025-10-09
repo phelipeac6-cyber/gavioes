@@ -14,24 +14,35 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const { profile, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Wait until the device type and auth state are determined
     if (authLoading || isMobile === undefined) {
       return;
     }
 
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
-    const isIndexRoute = location.pathname === '/';
+    const isDashboardLoginRoute = location.pathname === '/dashboard/login';
 
     // --- Desktop Logic ---
     if (!isMobile) {
-      if (!isIndexRoute && !isDashboardRoute) {
+      // If trying to access a dashboard page but not logged in, redirect to login
+      if (isDashboardRoute && !isDashboardLoginRoute && !profile) {
+        navigate('/dashboard/login', { replace: true });
+        return;
+      }
+      // If logged in and on the login page, redirect to dashboard
+      if (isDashboardLoginRoute && profile) {
         navigate('/dashboard', { replace: true });
+        return;
+      }
+      // If on a mobile-only page, redirect to dashboard
+      if (!isDashboardRoute) {
+        navigate('/dashboard', { replace: true });
+        return;
       }
     }
     // --- Mobile Logic ---
     else {
+      // If on a dashboard page, redirect to mobile home/login
       if (isDashboardRoute) {
-        // If user is logged in, redirect to their profile, otherwise to login
         if (profile?.username) {
           navigate(`/profile/${profile.username}`, { replace: true });
         } else {
@@ -41,7 +52,6 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     }
   }, [isMobile, location.pathname, navigate, profile, authLoading]);
 
-  // Don't render anything until loading is complete to avoid content flashing
   if (authLoading || isMobile === undefined) {
     return null;
   }

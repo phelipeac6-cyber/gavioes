@@ -36,6 +36,7 @@ import Historia from "./pages/Historia";
 import Channels from "./pages/Channels";
 import Chat from "./pages/Chat";
 import Dashboard from "./pages/admin/Dashboard";
+import AdminLogin from "./pages/admin/Login";
 import Torcedores from "./pages/admin/Torcedores";
 import MyInfo from "./pages/MyInfo";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -88,6 +89,7 @@ const App = () => (
                 <Route path="/channels" element={<Channels />} />
                 <Route path="/chat/:id" element={<Chat />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard/login" element={<AdminLogin />} />
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
                 <Route path="/settings/my-info" element={<MyInfo />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
