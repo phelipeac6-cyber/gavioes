@@ -20,28 +20,29 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
 
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
+    const isProfileRoute = location.pathname.startsWith('/profile/'); // Exceção para perfis públicos
 
-    // --- Desktop Logic ---
+    // --- Lógica para Desktop ---
     if (!isMobile) {
-      // If trying to access a dashboard page but not logged in, redirect to login
+      // Se tentar acessar uma página do dashboard sem estar logado, redireciona para o login
       if (isDashboardRoute && !isDashboardLoginRoute && !profile) {
         navigate('/dashboard/login', { replace: true });
         return;
       }
-      // If logged in and on the login page, redirect to dashboard
+      // Se estiver logado e na página de login, redireciona para o dashboard
       if (isDashboardLoginRoute && profile) {
         navigate('/dashboard', { replace: true });
         return;
       }
-      // If on a mobile-only page, redirect to dashboard
-      if (!isDashboardRoute) {
+      // Se estiver em uma página apenas para mobile (e não for uma página pública como o perfil), redireciona para o dashboard
+      if (!isDashboardRoute && !isProfileRoute) {
         navigate('/dashboard', { replace: true });
         return;
       }
     }
-    // --- Mobile Logic ---
+    // --- Lógica para Mobile ---
     else {
-      // If on a dashboard page, redirect to mobile home/login
+      // Se estiver em uma página do dashboard, redireciona para a home/login do mobile
       if (isDashboardRoute) {
         if (profile?.username) {
           navigate(`/profile/${profile.username}`, { replace: true });
