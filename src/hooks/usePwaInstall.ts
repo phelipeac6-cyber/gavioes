@@ -18,6 +18,7 @@ export const usePwaInstall = () => {
       event.preventDefault();
       setInstallPromptEvent(event as BeforeInstallPromptEvent);
       
+      // Verifica se o app já está rodando em modo standalone (instalado)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       if (!isStandalone) {
         setShowInstallPrompt(true);
@@ -26,6 +27,7 @@ export const usePwaInstall = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
+    // Limpa o evento ao desmontar o componente
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
@@ -35,8 +37,11 @@ export const usePwaInstall = () => {
     if (!installPromptEvent) {
       return;
     }
+    // Mostra o prompt de instalação do navegador
     installPromptEvent.prompt();
+    // Aguarda a escolha do usuário
     await installPromptEvent.userChoice;
+    // Limpa o evento para que não seja mostrado novamente
     setInstallPromptEvent(null);
     setShowInstallPrompt(false);
   };

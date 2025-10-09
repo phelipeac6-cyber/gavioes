@@ -14,6 +14,9 @@ export default defineConfig(() => ({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      devOptions: {
+        enabled: true, // Habilita o PWA em modo de desenvolvimento
+      },
       includeAssets: ["favicon.ico", "robots.txt", "pwa-logo.png"],
       manifest: {
         name: "Gaviões da Fiel",
