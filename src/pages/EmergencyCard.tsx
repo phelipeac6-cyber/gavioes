@@ -1,34 +1,57 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { PageLayout } from "@/components/PageLayout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Phone, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Shield, HeartPulse, Phone, Mail, MapPin, Building } from "lucide-react";
-import logo from "@/assets/gavioes-logo.png";
-import QRCode from "react-qr-code";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/AuthContext";
+
+type ProfileData = {
+  first_name: string | null;
+  avatar_url: string | null;
+  sub_sede: string | null;
+  tipo_sanguineo: string | null;
+  alergia_medicamento: string | null;
+  diabetes: string | null;
+  cardiaco: string | null;
+  pressao: string | null;
+  remedios: string | null;
+  contato_emergencia_nome: string | null;
+  contato_emergencia_telefone: string | null;
+};
 
 const EmergencyCard = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
+  const { username } = useParams<{ username: string }>();
+  const { profile: loggedInProfile } = useAuth();
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isOwner = loggedInProfile?.username === username;
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        showError("Você precisa estar logado para ver seu cartão.");
-        navigate("/login");
+      if (!username) {
+        showError("Nome de usuário não fornecido.");
+        navigate("/");
         return;
       }
 
+      setLoading(true);
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
-        .eq("id", user.id)
+        .select(
+          "first_name, avatar_url, sub_sede, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
+        )
+        .eq("username", username)
         .single();
 
       if (error) {
-        showError("Não foi possível carregar seu perfil.");
+        showError("Não foi possível carregar os dados do perfil.");
         console.error(error);
       } else {
         setProfile(data);
@@ -37,71 +60,127 @@ const EmergencyCard = () => {
     };
 
     fetchProfile();
-  }, [navigate]);
+  }, [navigate, username]);
+
+  const getChronicConditions = () => {
+    if (!profile) return "Nenhuma";
+    const conditions = [profile.diabetes, profile.cardiaco, profile.pressao].filter(Boolean);
+    return conditions.length > 0 ? conditions.join(", ") : "Nenhuma";
+  };
 
   if (loading) {
-    return <div className="min-h-screen bg-black flex items-center justify-center text-white">Carregando...</div>;
+    return <EmergencyCardSkeleton />;
   }
 
   if (!profile) {
-    return <div className="min-h-screen bg-black flex items-center justify-center text-white">Perfil não encontrado.</div>;
+    return (
+      <PageLayout title="Carteirinha de Emergência" showSponsor={false}>
+        <div className="text-center">
+          <p>Não foi possível carregar os dados.</p>
+        </div>
+      </PageLayout>
+    );
   }
 
-  const profileUrl = `${window.location.origin}/profile/${profile.username}`;
+  const healthInfo = [
+    { label: "Tipo Sanguíneo", value: profile.tipo_sanguineo || "Não informado" },
+    { label: "Alergias", value: profile.alergia_medicamento || "Nenhuma" },
+    { label: "Doenças Crônicas", value: getChronicConditions() },
+    { label: "Medicamentos em Uso", value: profile.remedios || "Nenhum" },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans p-4 flex flex-col items-center">
-      <div className="w-full max-w-sm bg-black rounded-2xl shadow-lg overflow-hidden relative border-2 border-gray-700">
-        <div className="bg-red-600 h-24 flex items-center justify-between p-4">
-          <img src={logo} alt="Gaviões da Fiel" className="h-16" />
-          <h2 className="text-lg font-bold">CARTEIRINHA DE ASSOCIADO</h2>
-        </div>
-        
-        <div className="p-6 flex flex-col items-center text-center -mt-16 z-10 relative">
-          <Avatar className="w-24 h-24 border-4 border-white">
+    <PageLayout title="Carteirinha de Emergência" showSponsor={false}>
+      <div className="flex flex-col items-center text-center space-y-8">
+        <div className="flex flex-col items-center space-y-3">
+          <Avatar className="w-24 h-24 border-4 border-gray-700">
             <AvatarImage src={profile.avatar_url || ""} alt={profile.first_name || ""} />
-            <AvatarFallback className="bg-gray-700 text-white text-3xl font-bold">
-              {profile.first_name?.charAt(0).toUpperCase()}
-              {profile.last_name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback><User size={48} /></AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-2xl font-bold">{profile.first_name || "Usuário"}</h1>
-            <p className="text-gray-400">@{profile.username || "username"}</p>
+            <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
           </div>
         </div>
 
-        <div className="px-6 pb-6 space-y-4">
-          <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="font-bold text-red-500 mb-2 flex items-center"><Building size={18} className="mr-2" /> Sub-Sede</h3>
-            <p>{profile.sub_sede || "Não informado"}</p>
-          </div>
-
-          <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="font-bold text-red-500 mb-2 flex items-center"><HeartPulse size={18} className="mr-2" /> Dados de Saúde</h3>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <p><span className="font-semibold">Tipo Sanguíneo:</span> {profile.tipo_sanguineo || "N/A"}</p>
-              <p><span className="font-semibold">Diabetes:</span> {profile.diabetes || "N/A"}</p>
-              <p><span className="font-semibold">Cardíaco:</span> {profile.cardiaco || "N/A"}</p>
-              <p><span className="font-semibold">Pressão:</span> {profile.pressao || "N/A"}</p>
+        <div className="w-full max-w-sm bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 space-y-6 text-left">
+          <div>
+            <h2 className="text-xl font-bold mb-4 text-red-500">Dados de Saúde</h2>
+            <div className="space-y-3">
+              {healthInfo.map((item) => (
+                <div key={item.label}>
+                  <p className="text-sm text-gray-400">{item.label}</p>
+                  <p className="font-semibold">{item.value}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="font-bold text-red-500 mb-2 flex items-center"><Shield size={18} className="mr-2" /> Contato de Emergência</h3>
-            <p className="font-semibold">{profile.contato_emergencia_nome || "Não informado"}</p>
-            <p className="text-sm text-gray-400">{profile.contato_emergencia_parentesco || ""}</p>
-            <p className="text-sm">{profile.contato_emergencia_telefone || ""}</p>
+          <Separator className="bg-gray-700" />
+
+          <div>
+            <h2 className="text-xl font-bold mb-4 text-red-500">Contato de Emergência</h2>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-400">Nome</p>
+                <p className="font-semibold">{profile.contato_emergencia_nome || "Não informado"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-400">Telefone</p>
+                {profile.contato_emergencia_telefone ? (
+                  <a href={`tel:${profile.contato_emergencia_telefone}`} className="font-semibold flex items-center space-x-2 hover:underline">
+                    <Phone size={16} />
+                    <span>{profile.contato_emergencia_telefone}</span>
+                  </a>
+                ) : (
+                  <p className="font-semibold">Não informado</p>
+                )}
+              </div>
+            </div>
           </div>
-          
-          <div className="bg-white p-4 rounded-lg flex justify-center">
-            <QRCode value={profileUrl} size={128} />
-          </div>
-          <p className="text-xs text-gray-500 text-center">Aponte a câmera para o QR Code para ver o perfil completo.</p>
         </div>
+        
+        {isOwner && (
+          <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black w-full max-w-sm h-12">
+            <Link to="/settings/my-info">Editar Dados</Link>
+          </Button>
+        )}
       </div>
-    </div>
+    </PageLayout>
   );
 };
+
+const EmergencyCardSkeleton = () => (
+  <PageLayout title="Carteirinha de Emergência" showSponsor={false}>
+    <div className="flex flex-col items-center text-center space-y-8 animate-pulse">
+      <div className="flex flex-col items-center space-y-3">
+        <Skeleton className="w-24 h-24 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-32 rounded" />
+          <Skeleton className="h-5 w-40 rounded" />
+        </div>
+      </div>
+      <div className="w-full max-w-sm bg-gray-900/50 rounded-2xl p-6 space-y-6">
+        <div>
+          <Skeleton className="h-7 w-48 mb-4 rounded" />
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full rounded" />
+            <Skeleton className="h-10 w-full rounded" />
+            <Skeleton className="h-10 w-full rounded" />
+          </div>
+        </div>
+        <Separator className="bg-gray-700" />
+        <div>
+          <Skeleton className="h-7 w-56 mb-4 rounded" />
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full rounded" />
+            <Skeleton className="h-10 w-full rounded" />
+          </div>
+        </div>
+      </div>
+      <Skeleton className="h-12 w-full max-w-sm rounded-lg" />
+    </div>
+  </PageLayout>
+);
 
 export default EmergencyCard;
