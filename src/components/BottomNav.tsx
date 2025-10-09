@@ -1,9 +1,47 @@
 import { NavLink } from "react-router-dom";
 import { Home, ClipboardList, HeartPulse, User, Bell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const BottomNav = () => {
   const { profile, loading } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (profile) {
+      const fetchUnreadCount = async () => {
+        const { count, error } = await supabase
+          .from('notifications')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', profile.id)
+          .eq('is_read', false);
+        
+        if (!error && count !== null) {
+          setUnreadCount(count);
+        }
+      };
+
+      fetchUnreadCount();
+
+      const channel = supabase
+        .channel('notifications_count')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` },
+          (payload) => {
+            console.log('Change received!', payload);
+            fetchUnreadCount();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [profile]);
+
   const getLinkClass = ({ isActive }: { isActive: boolean }) =>
     `transition-colors ${isActive ? "text-red-600" : "text-gray-900 hover:text-red-500"}`;
 
@@ -38,8 +76,11 @@ export const BottomNav = () => {
             <NavLink to={settingsPath} className={getLinkClass} aria-label="Configurações">
               <User size={28} fill="currentColor" />
             </NavLink>
-            <NavLink to="#" className={getLinkClass} aria-label="Notificações">
+            <NavLink to="/notifications" className={`${getLinkClass({ isActive: false })} relative`} aria-label="Notificações">
               <Bell size={28} fill="currentColor" />
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 border-2 border-white" />
+              )}
             </NavLink>
           </div>
         </div>

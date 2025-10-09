@@ -43,6 +43,7 @@ import EditSocialMedia from "./pages/EditSocialMedia";
 import EditAddress from "./pages/EditAddress";
 import EditHealthData from "./pages/EditHealthData";
 import EditEmergencyContact from "./pages/EditEmergencyContact";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -94,6 +95,7 @@ const App = () => (
                 <Route path="/settings/edit-address" element={<EditAddress />} />
                 <Route path="/settings/edit-health" element={<EditHealthData />} />
                 <Route path="/settings/edit-emergency-contact" element={<EditEmergencyContact />} />
+                <Route path="/notifications" element={<Notifications />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
