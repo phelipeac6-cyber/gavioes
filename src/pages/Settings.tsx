@@ -3,7 +3,7 @@ import { ChevronLeft, User, Shield, Bell, Lock, HelpCircle, Info, LogOut } from 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 
-export function Settings() {
+const Settings = () => {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -80,4 +80,6 @@ export function Settings() {
       </main>
     </div>
   );
-}
+};
+
+export default Settings;
