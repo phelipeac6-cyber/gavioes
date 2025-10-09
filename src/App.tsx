@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { RouteGuard } from "./components/RouteGuard";
+import { PwaInstallPrompt } from "./components/PwaInstallPrompt";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -57,6 +58,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+            <PwaInstallPrompt />
             <RouteGuard>
               <Routes>
                 <Route path="/" element={<Index />} />
