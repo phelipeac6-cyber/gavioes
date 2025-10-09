@@ -3,6 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,6 +87,8 @@ const HealthData = () => {
     setLoading(false);
   };
 
+  const bloodTypes = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
   return (
     <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
       <img
@@ -101,7 +110,21 @@ const HealthData = () => {
               Preencha seus dados de saúde. Essas informações são importantes em caso de emergência.
             </p>
             <form onSubmit={handleSave} className="w-full space-y-4 text-left">
-              <Input placeholder="Tipo sanguineo ?" value={tipoSanguineo} onChange={(e) => setTipoSanguineo(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+              <div>
+                <Label className="text-sm text-gray-400">Tipo Sanguíneo</Label>
+                <Select value={tipoSanguineo} onValueChange={setTipoSanguineo}>
+                  <SelectTrigger className="w-full bg-transparent border-white rounded-lg h-14 text-base mt-1">
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bloodTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div>
                 <Label className="text-sm text-gray-400">Diabetes?</Label>
