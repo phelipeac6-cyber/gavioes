@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Home, ClipboardList, HeartPulse, User, Bell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const BottomNav = () => {
   const { profile, loading } = useAuth();
+  const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -47,7 +48,20 @@ export const BottomNav = () => {
 
   const profilePath = loading ? "#" : (profile ? `/profile/${profile.username}` : "/login");
   const settingsPath = loading ? "#" : (profile ? "/settings" : "/login");
-  const emergencyCardPath = loading ? "#" : (profile ? `/emergency-card/${profile.username}` : "/login");
+
+  let emergencyCardPath = "#";
+  if (!loading) {
+    const profilePageMatch = location.pathname.match(/^\/profile\/([^/]+)/);
+
+    if (profilePageMatch) {
+      const usernameFromUrl = profilePageMatch[1];
+      emergencyCardPath = `/emergency-card/${usernameFromUrl}`;
+    } else if (profile) {
+      emergencyCardPath = `/emergency-card/${profile.username}`;
+    } else {
+      emergencyCardPath = "/login";
+    }
+  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 z-20 flex items-end justify-center pointer-events-none">
