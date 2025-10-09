@@ -9,6 +9,7 @@ import { ArrowLeft, Camera, Eye, EyeOff, User, Loader2 } from "lucide-react";
 import registerBg from "@/assets/gavioes-wallpaper.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
+import { SubSedeCombobox } from "@/components/SubSedeCombobox";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -218,7 +219,7 @@ const Register = () => {
 
               <div>
                 <Label className="text-sm text-gray-400">Sub-Sede</Label>
-                <Input value={subSede} onChange={(e) => setSubSede(e.target.value)} className="bg-transparent border-white rounded-lg mt-1" />
+                <SubSedeCombobox value={subSede} onChange={setSubSede} />
               </div>
 
               <div>
