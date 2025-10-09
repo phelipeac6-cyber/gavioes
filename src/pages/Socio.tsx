@@ -1,88 +1,98 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { PageLayout } from "@/components/PageLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, CheckCircle } from "lucide-react";
-import newBg from "@/assets/bg.png";
-import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, ChevronRight, User } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Socio = () => {
-  const navigate = useNavigate();
+  const { profile, loading } = useAuth();
+
+  const renderProfileSection = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center space-x-4">
+          <Skeleton className="w-14 h-14 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+      );
+    }
+
+    if (profile) {
+      return (
+        <div className="flex items-center space-x-4">
+          <Avatar className="w-14 h-14">
+            <AvatarImage
+              src={profile.avatar_url || ""}
+              alt={profile.first_name || "Usuário"}
+            />
+            <AvatarFallback>
+              {profile.first_name ? profile.first_name.charAt(0) : <User />}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-xl font-bold">{profile.first_name}</h2>
+            <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
+          </div>
+        </div>
+      );
+    }
+
+    return null; // Or a login prompt
+  };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
-      <img
-        src={newBg}
-        alt="Gaviões da Fiel background"
-        className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
-      />
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2">
-            <ArrowLeft size={24} />
-          </button>
-          <h1 className="text-xl font-bold">Socio Gavião</h1>
-        </header>
+    <PageLayout title="Gavião Sócio">
+      <div className="space-y-8">
+        {renderProfileSection()}
 
-        <main className="flex-grow p-6">
-          <div className="relative flex flex-col items-center space-y-6">
-            <div className="relative z-10 w-full space-y-4 text-black">
-              {/* User Info Card */}
-              <div className="bg-white p-4 rounded-2xl flex items-center space-x-3 w-full">
-                <div className="relative flex-shrink-0">
-                  <Avatar className="w-14 h-14">
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="Alê"
-                    />
-                    <AvatarFallback>A</AvatarFallback>
-                  </Avatar>
-                  <CheckCircle
-                    size={20}
-                    className="absolute -bottom-1 -right-1 text-yellow-400 bg-white rounded-full"
-                    fill="white"
-                  />
-                </div>
-                <div className="font-bold text-xl flex-1">Alê</div>
-                <div className="text-center text-xs">
-                  <p className="font-semibold">Data vencimento</p>
-                  <p className="font-bold">30/10/2025</p>
-                </div>
-                <div className="text-center text-xs">
-                  <p className="font-semibold">Mensalidade</p>
-                  <div className="flex items-center justify-center space-x-1">
-                    <span className="font-bold">Pago</span>
-                    <CheckCircle
-                      size={16}
-                      className="text-green-500"
-                      fill="white"
-                    />
-                  </div>
-                </div>
-              </div>
+        <div className="bg-gray-800/50 rounded-2xl p-6 text-center space-y-4">
+          <h3 className="text-lg font-bold">Seja um Gavião Sócio</h3>
+          <p className="text-gray-300">
+            Faça parte da nossa história e tenha acesso a benefícios exclusivos.
+          </p>
+          <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12">
+            Associe-se Agora
+          </Button>
+        </div>
 
-              {/* Membership Duration Card */}
-              <div className="bg-white p-4 rounded-2xl w-full text-center">
-                <p className="font-bold">Gavião á 25 anos 10 meses e 5 dias</p>
-              </div>
-
-              {/* Pay Button */}
-              <Button className="w-full bg-white text-black font-bold rounded-2xl text-lg hover:bg-gray-200 h-14">
-                Pagar
-              </Button>
-            </div>
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Benefícios</h3>
+          <div className="bg-gray-800/50 rounded-2xl p-4 space-y-4">
+            <BenefitItem text="Descontos em produtos oficiais" />
+            <BenefitItem text="Acesso a eventos exclusivos" />
+            <BenefitItem text="Participação em sorteios" />
           </div>
-        </main>
+        </div>
 
-        <footer className="p-6 flex justify-center">
-          <img
-            src={esportesDaSorteLogo}
-            alt="Esportes da Sorte Logo"
-            className="w-40 h-auto"
-          />
-        </footer>
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Informações</h3>
+          <div className="bg-gray-800/50 rounded-2xl divide-y divide-gray-700">
+            <InfoLink to="/estatuto" text="Estatuto do Sócio" />
+            <InfoLink to="/historia" text="Nossa História" />
+          </div>
+        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
+
+const BenefitItem = ({ text }: { text: string }) => (
+  <div className="flex items-center space-x-3">
+    <CheckCircle className="text-green-500" size={20} />
+    <span className="text-gray-200">{text}</span>
+  </div>
+);
+
+const InfoLink = ({ to, text }: { to: string; text: string }) => (
+  <Link to={to} className="flex items-center justify-between p-4 hover:bg-gray-700/50 transition-colors">
+    <span className="font-semibold">{text}</span>
+    <ChevronRight className="text-gray-400" />
+  </Link>
+);
 
 export default Socio;
