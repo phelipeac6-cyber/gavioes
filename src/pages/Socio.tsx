@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, ChevronRight, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format, intervalToDuration, isPast } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const Socio = () => {
   const { profile, loading } = useAuth();
@@ -42,13 +44,56 @@ const Socio = () => {
       );
     }
 
-    return null; // Or a login prompt
+    return null;
+  };
+
+  const renderMembershipCard = () => {
+    if (loading) {
+      return <Skeleton className="h-64 w-full rounded-2xl" />;
+    }
+
+    if (profile && profile.associated_at) {
+      const associationDate = new Date(profile.associated_at);
+      const expirationDate = profile.membership_expires_at ? new Date(profile.membership_expires_at) : null;
+
+      const isExpired = expirationDate ? isPast(expirationDate) : true;
+      const statusText = isExpired ? "Vencida" : "Em dia";
+      const statusColor = isExpired ? "text-red-500" : "text-green-500";
+
+      const duration = intervalToDuration({ start: associationDate, end: new Date() });
+      const durationString = `${duration.years || 0} anos, ${duration.months || 0} meses e ${duration.days || 0} dias`;
+
+      return (
+        <div className="bg-gray-800/50 rounded-2xl p-6 space-y-4">
+          <h3 className="text-lg font-bold text-center">Minha Associação</h3>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+            <p className="text-gray-400">Associado desde:</p>
+            <p className="font-semibold text-right">{format(associationDate, 'dd/MM/yyyy', { locale: ptBR })}</p>
+
+            <p className="text-gray-400">Vencimento:</p>
+            <p className="font-semibold text-right">{expirationDate ? format(expirationDate, 'dd/MM/yyyy', { locale: ptBR }) : 'N/A'}</p>
+
+            <p className="text-gray-400">Status:</p>
+            <p className={`font-bold text-right ${statusColor}`}>{statusText}</p>
+          </div>
+          <div className="text-sm text-center pt-2">
+            <p className="text-gray-400">Tempo de casa:</p>
+            <p className="font-semibold">{durationString}</p>
+          </div>
+          <Button className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 !mt-6">
+            Pagar
+          </Button>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
     <PageLayout title="Gavião Sócio">
       <div className="space-y-8">
         {renderProfileSection()}
+        {renderMembershipCard()}
 
         <div className="bg-gray-800/50 rounded-2xl p-6 text-center space-y-4">
           <h3 className="text-lg font-bold">Seja um Gavião Sócio</h3>

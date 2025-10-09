@@ -9,6 +9,8 @@ type Profile = {
   last_name: string;
   avatar_url: string;
   sub_sede: string | null;
+  associated_at: string | null;
+  membership_expires_at: string | null;
 };
 
 interface AuthContextType {
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (currentUser) {
         const { data: profileData } = await supabase
           .from('profiles')
-          .select('id, username, first_name, last_name, avatar_url, sub_sede')
+          .select('id, username, first_name, last_name, avatar_url, sub_sede, associated_at, membership_expires_at')
           .eq('id', currentUser.id)
           .single();
         setProfile(profileData);
@@ -56,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else if (_event === 'SIGNED_IN' && session?.user) {
          supabase
           .from('profiles')
-          .select('id, username, first_name, last_name, avatar_url, sub_sede')
+          .select('id, username, first_name, last_name, avatar_url, sub_sede, associated_at, membership_expires_at')
           .eq('id', session.user.id)
           .single()
           .then(({ data }) => setProfile(data));
