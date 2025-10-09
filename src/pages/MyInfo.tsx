@@ -25,16 +25,16 @@ const MyInfo = () => {
         <main className="flex-grow p-6 flex flex-col justify-center">
           <div className="w-full max-w-sm mx-auto space-y-5">
             <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
-              <Link to="/social">Redes Sociais</Link>
+              <Link to="/settings/edit-social">Redes Sociais</Link>
             </Button>
             <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
-              <Link to="/address">Endereço</Link>
+              <Link to="/settings/edit-address">Endereço</Link>
             </Button>
             <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
-              <Link to="/health">Dados de Saúde</Link>
+              <Link to="/settings/edit-health">Dados de Saúde</Link>
             </Button>
             <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
-              <Link to="/emergency-contact-form">Contatos de Emergência</Link>
+              <Link to="/settings/edit-emergency-contact">Contatos de Emergência</Link>
             </Button>
           </div>
         </main>

@@ -39,6 +39,10 @@ import Dashboard from "./pages/admin/Dashboard";
 import Torcedores from "./pages/admin/Torcedores";
 import MyInfo from "./pages/MyInfo";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import EditSocialMedia from "./pages/EditSocialMedia";
+import EditAddress from "./pages/EditAddress";
+import EditHealthData from "./pages/EditHealthData";
+import EditEmergencyContact from "./pages/EditEmergencyContact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,6 +90,10 @@ const App = () => (
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
                 <Route path="/settings/my-info" element={<MyInfo />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/settings/edit-social" element={<EditSocialMedia />} />
+                <Route path="/settings/edit-address" element={<EditAddress />} />
+                <Route path="/settings/edit-health" element={<EditHealthData />} />
+                <Route path="/settings/edit-emergency-contact" element={<EditEmergencyContact />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
