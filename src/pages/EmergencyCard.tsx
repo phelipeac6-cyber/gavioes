@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Shield, HeartPulse, Phone, Mail, MapPin, Building } from "lucide-react";
-import logo from "@/assets/logo-gavioes.png";
+import logo from "@/assets/gavioes-logo.png";
 import QRCode from "react-qr-code";
 
 const EmergencyCard = () => {
