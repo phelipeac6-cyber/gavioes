@@ -1,115 +1,96 @@
-import { Link, useNavigate } from "react-router-dom";
-import { X, CheckCircle2, UserCog, Mail, Shield, LogOut, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { PageLayout } from "@/components/PageLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronRight,
+  CheckCircle2,
+  Bell,
+  Shield,
+  LogOut,
+  Info,
+  User,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { BottomNav } from "@/components/BottomNav";
-import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const SettingsLink = ({ icon: Icon, text, to }: { icon: React.ElementType, text: string, to: string }) => (
-  <Link to={to} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-    <div className="flex items-center space-x-4">
-      <div className="p-2 bg-gray-800 rounded-md">
-        <Icon size={20} className="text-white" />
-      </div>
-      <span className="font-semibold">{text}</span>
-    </div>
-    <ChevronRight size={20} className="text-gray-400" />
-  </Link>
-);
-
 const Settings = () => {
-  const { profile, signOut, loading } = useAuth();
-  const navigate = useNavigate();
+  const { profile, loading, signOut } = useAuth();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
-  };
+  const renderProfileSection = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center space-x-4">
+          <Skeleton className="w-16 h-16 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        </div>
+      );
+    }
 
-  if (loading) {
-    return <SettingsSkeleton />;
-  }
-
-  if (!profile) {
-    navigate('/login');
-    return null;
-  }
-
-  return (
-    <div className="min-h-screen bg-black text-white font-sans">
-      <header className="p-4 flex items-center justify-between sticky top-0 bg-black z-10">
-        <div className="w-10"></div> {/* Spacer */}
-        <h1 className="text-2xl font-bold">Configurações</h1>
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <X size={28} />
-        </Button>
-      </header>
-
-      <main className="p-6 space-y-6 pb-32">
-        <div className="bg-white text-black p-4 rounded-2xl flex items-center space-x-4">
+    if (profile) {
+      return (
+        <div className="flex items-center space-x-4">
           <div className="relative">
-            <Avatar className="w-12 h-12">
+            <Avatar className="w-16 h-16">
               <AvatarImage src={profile.avatar_url || ""} alt={profile.first_name || ""} />
-              <AvatarFallback>{profile.first_name?.charAt(0)}</AvatarFallback>
+              <AvatarFallback>
+                {profile.first_name ? profile.first_name.charAt(0) : <User />}
+              </AvatarFallback>
             </Avatar>
             <CheckCircle2
               size={20}
-              className="absolute -bottom-1 -right-1 text-yellow-400 bg-white rounded-full"
-              fill="white"
+              className="absolute bottom-0 right-0 text-green-500 bg-black rounded-full"
             />
           </div>
-          <span className="font-bold text-xl">{profile.first_name}</span>
+          <div>
+            <h2 className="text-xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h2>
+            <p className="text-gray-400">Sócio Gaviões</p>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <PageLayout title="Configurações">
+      <div className="space-y-8">
+        {renderProfileSection()}
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Conta</h3>
+          <div className="bg-gray-800/50 rounded-2xl divide-y divide-gray-700">
+            <SettingsLink to="/settings/my-info" text="Minhas informações" icon={Info} />
+            <SettingsLink to="/notifications" text="Notificações" icon={Bell} />
+            <SettingsLink to="/privacy-policy" text="Política de Privacidade" icon={Shield} />
+          </div>
         </div>
 
-        <div className="bg-white text-black rounded-2xl divide-y divide-gray-200">
-          <SettingsLink icon={UserCog} text="Minhas informações" to="/settings/my-info" />
-          <SettingsLink icon={Mail} text="Gavião socio" to="/socio" />
-          <SettingsLink icon={Shield} text="Política de Privacidade" to="/privacy-policy" />
-        </div>
-
-        <div className="bg-white text-black rounded-2xl">
-          <button onClick={handleSignOut} className="w-full flex items-center p-4 space-x-4 text-left hover:bg-gray-50 transition-colors rounded-2xl">
-            <div className="p-2 bg-gray-800 rounded-md">
-              <LogOut size={20} className="text-white" />
-            </div>
-            <span className="font-semibold">Sair</span>
-          </button>
-        </div>
-
-        <div className="flex justify-center pt-8">
-          <img src={esportesDaSorteLogo} alt="Esportes da Sorte" className="w-48" />
-        </div>
-      </main>
-
-      <BottomNav />
-    </div>
+        <Button
+          onClick={signOut}
+          variant="ghost"
+          className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-500/10 text-base p-4"
+        >
+          <LogOut className="mr-3" size={20} />
+          Sair
+        </Button>
+      </div>
+    </PageLayout>
   );
 };
 
-const SettingsSkeleton = () => (
-  <div className="min-h-screen bg-black text-white font-sans animate-pulse">
-    <header className="p-4 flex items-center justify-between sticky top-0 bg-black z-10">
-      <div className="w-10"></div>
-      <h1 className="text-2xl font-bold">Configurações</h1>
-      <div className="w-10 h-10"></div>
-    </header>
-    <main className="p-6 space-y-6 pb-32">
-      <div className="bg-gray-800 p-4 rounded-2xl flex items-center space-x-4">
-        <Skeleton className="w-12 h-12 rounded-full" />
-        <Skeleton className="h-7 w-24 rounded-md" />
-      </div>
-      <div className="bg-gray-800 rounded-2xl p-4 space-y-4">
-        <Skeleton className="h-8 w-full rounded-md" />
-        <Skeleton className="h-8 w-full rounded-md" />
-        <Skeleton className="h-8 w-full rounded-md" />
-      </div>
-      <div className="bg-gray-800 rounded-2xl p-4">
-        <Skeleton className="h-8 w-full rounded-md" />
-      </div>
-    </main>
-  </div>
+const SettingsLink = ({ to, text, icon: Icon }: { to: string; text: string; icon: React.ElementType }) => (
+  <Link to={to} className="flex items-center justify-between p-4 hover:bg-gray-700/50 transition-colors">
+    <div className="flex items-center space-x-3">
+      <Icon size={20} />
+      <span className="font-semibold">{text}</span>
+    </div>
+    <ChevronRight className="text-gray-400" />
+  </Link>
 );
 
 export default Settings;
