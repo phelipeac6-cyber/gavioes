@@ -1,16 +1,44 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Session, User } from "@supabase/supabase-js";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Profile = {
   id: string;
-  username: string;
+  updated_at: string;
   first_name: string;
   last_name: string;
   avatar_url: string;
-  sub_sede: string | null;
-  associated_at: string | null;
-  membership_expires_at: string | null;
+  username: string;
+  sub_sede: string;
+  gender: string;
+  cep: string;
+  endereco: string;
+  numero: string;
+  cidade: string;
+  complemento: string;
+  facebook_url: string;
+  instagram_url: string;
+  whatsapp_number: string;
+  site_url: string;
+  pix_key: string;
+  tipo_sanguineo: string;
+  diabetes: string;
+  cardiaco: string;
+  pressao: string;
+  remedios: string;
+  alergia_medicamento: string;
+  laudo_pdf_url: string;
+  contato_emergencia_nome: string;
+  contato_emergencia_telefone: string;
+  contato_emergencia_parentesco: string;
+  contato_emergencia_email: string;
+  bairro: string;
+  estado: string;
+  bio: string;
+  associated_at: string;
+  membership_expires_at: string;
 };
 
 interface AuthContextType {
@@ -18,60 +46,73 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signOut: () => Promise<void>;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSessionAndProfile = async () => {
-      setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setSession(session);
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      if (currentUser) {
+      setUser(session?.user ?? null);
+      if (session?.user) {
         const { data: profileData } = await supabase
-          .from('profiles')
-          .select('id, username, first_name, last_name, avatar_url, sub_sede, associated_at, membership_expires_at')
-          .eq('id', currentUser.id)
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
           .single();
         setProfile(profileData);
       }
       setLoading(false);
     };
 
-    getSessionAndProfile();
+    getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (_event === 'SIGNED_OUT') {
+      if (session?.user) {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+        setProfile(profileData);
+      } else {
         setProfile(null);
-      } else if (_event === 'SIGNED_IN' && session?.user) {
-         supabase
-          .from('profiles')
-          .select('id, username, first_name, last_name, avatar_url, sub_sede, associated_at, membership_expires_at')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => setProfile(data));
       }
+      setLoading(false);
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setSession(null);
+    setUser(null);
+    setProfile(null);
+    
+    if (isMobile) {
+      navigate("/login", { replace: true });
+    } else {
+      navigate("/dashboard/login", { replace: true });
+    }
   };
 
   const value = {
@@ -88,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
