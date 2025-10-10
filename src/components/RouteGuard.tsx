@@ -22,6 +22,12 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
     const isProfileRoute = location.pathname.startsWith('/profile/');
     const isEmergencyCardRoute = location.pathname.startsWith('/emergency-card/');
+    const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
+
+    if (isChatRoute && !profile) {
+      navigate('/login', { replace: true });
+      return;
+    }
 
     // --- Lógica para Desktop ---
     if (!isMobile) {

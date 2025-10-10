@@ -8,6 +8,7 @@ import { Instagram, Facebook, MessageSquare, User, CheckCircle2 } from "lucide-r
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import profileBg from "@/assets/bg.png";
+import { useAuth } from "@/context/AuthContext";
 
 type ProfileType = {
   id: string;
@@ -33,6 +34,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
+  const { profile: loggedInProfile, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,6 +63,8 @@ const Profile = () => {
 
     fetchProfile();
   }, [username, navigate]);
+
+  const chatPath = authLoading ? "#" : loggedInProfile ? "/channels" : "/login";
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -120,7 +124,7 @@ const Profile = () => {
           <NavLink to="/news">Noticias</NavLink>
           <NavLink to="/store">Loja</NavLink>
           <NavLink to="/tickets">Ingressos</NavLink>
-          <NavLink to="/channels">Chat</NavLink>
+          <NavLink to={chatPath}>Chat</NavLink>
           <NavLink to="/events">Eventos</NavLink>
           <NavLink to="/polls">Enquete</NavLink>
           <NavLink to="/estatuto">Estatuto</NavLink>
