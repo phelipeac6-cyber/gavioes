@@ -137,7 +137,7 @@ const EmergencyCard = () => {
               <div>
                 <p className="text-sm text-gray-400">Telefone</p>
                 {profile.contato_emergencia_telefone ? (
-                  <a href={`tel:${profile.contato_emergencia_telefone}`} className="font-semibold flex items-center space-x-2 hover:underline">
+                  <a href={`https://wa.me/55${profile.contato_emergencia_telefone}`} className="font-semibold flex items-center space-x-2 hover:underline">
                     <Phone size={16} />
                     <span>{profile.contato_emergencia_telefone}</span>
                   </a>
