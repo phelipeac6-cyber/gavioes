@@ -39,6 +39,7 @@ type Profile = {
   bio: string;
   associated_at: string;
   membership_expires_at: string;
+  role: string | null;
 };
 
 interface AuthContextType {

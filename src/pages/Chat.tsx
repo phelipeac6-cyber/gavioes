@@ -31,7 +31,7 @@ type Channel = {
 const Chat = () => {
   const { id: channelId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [channel, setChannel] = useState<Channel | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -115,6 +115,9 @@ const Chat = () => {
     }
   };
 
+  const isAdmin = profile?.role === 'admin';
+  const canPost = !channel?.is_admin_channel || isAdmin;
+
   if (loading) {
     return <ChatSkeleton />;
   }
@@ -149,7 +152,7 @@ const Chat = () => {
       </main>
 
       <footer className="p-2 sticky bottom-0 bg-black">
-        {channel?.is_admin_channel ? (
+        {!canPost ? (
           <div className="flex items-center justify-center bg-gray-800 rounded-full p-3 text-gray-400 text-sm">
             <Info size={16} className="mr-2" />
             Apenas administradores podem enviar mensagens neste canal.
