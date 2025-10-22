@@ -36,6 +36,7 @@ import Estatuto from "./pages/Estatuto";
 import Historia from "./pages/Historia";
 import Channels from "./pages/Channels";
 import Chat from "./pages/Chat";
+import ChatList from "./pages/ChatList";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminLogin from "./pages/admin/Login";
 import Torcedores from "./pages/admin/Torcedores";
@@ -57,6 +58,8 @@ import Ingressos from "./pages/admin/Ingressos";
 import SubSedes from "./pages/admin/SubSedes";
 import Config from "./pages/admin/Config";
 import NotFound from "./pages/NotFound";
+import HelpCenter from "./pages/HelpCenter";
+import PrivacySettings from "./pages/PrivacySettings";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +103,7 @@ const App = () => (
                 <Route path="/historia" element={<Historia />} />
                 <Route path="/channels" element={<Channels />} />
                 <Route path="/chat/:id" element={<Chat />} />
+                <Route path="/chat-list" element={<ChatList />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/login" element={<AdminLogin />} />
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
@@ -120,6 +124,8 @@ const App = () => (
                 <Route path="/settings/edit-health" element={<EditHealthData />} />
                 <Route path="/settings/edit-emergency-contact" element={<EditEmergencyContact />} />
                 <Route path="/notifications" element={<Notifications />} />
+                <Route path="/help-center" element={<HelpCenter />} />
+                <Route path="/privacy-settings" element={<PrivacySettings />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
