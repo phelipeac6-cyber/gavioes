@@ -7,7 +7,14 @@ import { useAuth } from "@/context/AuthContext";
 const Index = () => {
   const { profile, loading } = useAuth();
 
-  const continuePath = loading ? "#" : (profile ? `/profile/${profile.username}` : "/login");
+  const generateProfileUrl = () => {
+    if (!profile) return "/login";
+    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+    const encodedName = encodeURIComponent(fullName);
+    return `/id=${profile.pulseira_id}/${encodedName}`;
+  };
+
+  const continuePath = loading ? "#" : generateProfileUrl();
 
   return (
     <div className="min-h-screen bg-black text-white font-sans flex flex-col items-center justify-between p-8 text-center">

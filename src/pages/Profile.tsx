@@ -15,7 +15,7 @@ type ProfileType = {
   first_name: string | null;
   last_name: string | null;
   avatar_url: string | null;
-  username: string | null;
+  pulseira_id: string | null;
   instagram_url: string | null;
   facebook_url: string | null;
   whatsapp_number: string | null;
@@ -30,7 +30,7 @@ const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) =>
 );
 
 const Profile = () => {
-  const { username } = useParams<{ username: string }>();
+  const { pulseiraId, fullName } = useParams<{ pulseiraId: string; fullName: string }>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,8 +38,8 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!username) {
-        toast.error("Nome de usuário não encontrado.");
+      if (!pulseiraId || !fullName) {
+        toast.error("ID da pulseira ou nome não encontrados.");
         setLoading(false);
         return;
       }
@@ -48,23 +48,27 @@ const Profile = () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("username", username)
+        .eq("pulseira_id", pulseiraId)
         .single();
 
       if (error || !data) {
         console.error("Error fetching profile:", error);
-        // Não redireciona mais, apenas define o perfil como nulo
         setProfile(null);
       } else {
-        setProfile(data);
+        // Verificar se o nome na URL corresponde ao nome do perfil
+        const expectedFullName = `${data.first_name || ''} ${data.last_name || ''}`.trim();
+        if (expectedFullName !== decodeURIComponent(fullName)) {
+          toast.error("Nome na URL não corresponde ao perfil.");
+          setProfile(null);
+        } else {
+          setProfile(data);
+        }
       }
       setLoading(false);
     };
 
     fetchProfile();
-  }, [username, navigate]);
-
-  const chatPath = authLoading ? "#" : loggedInProfile ? "/channels" : "/login";
+  }, [pulseiraId, fullName, navigate]);
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -75,7 +79,7 @@ const Profile = () => {
       <MainLayout bgImage={profileBg}>
         <div className="min-h-screen flex flex-col items-center justify-center text-white text-center p-4">
           <h1 className="text-2xl font-bold mb-2">Perfil não encontrado</h1>
-          <p className="text-gray-300 mb-4">O usuário "{username}" não existe ou não pôde ser carregado.</p>
+          <p className="text-gray-300 mb-4">O perfil solicitado não existe ou não pôde ser carregado.</p>
           <Button onClick={() => navigate("/")} className="bg-white text-black hover:bg-gray-200">Voltar para o Início</Button>
         </div>
       </MainLayout>
@@ -96,7 +100,7 @@ const Profile = () => {
         </div>
         
         <div className="space-y-1">
-          <h1 className="text-4xl font-bold">{profile.first_name}</h1>
+          <h1 className="text-4xl font-bold">{profile.first_name} {profile.last_name}</h1>
           <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
         </div>
         
@@ -124,7 +128,7 @@ const Profile = () => {
           <NavLink to="/news">Noticias</NavLink>
           <NavLink to="/store">Loja</NavLink>
           <NavLink to="/tickets">Ingressos</NavLink>
-          <NavLink to={chatPath}>Chat</NavLink>
+          <NavLink to="/chat-list">Chat</NavLink>
           <NavLink to="/events">Eventos</NavLink>
           <NavLink to="/polls">Enquete</NavLink>
           <NavLink to="/estatuto">Estatuto</NavLink>

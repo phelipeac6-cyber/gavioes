@@ -19,6 +19,13 @@ const Settings = () => {
   const { profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const generateProfileUrl = () => {
+    if (!profile) return "/login";
+    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+    const encodedName = encodeURIComponent(fullName);
+    return `/id=${profile.pulseira_id}/${encodedName}`;
+  };
+
   const renderProfileSection = () => {
     if (loading) {
       return (
@@ -67,6 +74,7 @@ const Settings = () => {
 
         <div className="bg-white rounded-2xl divide-y divide-gray-200 text-black">
           <SettingsLink to="/settings/my-info" text="Minhas informações" icon={IdCard} />
+          <SettingsLink to={generateProfileUrl()} text="Meu perfil" icon={User} />
           <SettingsLink to="/socio" text="Gavião socio" icon={Mail} />
           <SettingsLink to="/privacy-policy" text="Política de Privacidade" icon={Shield} />
         </div>

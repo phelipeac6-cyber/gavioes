@@ -11,9 +11,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 
 type ProfileData = {
+  id: string;
   first_name: string | null;
   avatar_url: string | null;
   sub_sede: string | null;
+  pulseira_id: string | null;
   tipo_sanguineo: string | null;
   alergia_medicamento: string | null;
   diabetes: string | null;
@@ -26,17 +28,17 @@ type ProfileData = {
 
 const EmergencyCard = () => {
   const navigate = useNavigate();
-  const { username } = useParams<{ username: string }>();
+  const { pulseiraId, fullName } = useParams<{ pulseiraId: string; fullName: string }>();
   const { profile: loggedInProfile } = useAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isOwner = loggedInProfile?.username === username;
+  const isOwner = loggedInProfile?.pulseira_id === pulseiraId;
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!username) {
-        showError("Nome de usuário não fornecido.");
+      if (!pulseiraId || !fullName) {
+        showError("ID da pulseira ou nome não fornecidos.");
         navigate("/");
         return;
       }
@@ -45,22 +47,29 @@ const EmergencyCard = () => {
       const { data, error } = await supabase
         .from("profiles")
         .select(
-          "first_name, avatar_url, sub_sede, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
+          "first_name, avatar_url, sub_sede, pulseira_id, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
         )
-        .eq("username", username)
+        .eq("pulseira_id", pulseiraId)
         .single();
 
       if (error) {
         showError("Não foi possível carregar os dados do perfil.");
         console.error(error);
       } else {
-        setProfile(data);
+        // Verificar se o nome na URL corresponde ao nome do perfil
+        const expectedFullName = `${data.first_name || ''}`.trim();
+        if (expectedFullName !== decodeURIComponent(fullName)) {
+          showError("Nome na URL não corresponde ao perfil.");
+          setProfile(null);
+        } else {
+          setProfile(data);
+        }
       }
       setLoading(false);
     };
 
     fetchProfile();
-  }, [navigate, username]);
+  }, [navigate, pulseiraId, fullName]);
 
   const getChronicConditions = () => {
     if (!profile) return "Nenhuma";
@@ -107,7 +116,7 @@ const EmergencyCard = () => {
             <AvatarFallback><User size={48} /></AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold">{profile.first_name || "Usuário"}</h1>
+            <h1 className="text-2xl font-bold">{profile.first_name}</h1>
             <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
           </div>
         </div>

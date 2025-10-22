@@ -11,6 +11,7 @@ type Profile = {
   last_name: string;
   avatar_url: string;
   username: string;
+  pulseira_id: string;
   sub_sede: string;
   gender: string;
   cep: string;

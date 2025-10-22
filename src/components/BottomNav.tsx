@@ -46,22 +46,21 @@ export const BottomNav = () => {
   const getLinkClass = ({ isActive }: { isActive: boolean }) =>
     `transition-colors ${isActive ? "text-red-600" : "text-gray-900 hover:text-red-500"}`;
 
-  const profilePath = loading ? "#" : (profile ? `/profile/${profile.username}` : "/login");
+  const generateProfileUrl = () => {
+    if (!profile) return "/login";
+    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+    const encodedName = encodeURIComponent(fullName);
+    return `/id=${profile.pulseira_id}/${encodedName}`;
+  };
+
+  const generateEmergencyCardUrl = () => {
+    if (!profile) return "/login";
+    const fullName = `${profile.first_name || ''}`.trim();
+    const encodedName = encodeURIComponent(fullName);
+    return `/emergency-card/id=${profile.pulseira_id}/${encodedName}`;
+  };
+
   const settingsPath = loading ? "#" : (profile ? "/settings" : "/login");
-
-  let emergencyCardPath = "#";
-  if (!loading) {
-    const profilePageMatch = location.pathname.match(/^\/profile\/([^/]+)/);
-
-    if (profilePageMatch) {
-      const usernameFromUrl = profilePageMatch[1];
-      emergencyCardPath = `/emergency-card/${usernameFromUrl}`;
-    } else if (profile) {
-      emergencyCardPath = `/emergency-card/${profile.username}`;
-    } else {
-      emergencyCardPath = "/login";
-    }
-  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 z-20 flex items-end justify-center pointer-events-none">
@@ -69,7 +68,7 @@ export const BottomNav = () => {
         
         {/* Botão Central - Carteirinha de Emergência */}
         <NavLink
-          to={emergencyCardPath}
+          to={generateEmergencyCardUrl()}
           className="absolute left-1/2 -translate-x-1/2 -top-8 w-20 h-20 bg-red-600 rounded-full flex items-center justify-center border-4 border-black shadow-lg transition-transform hover:scale-105"
           aria-label="Carteirinha de Emergência"
         >
@@ -78,7 +77,7 @@ export const BottomNav = () => {
 
         {/* Menu Esquerdo */}
         <div className="flex justify-around w-2/5">
-          <NavLink to={profilePath} className={getLinkClass} aria-label="Início">
+          <NavLink to={generateProfileUrl()} className={getLinkClass} aria-label="Início">
             <Home size={28} fill="currentColor" />
           </NavLink>
           <NavLink to="/news" className={getLinkClass} aria-label="Notícias">

@@ -3,9 +3,18 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import gavioesWallpaper from "@/assets/gavioes-wallpaper.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
+import { useAuth } from "@/context/AuthContext";
 
 const MyInfo = () => {
   const navigate = useNavigate();
+  const { profile } = useAuth();
+
+  const generateEmergencyCardUrl = () => {
+    if (!profile) return "/login";
+    const fullName = `${profile.first_name || ''}`.trim();
+    const encodedName = encodeURIComponent(fullName);
+    return `/emergency-card/id=${profile.pulseira_id}/${encodedName}`;
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
@@ -35,6 +44,9 @@ const MyInfo = () => {
             </Button>
             <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
               <Link to="/settings/edit-emergency-contact">Contatos de Emergência</Link>
+            </Button>
+            <Button asChild className="w-full bg-white text-black font-bold rounded-xl text-lg hover:bg-gray-200 h-14">
+              <Link to={generateEmergencyCardUrl()}>Carteirinha de Emergência</Link>
             </Button>
           </div>
         </main>

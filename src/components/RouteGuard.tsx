@@ -20,8 +20,8 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
 
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
-    const isProfileRoute = location.pathname.startsWith('/profile/');
-    const isEmergencyCardRoute = location.pathname.startsWith('/emergency-card/');
+    const isProfileRoute = location.pathname.startsWith('/id=');
+    const isEmergencyCardRoute = location.pathname.startsWith('/emergency-card/id=');
     const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
 
     if (isChatRoute && !profile) {
@@ -47,8 +47,10 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     // --- Lógica para Mobile ---
     else {
       if (isDashboardRoute) {
-        if (profile?.username) {
-          navigate(`/profile/${profile.username}`, { replace: true });
+        if (profile?.pulseira_id) {
+          const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+          const encodedName = encodeURIComponent(fullName);
+          navigate(`/id=${profile.pulseira_id}/${encodedName}`, { replace: true });
         } else {
           navigate('/login', { replace: true });
         }
