@@ -61,6 +61,7 @@ import NotFound from "./pages/NotFound";
 import HelpCenter from "./pages/HelpCenter";
 import PrivacySettings from "./pages/PrivacySettings";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
+import SuperAdminSetup from "./pages/admin/SuperAdminSetup";
 
 const queryClient = new QueryClient();
 
@@ -108,6 +109,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/login" element={<AdminLogin />} />
                 <Route path="/dashboard/super-admin" element={<SuperAdminDashboard />} />
+                <Route path="/dashboard/super-admin-setup" element={<SuperAdminSetup />} />
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
                 <Route path="/dashboard/cadastros" element={<Cadastros />} />
                 <Route path="/dashboard/analytics" element={<Analytics />} />
@@ -128,7 +130,6 @@ const App = () => (
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/help-center" element={<HelpCenter />} />
                 <Route path="/privacy-settings" element={<PrivacySettings />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </RouteGuard>
