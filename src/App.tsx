@@ -60,6 +60,7 @@ import Config from "./pages/admin/Config";
 import NotFound from "./pages/NotFound";
 import HelpCenter from "./pages/HelpCenter";
 import PrivacySettings from "./pages/PrivacySettings";
+import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,7 @@ const App = () => (
                 <Route path="/chat-list" element={<ChatList />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/login" element={<AdminLogin />} />
+                <Route path="/dashboard/super-admin" element={<SuperAdminDashboard />} />
                 <Route path="/dashboard/torcedores" element={<Torcedores />} />
                 <Route path="/dashboard/cadastros" element={<Cadastros />} />
                 <Route path="/dashboard/analytics" element={<Analytics />} />
