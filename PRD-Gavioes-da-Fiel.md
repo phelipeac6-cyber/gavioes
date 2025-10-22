@@ -1,4 +1,4 @@
-# PRD - Gaviões da Fiel App
+# PRD - Gaviões da Fiel - Sistema Digital Integrado
 
 ## 1. Visão Geral do Produto
 
@@ -64,7 +64,7 @@ Tornar-se o principal ecossistema digital para torcedores organizados no Brasil,
   - Recentemente associado
   - Quer se integrar à comunidade
   - Busca informações sobre a torcida
-  - Usa redes sociais intensamente
+  - Usa redes sociais intensivamente
 - **Necessidades**:
   - Entender a cultura Gavião
   - Conectar-se com outros membros
