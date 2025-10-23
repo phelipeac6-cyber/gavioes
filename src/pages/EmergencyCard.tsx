@@ -5,17 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Phone, User } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuth } from "@/context/AuthContext";
 
-type ProfileData = {
-  id: string;
+type CardData = {
   first_name: string | null;
   avatar_url: string | null;
   sub_sede: string | null;
-  pulseira_id: string | null;
   tipo_sanguineo: string | null;
   alergia_medicamento: string | null;
   diabetes: string | null;
@@ -28,96 +24,46 @@ type ProfileData = {
 
 const EmergencyCard = () => {
   const navigate = useNavigate();
-  const { pulseiraId, fullName } = useParams<{ pulseiraId: string; fullName: string }>();
-  const { profile: loggedInProfile } = useAuth();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const { slug } = useParams<{ slug: string }>();
+  const [profile, setProfile] = useState<CardData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isOwner = loggedInProfile?.pulseira_id === pulseiraId;
-
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!pulseiraId || !fullName) {
-        showError("ID da pulseira ou nome não fornecidos.");
+    const fetchCard = async () => {
+      if (!slug) {
+        showError("UUID da pulseira não fornecido.");
         navigate("/");
         return;
       }
 
       setLoading(true);
-      // Buscar a pulseira
-      const { data: pulse, error: pulseErr } = await supabase
-        .from("pulseira")
-        .select("assigned_profile_id, status")
-        .eq("codigo", pulseiraId)
-        .single();
+      const res = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/public-card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uuid: slug }),
+      });
+      const data = await res.json();
 
-      if (pulseErr || !pulse) {
-        showError("Não foi possível localizar a pulseira.");
-        console.error(pulseErr);
+      if (!res.ok || !data?.ok) {
+        showError(data?.error || "Não foi possível carregar a carteirinha.");
         setProfile(null);
         setLoading(false);
         return;
       }
 
-      if (pulse.status !== "atribuida" || !pulse.assigned_profile_id) {
-        showError("Pulseira não atribuída ou inativa.");
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select(
-          "first_name, avatar_url, sub_sede, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
-        )
-        .eq("id", pulse.assigned_profile_id)
-        .single();
-
-      if (error) {
-        showError("Não foi possível carregar os dados do perfil.");
-        console.error(error);
-      } else {
-        const expectedFullName = `${data.first_name || ''}`.trim();
-        if (expectedFullName !== decodeURIComponent(fullName)) {
-          showError("Nome na URL não corresponde ao perfil.");
-          setProfile(null);
-        } else {
-          setProfile({
-            id: pulse.assigned_profile_id,
-            first_name: data.first_name,
-            avatar_url: data.avatar_url,
-            sub_sede: data.sub_sede,
-            pulseira_id: pulseiraId,
-            tipo_sanguineo: data.tipo_sanguineo,
-            alergia_medicamento: data.alergia_medicamento,
-            diabetes: data.diabetes,
-            cardiaco: data.cardiaco,
-            pressao: data.pressao,
-            remedios: data.remedios,
-            contato_emergencia_nome: data.contato_emergencia_nome,
-            contato_emergencia_telefone: data.contato_emergencia_telefone,
-          });
-        }
-      }
+      setProfile(data.data);
       setLoading(false);
     };
 
-    fetchProfile();
-  }, [navigate, pulseiraId, fullName]);
+    fetchCard();
+  }, [navigate, slug]);
 
   const getChronicConditions = () => {
     if (!profile) return "Nenhuma";
     const conditions = [];
-    if (profile.diabetes === "Sim") {
-      conditions.push("Diabetes");
-    }
-    if (profile.cardiaco === "Problemas Cardíacos") {
-      conditions.push("Problemas Cardíacos");
-    }
-    if (profile.pressao === "Pressão Alta") {
-      conditions.push("Pressão Alta");
-    }
+    if (profile.diabetes === "Sim") conditions.push("Diabetes");
+    if (profile.cardiaco === "Problemas Cardíacos") conditions.push("Problemas Cardíacos");
+    if (profile.pressao === "Pressão Alta") conditions.push("Pressão Alta");
     return conditions.length > 0 ? conditions.join(", ") : "Nenhuma";
   };
 
@@ -193,11 +139,9 @@ const EmergencyCard = () => {
           </div>
         </div>
         
-        {isOwner && (
-          <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black w-full max-w-sm h-12">
-            <Link to="/settings/my-info">Editar Dados</Link>
-          </Button>
-        )}
+        <Button asChild variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-black w-full max-w-sm h-12">
+          <Link to="/settings/my-info">Editar Dados</Link>
+        </Button>
       </div>
     </PageLayout>
   );

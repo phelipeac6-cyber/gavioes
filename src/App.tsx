@@ -80,14 +80,14 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/id=:pulseiraId/:fullName" element={<Profile />} />
+                <Route path="/s/:slug" element={<EmergencyCard />} />
+                <Route path="/:slug" element={<Profile />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/socio" element={<Socio />} />
                 <Route path="/health" element={<HealthData />} />
                 <Route path="/address" element={<Address />} />
                 <Route path="/social" element={<SocialMedia />} />
-                <Route path="/emergency-card/id=:pulseiraId/:fullName" element={<EmergencyCard />} />
                 <Route path="/emergency-contact-form" element={<EmergencyContactForm />} />
                 <Route path="/store" element={<Store />} />
                 <Route path="/product/:id" element={<ProductDetail />} />

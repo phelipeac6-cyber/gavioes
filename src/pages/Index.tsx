@@ -5,13 +5,11 @@ import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
-  const { profile, loading } = useAuth();
+  const { profile, loading, wristbandCode } = useAuth();
 
   const generateProfileUrl = () => {
-    if (!profile) return "/login";
-    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-    const encodedName = encodeURIComponent(fullName);
-    return `/id=${profile.pulseira_id}/${encodedName}`;
+    if (!profile || !wristbandCode) return "/login";
+    return `/${wristbandCode}`;
   };
 
   const continuePath = loading ? "#" : generateProfileUrl();

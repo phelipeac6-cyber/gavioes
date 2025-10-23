@@ -11,9 +11,8 @@ const MyInfo = () => {
 
   const generateEmergencyCardUrl = () => {
     if (!profile) return "/login";
-    const fullName = `${profile.first_name || ''}`.trim();
-    const encodedName = encodeURIComponent(fullName);
-    return `/emergency-card/id=${profile.pulseira_id}/${encodedName}`;
+    const { wristbandCode } = useAuth() as any;
+    return wristbandCode ? `/s/${wristbandCode}` : "/login";
   };
 
   return (

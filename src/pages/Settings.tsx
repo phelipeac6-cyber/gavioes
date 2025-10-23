@@ -21,9 +21,8 @@ const Settings = () => {
 
   const generateProfileUrl = () => {
     if (!profile) return "/login";
-    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-    const encodedName = encodeURIComponent(fullName);
-    return `/id=${profile.pulseira_id}/${encodedName}`;
+    const { wristbandCode } = useAuth() as any;
+    return wristbandCode ? `/${wristbandCode}` : "/login";
   };
 
   const renderProfileSection = () => {

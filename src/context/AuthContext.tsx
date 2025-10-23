@@ -80,12 +80,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Carrega o código da pulseira atribuída (status atribuida)
         const { data: wb } = await supabase
           .from("pulseira")
-          .select("codigo, status")
+          .select("id, status")
           .eq("assigned_profile_id", session.user.id)
           .order("assigned_at", { ascending: false })
           .limit(1)
           .maybeSingle();
-        setWristbandCode(wb && wb.status === "atribuida" ? wb.codigo : null);
+        setWristbandCode(wb && wb.status === "atribuida" ? (wb as any).id : null);
       }
       setLoading(false);
     };
@@ -106,12 +106,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setProfile(profileData);
         const { data: wb } = await supabase
           .from("pulseira")
-          .select("codigo, status")
+          .select("id, status")
           .eq("assigned_profile_id", session.user.id)
           .order("assigned_at", { ascending: false })
           .limit(1)
           .maybeSingle();
-        setWristbandCode(wb && wb.status === "atribuida" ? wb.codigo : null);
+        setWristbandCode(wb && wb.status === "atribuida" ? (wb as any).id : null);
       } else {
         setProfile(null);
         setWristbandCode(null);

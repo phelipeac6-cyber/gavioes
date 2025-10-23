@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { MainLayout } from "@/components/MainLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,19 +7,16 @@ import { Instagram, Facebook, MessageSquare, User, CheckCircle2 } from "lucide-r
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import profileBg from "@/assets/bg.png";
-import { useAuth } from "@/context/AuthContext";
 
-type ProfileType = {
-  id: string;
+type PublicProfile = {
   first_name: string | null;
   last_name: string | null;
   avatar_url: string | null;
-  pulseira_id: string | null;
+  sub_sede: string | null;
+  bio: string | null;
   instagram_url: string | null;
   facebook_url: string | null;
   whatsapp_number: string | null;
-  bio: string | null;
-  sub_sede: string | null;
 };
 
 const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
@@ -30,67 +26,68 @@ const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) =>
 );
 
 const Profile = () => {
-  const { pulseiraId, fullName } = useParams<{ pulseiraId: string; fullName: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<ProfileType | null>(null);
+  const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { profile: loggedInProfile, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!pulseiraId || !fullName) {
-        toast.error("ID da pulseira ou nome não encontrados.");
+    const resolveAndLoad = async () => {
+      if (!slug) {
         setLoading(false);
+        navigate("/not-found");
         return;
       }
-
       setLoading(true);
 
-      // Primeiro buscar a pulseira por código
-      const { data: pulse, error: pulseErr } = await supabase
-        .from("pulseira")
-        .select("assigned_profile_id, status")
-        .eq("codigo", pulseiraId)
-        .single();
+      // Primeiro resolver se existe e se está atribuída
+      const res = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/resolve-pulseira", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uuid: slug }),
+      });
+      const info = await res.json();
 
-      if (pulseErr || !pulse) {
-        console.error("Error fetching pulseira:", pulseErr);
-        setProfile(null);
+      if (!res.ok) {
+        toast.error(info?.error || "Erro ao resolver pulseira.");
+        setLoading(false);
+        return;
+      }
+      if (!info.exists) {
+        toast.error("Pulseira não encontrada.");
+        setLoading(false);
+        return;
+      }
+      if (["desativada", "extraviada"].includes(info.status)) {
+        toast.error("Pulseira inativa ou extraviada.");
+        setLoading(false);
+        return;
+      }
+      if (!info.assigned) {
+        // Redireciona para cadastro com code
+        navigate(`/register?code=${slug}`);
         setLoading(false);
         return;
       }
 
-      if (pulse.status !== "atribuida" || !pulse.assigned_profile_id) {
-        toast.error("Pulseira não atribuída ou inativa.");
-        setProfile(null);
+      // Carregar dados públicos do perfil
+      const res2 = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/public-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uuid: slug }),
+      });
+      const data = await res2.json();
+      if (!res2.ok || !data?.ok) {
+        toast.error(data?.error || "Não foi possível carregar o perfil.");
         setLoading(false);
         return;
       }
-
-      // Buscar o profile vinculado
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", pulse.assigned_profile_id)
-        .single();
-
-      if (error || !data) {
-        console.error("Error fetching profile:", error);
-        setProfile(null);
-      } else {
-        const expectedFullName = `${data.first_name || ''} ${data.last_name || ''}`.trim();
-        if (expectedFullName !== decodeURIComponent(fullName)) {
-          toast.error("Nome na URL não corresponde ao perfil.");
-          setProfile(null);
-        } else {
-          setProfile(data);
-        }
-      }
+      setProfile(data.data);
       setLoading(false);
     };
 
-    fetchProfile();
-  }, [pulseiraId, fullName, navigate]);
+    resolveAndLoad();
+  }, [slug, navigate]);
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -100,8 +97,8 @@ const Profile = () => {
     return (
       <MainLayout bgImage={profileBg}>
         <div className="min-h-screen flex flex-col items-center justify-center text-white text-center p-4">
-          <h1 className="text-2xl font-bold mb-2">Perfil não encontrado</h1>
-          <p className="text-gray-300 mb-4">O perfil solicitado não existe ou não pôde ser carregado.</p>
+          <h1 className="text-2xl font-bold mb-2">Perfil não disponível</h1>
+          <p className="text-gray-300 mb-4">Verifique o link ou tente novamente mais tarde.</p>
           <Button onClick={() => navigate("/")} className="bg-white text-black hover:bg-gray-200">Voltar para o Início</Button>
         </div>
       </MainLayout>
@@ -113,7 +110,7 @@ const Profile = () => {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-6rem)] text-center p-6 space-y-5 text-white">
         <div className="relative">
           <Avatar className="w-32 h-32 border-4 border-white">
-            <AvatarImage src={profile.avatar_url || ""} alt={`${profile.first_name} ${profile.last_name}`} />
+            <AvatarImage src={profile.avatar_url || ""} alt={`${profile.first_name || ""} ${profile.last_name || ""}`} />
             <AvatarFallback className="bg-gray-800">
               <User size={64} />
             </AvatarFallback>

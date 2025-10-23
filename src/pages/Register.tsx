@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,8 @@ import { SubSedeCombobox } from "@/components/SubSedeCombobox";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const code = searchParams.get("code");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -120,11 +122,37 @@ const Register = () => {
     
     if (profileError) {
       showError(profileError.message);
-    } else {
-      showSuccess("Cadastro realizado com sucesso! Complete seu perfil.");
-      navigate("/address");
+      setLoading(false);
+      return;
     }
 
+    // Ativação automática da pulseira se veio por link com ?code=<uuid>
+    if (code) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      const resp = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/assign-pulseira", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ uuid: code, user_id: user.id }),
+      });
+      const json = await resp.json();
+      if (!resp.ok || !json?.ok) {
+        showError(json?.error || "Falha ao atribuir pulseira.");
+        setLoading(false);
+        return;
+      }
+    }
+
+    showSuccess("Cadastro realizado com sucesso!");
+    // Se houver código, redireciona para a raiz dessa pulseira; caso contrário, completar endereço
+    if (code) {
+      navigate(`/${code}`);
+    } else {
+      navigate("/address");
+    }
     setLoading(false);
   };
 

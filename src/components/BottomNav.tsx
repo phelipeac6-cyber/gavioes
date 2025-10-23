@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const BottomNav = () => {
-  const { profile, loading } = useAuth();
+  const { profile, loading, wristbandCode } = useAuth();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -48,19 +48,12 @@ export const BottomNav = () => {
 
   const generateProfileUrl = () => {
     if (!profile) return "/login";
-    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-    const encodedName = encodeURIComponent(fullName);
-    // usa wristbandCode do contexto
-    const { wristbandCode } = useAuth() as any;
-    return wristbandCode ? `/id=${wristbandCode}/${encodedName}` : "/login";
+    return wristbandCode ? `/${wristbandCode}` : "/login";
   };
 
   const generateEmergencyCardUrl = () => {
     if (!profile) return "/login";
-    const fullName = `${profile.first_name || ''}`.trim();
-    const encodedName = encodeURIComponent(fullName);
-    const { wristbandCode } = useAuth() as any;
-    return wristbandCode ? `/emergency-card/id=${wristbandCode}/${encodedName}` : "/login";
+    return wristbandCode ? `/s/${wristbandCode}` : "/login";
   };
 
   const settingsPath = loading ? "#" : (profile ? "/settings" : "/login");
