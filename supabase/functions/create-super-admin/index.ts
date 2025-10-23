@@ -36,6 +36,21 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     )
 
+    // Helper para encontrar usuário por e-mail via Admin API
+    const findUserIdByEmail = async (emailToFind: string): Promise<string | null> => {
+      let page = 1
+      const perPage = 200
+      while (page <= 5) {
+        const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
+        if (error) break
+        const found = data?.users?.find((u: any) => u.email === emailToFind)
+        if (found?.id) return found.id
+        if (!data || (data.users?.length || 0) < perPage) break
+        page++
+      }
+      return null
+    }
+
     // Tentar criar o usuário
     const { data: created, error: createErr } = await supabase.auth.admin.createUser({
       email,
@@ -49,16 +64,20 @@ serve(async (req) => {
 
     let userId = created?.user?.id || null
 
-    // Se email já existir, retornar conflito mais informativo
+    // Se email já existir, tornar idempotente: localizar usuário e prosseguir
     if (createErr) {
-      return new Response(JSON.stringify({ error: createErr.message }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 409,
-      })
+      const existingId = await findUserIdByEmail(email)
+      if (!existingId) {
+        return new Response(JSON.stringify({ error: createErr.message }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 409,
+        })
+      }
+      userId = existingId
     }
 
     if (!userId) {
-      return new Response(JSON.stringify({ error: "User not created" }), {
+      return new Response(JSON.stringify({ error: "User not created or found" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
       })
@@ -67,7 +86,7 @@ serve(async (req) => {
     // Aguardar criação do profile pela trigger (polling simples)
     let attempts = 0
     let profileExists = false
-    while (attempts < 10 && !profileExists) {
+    while (attempts < 15 && !profileExists) {
       const { data: prof } = await supabase.from("profiles").select("id").eq("id", userId).maybeSingle()
       if (prof?.id) {
         profileExists = true
@@ -77,17 +96,35 @@ serve(async (req) => {
       await new Promise((r) => setTimeout(r, 200))
     }
 
-    // Atualizar role no profile
-    const { error: updateErr } = await supabase
-      .from("profiles")
-      .update({ role: "super_admin", first_name: "Super", last_name: "Admin" })
-      .eq("id", userId)
-
-    if (updateErr) {
-      return new Response(JSON.stringify({ error: updateErr.message }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      })
+    // Se profile não existir, criar mínimo
+    if (!profileExists) {
+      const { error: upsertErr } = await supabase
+        .from("profiles")
+        .upsert({
+          id: userId,
+          first_name: "Super",
+          last_name: "Admin",
+          username: `super_${String(userId).slice(0, 8)}`,
+          role: "super_admin",
+        } as any, { onConflict: "id" })
+      if (upsertErr) {
+        return new Response(JSON.stringify({ error: upsertErr.message }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        })
+      }
+    } else {
+      // Atualizar role e nome no profile
+      const { error: updateErr } = await supabase
+        .from("profiles")
+        .update({ role: "super_admin", first_name: "Super", last_name: "Admin" })
+        .eq("id", userId)
+      if (updateErr) {
+        return new Response(JSON.stringify({ error: updateErr.message }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        })
+      }
     }
 
     // Atribuir pulseira: usar a existente por código ou criar uma nova
@@ -99,6 +136,7 @@ serve(async (req) => {
 
     if (existingPulse) {
       if (existingPulse.assigned_profile_id && existingPulse.assigned_profile_id !== userId) {
+        // Se já atribuída a outro, retornar mensagem clara
         return new Response(JSON.stringify({ error: "Pulseira já atribuída a outro usuário" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 409,

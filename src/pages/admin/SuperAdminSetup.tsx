@@ -24,7 +24,19 @@ const SuperAdminSetup = () => {
       });
 
       if (error) {
-        showError(`Erro: ${error.message}`);
+        // Tentar extrair detalhes do corpo retornado pela função
+        const ctx: any = (error as any)?.context;
+        let detailed = error.message;
+        const rawBody = ctx?.body;
+        if (rawBody) {
+          try {
+            const parsed = typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody;
+            if (parsed?.error) detailed = parsed.error;
+          } catch {
+            detailed = String(rawBody);
+          }
+        }
+        showError(`Erro: ${detailed}`);
         return;
       }
 
