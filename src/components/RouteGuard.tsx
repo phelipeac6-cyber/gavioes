@@ -24,8 +24,10 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
     const isSuperAdminSetupRoute = location.pathname === '/dashboard/super-admin-setup';
-    const isProfileRoute = location.pathname.startsWith('/id=');
-    const isEmergencyCardRoute = location.pathname.startsWith('/emergency-card/id=');
+    // Perfil: '/:slug' onde slug é UUID (36 chars com hífens)
+    const isProfileRoute = /^\/[0-9a-fA-F-]{36}$/.test(location.pathname);
+    // Carteirinha: '/s/:slug' com UUID
+    const isEmergencyCardRoute = /^\/s\/[0-9a-fA-F-]{36}$/.test(location.pathname);
     const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
 
     if (isChatRoute && !profile) {
@@ -43,6 +45,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         navigate('/dashboard', { replace: true });
         return;
       }
+      // Permite apenas dashboard, perfil '/UUID' e emergência '/s/UUID' no desktop
       if (!isDashboardRoute && !isProfileRoute && !isEmergencyCardRoute) {
         navigate('/dashboard', { replace: true });
         return;
@@ -53,9 +56,8 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
       // Permitir acesso público à página de setup do super admin
       if (isDashboardRoute && !isSuperAdminSetupRoute) {
         if (profile?.pulseira_id) {
-          const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-          const encodedName = encodeURIComponent(fullName);
-          navigate(`/id=${profile.pulseira_id}/${encodedName}`, { replace: true });
+          // Redireciona para rota correta de perfil (/:slug)
+          navigate(`/${profile.pulseira_id}`, { replace: true });
         } else {
           navigate('/login', { replace: true });
         }
