@@ -14,6 +14,7 @@ import {
   Settings,
   LogOut,
   X,
+  Key,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ const mainNavItems = [
   { to: "/dashboard/eventos", icon: Calendar, label: "Eventos" },
   { to: "/dashboard/ingressos", icon: Ticket, label: "Ingressos" },
   { to: "/dashboard/sub-sedes", icon: Building, label: "Sub-Sede" },
+  { to: "/dashboard/pulseiras", icon: Key, label: "Pulseiras" },
 ];
 
 const generalNavItems = [

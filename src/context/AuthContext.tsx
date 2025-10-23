@@ -49,6 +49,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signOut: () => void;
+  wristbandCode: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,6 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [wristbandCode, setWristbandCode] = useState<string | null>(null);
 
   useEffect(() => {
     const getSession = async () => {
@@ -75,6 +77,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .eq("id", session.user.id)
           .single();
         setProfile(profileData);
+        // Carrega o código da pulseira atribuída (status atribuida)
+        const { data: wb } = await supabase
+          .from("pulseira")
+          .select("codigo, status")
+          .eq("assigned_profile_id", session.user.id)
+          .order("assigned_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        setWristbandCode(wb && wb.status === "atribuida" ? wb.codigo : null);
       }
       setLoading(false);
     };
@@ -93,8 +104,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .eq("id", session.user.id)
           .single();
         setProfile(profileData);
+        const { data: wb } = await supabase
+          .from("pulseira")
+          .select("codigo, status")
+          .eq("assigned_profile_id", session.user.id)
+          .order("assigned_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        setWristbandCode(wb && wb.status === "atribuida" ? wb.codigo : null);
       } else {
         setProfile(null);
+        setWristbandCode(null);
       }
       setLoading(false);
     });
@@ -123,6 +143,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     profile,
     loading,
     signOut,
+    wristbandCode,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

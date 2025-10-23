@@ -17,9 +17,8 @@ type UserProfile = {
   id: string;
   first_name: string | null;
   last_name: string | null;
-  email: string;
+  email?: string | null;
   role: string | null;
-  pulseira_id: string | null;
   sub_sede: string | null;
   associated_at: string | null;
   updated_at: string | null;
@@ -57,30 +56,47 @@ const SuperAdminDashboard = () => {
   const fetchSystemData = async () => {
     setLoading(true);
     try {
-      // Buscar usuários
+      // Buscar usuários (sem email/pulseira_id pois não existem em profiles)
       const { data: usersData, error: usersError } = await supabase
         .from('profiles')
         .select(`
           id,
           first_name,
           last_name,
-          email,
           role,
-          pulseira_id,
           sub_sede,
           associated_at,
           updated_at
         `)
-        .order('created_at', { ascending: false })
+        .order('associated_at', { ascending: false })
         .limit(100);
 
       if (usersError) throw usersError;
-      setUsers(usersData || []);
+      const list = usersData || [];
+      setUsers(list as UserProfile[]);
 
-      // Buscar estatísticas
-      const totalUsers = (usersData || []).length;
-      const totalAdmins = (usersData || []).filter(u => u.role === 'admin' || u.role === 'super_admin').length;
-      const totalPulses = (usersData || []).filter(u => u.pulseira_id).length;
+      // Buscar contagem de pulseiras
+      const { count: pulseCount, error: pulseCountErr } = await supabase
+        .from('pulseira')
+        .select('*', { count: 'exact', head: true });
+      if (pulseCountErr) throw pulseCountErr;
+
+      // Mapear código por usuário
+      const ids = list.map(u => u.id);
+      let codesMap: Record<string, string> = {};
+      if (ids.length > 0) {
+        const { data: pulseRows } = await supabase
+          .from('pulseira')
+          .select('codigo, assigned_profile_id')
+          .in('assigned_profile_id', ids);
+        (pulseRows || []).forEach((r: any) => {
+          if (r.assigned_profile_id) codesMap[r.assigned_profile_id] = r.codigo;
+        });
+      }
+
+      const totalUsers = list.length;
+      const totalAdmins = list.filter(u => u.role === 'admin' || u.role === 'super_admin').length;
+      const totalPulses = pulseCount || 0;
 
       setStats({
         totalUsers,
@@ -88,6 +104,9 @@ const SuperAdminDashboard = () => {
         totalPulses,
         recentActivity: 0
       });
+
+      // Anexar o código na lista (sem alterar tipo)
+      setUsers(prev => prev.map(u => ({ ...u, pulseira_codigo: codesMap[u.id] } as any)));
     } catch (error) {
       showError('Erro ao carregar dados do sistema');
     }
@@ -285,7 +304,7 @@ const SuperAdminDashboard = () => {
                             </Badge>
                           </TableCell>
                           <TableCell className="font-mono text-sm">
-                            {user.pulseira_id || '-'}
+                            {(user as any).pulseira_codigo || '-'}
                           </TableCell>
                           <TableCell>{user.sub_sede || '-'}</TableCell>
                           <TableCell>

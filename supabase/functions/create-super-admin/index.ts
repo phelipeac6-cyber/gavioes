@@ -77,11 +77,10 @@ serve(async (req) => {
       await new Promise((r) => setTimeout(r, 200))
     }
 
-    // Atualizar role e pulseira_id no profile
-    // Se por algum motivo a trigger ainda não criou, tentamos novamente atualizar (falhar silenciosamente se não existir)
+    // Atualizar role no profile
     const { error: updateErr } = await supabase
       .from("profiles")
-      .update({ role: "super_admin", pulseira_id: desiredPulse, first_name: "Super", last_name: "Admin" })
+      .update({ role: "super_admin", first_name: "Super", last_name: "Admin" })
       .eq("id", userId)
 
     if (updateErr) {
@@ -89,6 +88,47 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
       })
+    }
+
+    // Atribuir pulseira: usar a existente por código ou criar uma nova
+    const { data: existingPulse } = await supabase
+      .from("pulseira")
+      .select("id, assigned_profile_id, status")
+      .eq("codigo", desiredPulse)
+      .maybeSingle();
+
+    if (existingPulse) {
+      if (existingPulse.assigned_profile_id && existingPulse.assigned_profile_id !== userId) {
+        return new Response(JSON.stringify({ error: "Pulseira já atribuída a outro usuário" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 409,
+        })
+      }
+      const { error: assignErr } = await supabase
+        .from("pulseira")
+        .update({ assigned_profile_id: userId, status: "atribuida", assigned_at: new Date().toISOString() })
+        .eq("id", existingPulse.id);
+      if (assignErr) {
+        return new Response(JSON.stringify({ error: assignErr.message }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        })
+      }
+    } else {
+      const { error: createPulseErr } = await supabase
+        .from("pulseira")
+        .insert({
+          codigo: desiredPulse,
+          status: "atribuida",
+          assigned_profile_id: userId,
+          assigned_at: new Date().toISOString(),
+        } as any);
+      if (createPulseErr) {
+        return new Response(JSON.stringify({ error: createPulseErr.message }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        })
+      }
     }
 
     return new Response(

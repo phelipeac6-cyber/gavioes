@@ -57,6 +57,7 @@ import Eventos from "./pages/admin/Eventos";
 import Ingressos from "./pages/admin/Ingressos";
 import SubSedes from "./pages/admin/SubSedes";
 import Config from "./pages/admin/Config";
+import Pulseiras from "./pages/admin/Pulseiras";
 import NotFound from "./pages/NotFound";
 import HelpCenter from "./pages/HelpCenter";
 import PrivacySettings from "./pages/PrivacySettings";
@@ -121,6 +122,7 @@ const App = () => (
                 <Route path="/dashboard/ingressos" element={<Ingressos />} />
                 <Route path="/dashboard/sub-sedes" element={<SubSedes />} />
                 <Route path="/dashboard/config" element={<Config />} />
+                <Route path="/dashboard/pulseiras" element={<Pulseiras />} />
                 <Route path="/settings/my-info" element={<MyInfo />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/settings/edit-social" element={<EditSocialMedia />} />

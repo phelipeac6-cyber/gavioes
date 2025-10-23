@@ -45,17 +45,39 @@ const Profile = () => {
       }
 
       setLoading(true);
+
+      // Primeiro buscar a pulseira por código
+      const { data: pulse, error: pulseErr } = await supabase
+        .from("pulseira")
+        .select("assigned_profile_id, status")
+        .eq("codigo", pulseiraId)
+        .single();
+
+      if (pulseErr || !pulse) {
+        console.error("Error fetching pulseira:", pulseErr);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      if (pulse.status !== "atribuida" || !pulse.assigned_profile_id) {
+        toast.error("Pulseira não atribuída ou inativa.");
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      // Buscar o profile vinculado
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("pulseira_id", pulseiraId)
+        .eq("id", pulse.assigned_profile_id)
         .single();
 
       if (error || !data) {
         console.error("Error fetching profile:", error);
         setProfile(null);
       } else {
-        // Verificar se o nome na URL corresponde ao nome do perfil
         const expectedFullName = `${data.first_name || ''} ${data.last_name || ''}`.trim();
         if (expectedFullName !== decodeURIComponent(fullName)) {
           toast.error("Nome na URL não corresponde ao perfil.");

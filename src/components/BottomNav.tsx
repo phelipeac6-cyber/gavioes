@@ -50,14 +50,17 @@ export const BottomNav = () => {
     if (!profile) return "/login";
     const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
     const encodedName = encodeURIComponent(fullName);
-    return `/id=${profile.pulseira_id}/${encodedName}`;
+    // usa wristbandCode do contexto
+    const { wristbandCode } = useAuth() as any;
+    return wristbandCode ? `/id=${wristbandCode}/${encodedName}` : "/login";
   };
 
   const generateEmergencyCardUrl = () => {
     if (!profile) return "/login";
     const fullName = `${profile.first_name || ''}`.trim();
     const encodedName = encodeURIComponent(fullName);
-    return `/emergency-card/id=${profile.pulseira_id}/${encodedName}`;
+    const { wristbandCode } = useAuth() as any;
+    return wristbandCode ? `/emergency-card/id=${wristbandCode}/${encodedName}` : "/login";
   };
 
   const settingsPath = loading ? "#" : (profile ? "/settings" : "/login");

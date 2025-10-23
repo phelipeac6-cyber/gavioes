@@ -44,25 +44,60 @@ const EmergencyCard = () => {
       }
 
       setLoading(true);
+      // Buscar a pulseira
+      const { data: pulse, error: pulseErr } = await supabase
+        .from("pulseira")
+        .select("assigned_profile_id, status")
+        .eq("codigo", pulseiraId)
+        .single();
+
+      if (pulseErr || !pulse) {
+        showError("Não foi possível localizar a pulseira.");
+        console.error(pulseErr);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      if (pulse.status !== "atribuida" || !pulse.assigned_profile_id) {
+        showError("Pulseira não atribuída ou inativa.");
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("profiles")
         .select(
-          "first_name, avatar_url, sub_sede, pulseira_id, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
+          "first_name, avatar_url, sub_sede, tipo_sanguineo, alergia_medicamento, diabetes, cardiaco, pressao, remedios, contato_emergencia_nome, contato_emergencia_telefone"
         )
-        .eq("pulseira_id", pulseiraId)
+        .eq("id", pulse.assigned_profile_id)
         .single();
 
       if (error) {
         showError("Não foi possível carregar os dados do perfil.");
         console.error(error);
       } else {
-        // Verificar se o nome na URL corresponde ao nome do perfil
         const expectedFullName = `${data.first_name || ''}`.trim();
         if (expectedFullName !== decodeURIComponent(fullName)) {
           showError("Nome na URL não corresponde ao perfil.");
           setProfile(null);
         } else {
-          setProfile(data);
+          setProfile({
+            id: pulse.assigned_profile_id,
+            first_name: data.first_name,
+            avatar_url: data.avatar_url,
+            sub_sede: data.sub_sede,
+            pulseira_id: pulseiraId,
+            tipo_sanguineo: data.tipo_sanguineo,
+            alergia_medicamento: data.alergia_medicamento,
+            diabetes: data.diabetes,
+            cardiaco: data.cardiaco,
+            pressao: data.pressao,
+            remedios: data.remedios,
+            contato_emergencia_nome: data.contato_emergencia_nome,
+            contato_emergencia_telefone: data.contato_emergencia_telefone,
+          });
         }
       }
       setLoading(false);
