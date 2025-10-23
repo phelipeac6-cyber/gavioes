@@ -20,6 +20,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
 
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
+    const isSuperAdminSetupRoute = location.pathname === '/dashboard/super-admin-setup';
     const isProfileRoute = location.pathname.startsWith('/id=');
     const isEmergencyCardRoute = location.pathname.startsWith('/emergency-card/id=');
     const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
@@ -31,7 +32,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
 
     // --- Lógica para Desktop ---
     if (!isMobile) {
-      if (isDashboardRoute && !isDashboardLoginRoute && !profile) {
+      if (isDashboardRoute && !isDashboardLoginRoute && !isSuperAdminSetupRoute && !profile) {
         navigate('/dashboard/login', { replace: true });
         return;
       }
@@ -46,7 +47,8 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     }
     // --- Lógica para Mobile ---
     else {
-      if (isDashboardRoute) {
+      // Permitir acesso público à página de setup do super admin
+      if (isDashboardRoute && !isSuperAdminSetupRoute) {
         if (profile?.pulseira_id) {
           const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
           const encodedName = encodeURIComponent(fullName);
