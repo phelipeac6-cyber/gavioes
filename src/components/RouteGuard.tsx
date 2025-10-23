@@ -60,7 +60,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
           // Redireciona para rota correta de perfil (/:slug) usando a pulseira atribuída
           navigate(`/${wristbandCode}`, { replace: true });
         } else {
-          navigate('/login', { replace: true });
+          navigate('/register', { replace: true });
         }
       }
     }
