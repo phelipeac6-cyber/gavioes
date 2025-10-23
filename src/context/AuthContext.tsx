@@ -57,18 +57,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
   const [wristbandCode, setWristbandCode] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+    return data;
+  };
 
   useEffect(() => {
     const getSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setSession(session);
+      setCurrentSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         const { data: profileData } = await supabase
@@ -92,35 +104,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     getSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Listener for auth changes
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      setCurrentSession(session);
       if (session?.user) {
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
+        setUser(session.user);
+        // Fetch profile and assigned wristband
+        const profileData = await fetchProfile(session.user.id);
         setProfile(profileData);
-        const { data: wb } = await supabase
+        const { data: wristband } = await supabase
           .from("pulseira")
-          .select("id, status")
+          .select("id")
           .eq("assigned_profile_id", session.user.id)
+          .eq("status", "atribuida")
           .order("assigned_at", { ascending: false })
           .limit(1)
           .maybeSingle();
-        setWristbandCode(wb && wb.status === "atribuida" ? (wb as any).id : null);
+        setWristbandCode((wristband as any)?.id ?? null);
       } else {
+        setUser(null);
         setProfile(null);
         setWristbandCode(null);
       }
-      setLoading(false);
+      if (event === 'SIGNED_IN') {
+        navigate('/');
+      } else if (event === 'SIGNED_OUT') {
+        navigate('/');
+      }
     });
 
     return () => {
-      subscription.unsubscribe();
+      // Cleanup subscription if needed
     };
   }, []);
 
@@ -138,12 +152,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const value = {
-    session,
     user,
     profile,
+    wristbandCode,
     loading,
     signOut,
-    wristbandCode,
+    refreshProfile: fetchProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
