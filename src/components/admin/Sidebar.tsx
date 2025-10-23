@@ -18,6 +18,7 @@ import {
   Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const mainNavItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -63,6 +64,8 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+  const { signOut } = useAuth();
+  
   return (
     <>
       {/* Backdrop for mobile */}
@@ -97,9 +100,23 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         <div className="p-4 flex-shrink-0">
           <h3 className="text-gray-500 text-sm font-semibold px-4 mb-2">Geral</h3>
           <nav className="space-y-2">
-            {generalNavItems.map((item) => (
-              <NavLink key={item.label} {...item} />
-            ))}
+            {generalNavItems.map((item) =>
+              item.label === "Sair" ? (
+                <button
+                  key={item.label}
+                  onClick={signOut}
+                  className={cn(
+                    "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
+                    "text-gray-400 hover:bg-gray-700 hover:text-white"
+                  )}
+                >
+                  <item.icon size={20} />
+                  <span className="font-semibold">{item.label}</span>
+                </button>
+              ) : (
+                <NavLink key={item.label} {...item} />
+              )
+            )}
           </nav>
         </div>
       </aside>
