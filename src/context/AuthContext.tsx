@@ -80,7 +80,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setCurrentSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         const { data: profileData } = await supabase
@@ -106,7 +105,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Listener for auth changes
     supabase.auth.onAuthStateChange(async (event, session) => {
-      setCurrentSession(session);
       if (session?.user) {
         setUser(session.user);
         // Fetch profile and assigned wristband
