@@ -1,35 +1,24 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import feelonelogo from "@/assets/feel-one-logo.png";
-import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
-import { useAuth } from "@/context/AuthContext";
-import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+"use client";
+
+import { Link, useLocation } from "react-router-dom";
 import gavioesLogo from "@/assets/gavioes-logo.png";
+import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
+import { Button } from "@/components/ui/button";
+import { useMemo } from "react";
 
 const Index = () => {
-  const { profile, loading, wristbandCode } = useAuth();
-
-  const generateProfileUrl = () => {
-    if (!profile || !wristbandCode) return "/login";
-    return `/${wristbandCode}`;
-  };
-
-  const continuePath = loading ? "#" : generateProfileUrl();
+  const location = useLocation();
+  const continuePath = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const wristbandCode = params.get("wristbandCode");
+    if (wristbandCode) {
+      return `/${wristbandCode}`;
+    }
+    return "/login";
+  }, [location.search]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white text-[#1800AD] text-center p-4">
-      <PwaInstallPrompt />
-      <div className="w-full mt-8">
-        <h1 className="text-5xl font-extrabold leading-tight">
-          Bem Vindo
-          <br />
-          à Feel One
-        </h1>
-        <p className="mt-4 text-gray-300 max-w-xs mx-auto">
-          A pulseira exclusiva, pensada para segurança de nossos Gaviões.
-        </p>
-      </div>
-
       <div className="flex flex-col items-center">
         <p className="font-bold tracking-wider mb-6">A CORRENTE JAMAIS SE QUEBRARÁ</p>
         <img
@@ -37,17 +26,16 @@ const Index = () => {
           alt="Gaviões da Fiel Logo"
           className="w-64 h-auto"
         />
-      </div>
-
-      <div className="w-full max-w-sm space-y-6">
-        <Button asChild className="w-full bg-white text-[#1800AD] hover:bg-gray-100">
-          <Link to={continuePath}>Continuar</Link>
-        </Button>
-        <img
-          src={esportesDaSorteLogo}
-          alt="Esportes da Sorte Logo"
-          className="w-40 h-auto mx-auto"
-        />
+        <div className="mt-8 space-y-4 w-full max-w-xs">
+          <Button asChild className="w-full bg-[#1800AD] text-white hover:bg-[#1800AD]/90">
+            <Link to={continuePath}>Continuar</Link>
+          </Button>
+          <img
+            src={esportesDaSorteLogo}
+            alt="Esportes da Sorte Logo"
+            className="w-48 h-auto mx-auto mt-6"
+          />
+        </div>
       </div>
     </div>
   );
