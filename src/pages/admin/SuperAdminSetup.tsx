@@ -52,7 +52,8 @@ const SuperAdminSetup = () => {
       if (data?.ok) {
         showSuccess("Super Admin criado com sucesso!");
       } else {
-        showError("Falha ao criar Super Admin.");
+        const msg = data?.error || "Falha ao criar Super Admin.";
+        showError(`Erro: ${msg}`);
       }
     } finally {
       setLoading(false);

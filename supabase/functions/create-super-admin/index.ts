@@ -25,9 +25,9 @@ serve(async (req) => {
     const desiredPulse = (body?.pulseira_id as string) || "SUPER-ADMIN-001"
 
     if (!email || !password) {
-      return new Response(JSON.stringify({ error: "Missing email or password" }), {
+      return new Response(JSON.stringify({ ok: false, error: "Missing email or password" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
+        status: 200,
       })
     }
 
@@ -68,18 +68,18 @@ serve(async (req) => {
     if (createErr) {
       const existingId = await findUserIdByEmail(email)
       if (!existingId) {
-        return new Response(JSON.stringify({ error: createErr.message }), {
+        return new Response(JSON.stringify({ ok: false, error: createErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 409,
+          status: 200,
         })
       }
       userId = existingId
     }
 
     if (!userId) {
-      return new Response(JSON.stringify({ error: "User not created or found" }), {
+      return new Response(JSON.stringify({ ok: false, error: "User not created or found" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
+        status: 200,
       })
     }
 
@@ -108,9 +108,9 @@ serve(async (req) => {
           role: "super_admin",
         } as any, { onConflict: "id" })
       if (upsertErr) {
-        return new Response(JSON.stringify({ error: upsertErr.message }), {
+        return new Response(JSON.stringify({ ok: false, error: upsertErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500,
+          status: 200,
         })
       }
     } else {
@@ -120,9 +120,9 @@ serve(async (req) => {
         .update({ role: "super_admin", first_name: "Super", last_name: "Admin" })
         .eq("id", userId)
       if (updateErr) {
-        return new Response(JSON.stringify({ error: updateErr.message }), {
+        return new Response(JSON.stringify({ ok: false, error: updateErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500,
+          status: 200,
         })
       }
     }
@@ -136,10 +136,9 @@ serve(async (req) => {
 
     if (existingPulse) {
       if (existingPulse.assigned_profile_id && existingPulse.assigned_profile_id !== userId) {
-        // Se já atribuída a outro, retornar mensagem clara
-        return new Response(JSON.stringify({ error: "Pulseira já atribuída a outro usuário" }), {
+        return new Response(JSON.stringify({ ok: false, error: "Pulseira já atribuída a outro usuário" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 409,
+          status: 200,
         })
       }
       const { error: assignErr } = await supabase
@@ -147,9 +146,9 @@ serve(async (req) => {
         .update({ assigned_profile_id: userId, status: "atribuida", assigned_at: new Date().toISOString() })
         .eq("id", existingPulse.id);
       if (assignErr) {
-        return new Response(JSON.stringify({ error: assignErr.message }), {
+        return new Response(JSON.stringify({ ok: false, error: assignErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500,
+          status: 200,
         })
       }
     } else {
@@ -162,9 +161,9 @@ serve(async (req) => {
           assigned_at: new Date().toISOString(),
         } as any);
       if (createPulseErr) {
-        return new Response(JSON.stringify({ error: createPulseErr.message }), {
+        return new Response(JSON.stringify({ ok: false, error: createPulseErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500,
+          status: 200,
         })
       }
     }
@@ -183,9 +182,9 @@ serve(async (req) => {
       }
     )
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "Unknown error" }), {
+    return new Response(JSON.stringify({ ok: false, error: e?.message || "Unknown error" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: 200,
     })
   }
 })
