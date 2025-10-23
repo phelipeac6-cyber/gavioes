@@ -40,7 +40,7 @@ const Index = () => {
         <img
           src={feelonelogo}
           alt="FeelOne Logo"
-          className="w-56 h-auto my-4"
+          className="w-[28rem] max-w-full h-auto my-4"
         />
       </div>
 
