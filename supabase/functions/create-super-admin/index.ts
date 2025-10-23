@@ -36,7 +36,6 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     )
 
-    // Helper para encontrar usuário por e-mail via Admin API
     const findUserIdByEmail = async (emailToFind: string): Promise<string | null> => {
       let page = 1
       const perPage = 200
@@ -51,7 +50,6 @@ serve(async (req) => {
       return null
     }
 
-    // Tentar criar o usuário
     const { data: created, error: createErr } = await supabase.auth.admin.createUser({
       email,
       password,
@@ -64,11 +62,12 @@ serve(async (req) => {
 
     let userId = created?.user?.id || null
 
-    // Se email já existir, tornar idempotente: localizar usuário e prosseguir
     if (createErr) {
+      // Se der erro (inclui "Database error creating new user" ou "already registered"),
+      // tentar localizar e seguir idempotente
       const existingId = await findUserIdByEmail(email)
       if (!existingId) {
-        return new Response(JSON.stringify({ ok: false, error: createErr.message }), {
+        return new Response(JSON.stringify({ ok: false, error: createErr.message || "Failed to create user" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 200,
         })
@@ -93,11 +92,11 @@ serve(async (req) => {
         break
       }
       attempts++
-      await new Promise((r) => setTimeout(r, 200))
+      await new Promise((r) => setTimeout(r, 250))
     }
 
-    // Se profile não existir, criar mínimo
     if (!profileExists) {
+      // Se profile não existir, criar mínimo
       const { error: upsertErr } = await supabase
         .from("profiles")
         .upsert({
@@ -128,11 +127,18 @@ serve(async (req) => {
     }
 
     // Atribuir pulseira: usar a existente por código ou criar uma nova
-    const { data: existingPulse } = await supabase
+    const { data: existingPulse, error: fetchPulseErr } = await supabase
       .from("pulseira")
       .select("id, assigned_profile_id, status")
       .eq("codigo", desiredPulse)
-      .maybeSingle();
+      .maybeSingle()
+
+    if (fetchPulseErr) {
+      return new Response(JSON.stringify({ ok: false, error: fetchPulseErr.message }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      })
+    }
 
     if (existingPulse) {
       if (existingPulse.assigned_profile_id && existingPulse.assigned_profile_id !== userId) {
@@ -144,7 +150,7 @@ serve(async (req) => {
       const { error: assignErr } = await supabase
         .from("pulseira")
         .update({ assigned_profile_id: userId, status: "atribuida", assigned_at: new Date().toISOString() })
-        .eq("id", existingPulse.id);
+        .eq("id", existingPulse.id)
       if (assignErr) {
         return new Response(JSON.stringify({ ok: false, error: assignErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -159,7 +165,7 @@ serve(async (req) => {
           status: "atribuida",
           assigned_profile_id: userId,
           assigned_at: new Date().toISOString(),
-        } as any);
+        } as any)
       if (createPulseErr) {
         return new Response(JSON.stringify({ ok: false, error: createPulseErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
