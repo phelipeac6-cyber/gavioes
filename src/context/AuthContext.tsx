@@ -50,6 +50,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => void;
   wristbandCode: string | null;
+  refreshProfile: (userId: string) => Promise<Profile | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,6 +58,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [wristbandCode, setWristbandCode] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Error fetching profile:", error);
       return null;
     }
-    return data;
+    return data as Profile;
   };
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      setSession(session ?? null);
       setUser(session?.user ?? null);
       if (session?.user) {
         const { data: profileData } = await supabase
@@ -87,7 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .select("*")
           .eq("id", session.user.id)
           .single();
-        setProfile(profileData);
+        setProfile(profileData as Profile);
         // Carrega o código da pulseira atribuída (status atribuida)
         const { data: wb } = await supabase
           .from("pulseira")
@@ -105,6 +108,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Listener for auth changes
     supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session ?? null);
       if (session?.user) {
         setUser(session.user);
         // Fetch profile and assigned wristband
@@ -150,6 +154,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const value = {
+    session,
     user,
     profile,
     wristbandCode,
