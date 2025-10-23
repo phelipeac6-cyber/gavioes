@@ -15,6 +15,7 @@ import {
   LogOut,
   X,
   Key,
+  Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
