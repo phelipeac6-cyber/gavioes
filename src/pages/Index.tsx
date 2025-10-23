@@ -4,6 +4,7 @@ import feelonelogo from "@/assets/feel-one-logo.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import gavioesLogo from "@/assets/gavioes-logo.png";
 
 const Index = () => {
   const { profile, loading, wristbandCode } = useAuth();
