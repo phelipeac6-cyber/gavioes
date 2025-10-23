@@ -48,21 +48,54 @@ const Address = () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (user) {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ cep, endereco, numero, complemento, bairro, cidade, estado })
-        .eq("id", user.id);
-
-      if (error) {
-        showError(error.message);
-      } else {
-        showSuccess("Endereço salvo com sucesso!");
-        navigate("/social");
-      }
-    } else {
+    if (!user) {
       showError("Usuário não encontrado. Faça o login novamente.");
       navigate("/login");
+      setLoading(false);
+      return;
+    }
+
+    // Garantir que o profile exista
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!existingProfile) {
+      // Criar profile mínimo se não existir
+      const { error: insertErr } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          username: `user_${String(user.id).slice(0, 8)}`,
+        });
+      if (insertErr) {
+        showError("Erro ao criar profile: " + insertErr.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const updateData: any = {};
+    if (cep) updateData.cep = cep;
+    if (endereco) updateData.endereco = endereco;
+    if (numero) updateData.numero = numero;
+    if (complemento) updateData.complemento = complemento;
+    if (bairro) updateData.bairro = bairro;
+    if (cidade) updateData.cidade = cidade;
+    if (estado) updateData.estado = estado;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update(updateData)
+      .eq("id", user.id);
+
+    if (error) {
+      showError(error.message);
+    } else {
+      showSuccess("Endereço salvo com sucesso!");
+      navigate("/");
     }
     setLoading(false);
   };
