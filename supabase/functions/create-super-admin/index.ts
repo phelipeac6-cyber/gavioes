@@ -62,12 +62,11 @@ serve(async (req) => {
 
     let userId = created?.user?.id || null
 
+    // Se email já existir, tornar idempotente: localizar usuário e prosseguir
     if (createErr) {
-      // Se der erro (inclui "Database error creating new user" ou "already registered"),
-      // tentar localizar e seguir idempotente
       const existingId = await findUserIdByEmail(email)
       if (!existingId) {
-        return new Response(JSON.stringify({ ok: false, error: createErr.message || "Failed to create user" }), {
+        return new Response(JSON.stringify({ ok: false, error: createErr.message }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 200,
         })
@@ -77,6 +76,18 @@ serve(async (req) => {
 
     if (!userId) {
       return new Response(JSON.stringify({ ok: false, error: "User not created or found" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      })
+    }
+
+    // Garantir que a senha seja a fornecida (reset de senha idempotente)
+    const { error: pwErr } = await supabase.auth.admin.updateUserById(userId, {
+      password,
+      email_confirm: true,
+    })
+    if (pwErr) {
+      return new Response(JSON.stringify({ ok: false, error: pwErr.message }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       })

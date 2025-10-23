@@ -7,7 +7,7 @@ import { showError, showSuccess } from "@/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const DEFAULT_EMAIL = "phelipeac3@gmail.com";
-const DEFAULT_PASSWORD = "F@b15183020*";
+const DEFAULT_PASSWORD = "15183020";
 const DEFAULT_PULSE = "SUPER-ADMIN-001";
 
 const SuperAdminSetup = () => {
