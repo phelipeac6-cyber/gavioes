@@ -64,7 +64,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         }
       }
     }
-  }, [isMobile, location.pathname, navigate, profile, authLoading]);
+  }, [isMobile, location.pathname, navigate, profile, authLoading, wristbandCode]);
 
   // Se estiver na rota de setup do super admin, sempre renderizar os children
   if (isSuperAdminSetupRouteNow) {
@@ -72,7 +72,14 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   }
 
   if (authLoading || isMobile === undefined) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="flex items-center space-x-3">
+          <div className="h-5 w-5 border-2 border-white/60 border-t-transparent rounded-full animate-spin" />
+          <span>Carregando...</span>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;
