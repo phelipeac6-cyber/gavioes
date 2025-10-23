@@ -62,7 +62,7 @@ const Register = () => {
         title: "Cadastro realizado com sucesso!",
         description: "Verifique seu e-mail para confirmar sua conta.",
       });
-      navigate("/login");
+      navigate("/social-media");
     }
     setLoading(false);
   };

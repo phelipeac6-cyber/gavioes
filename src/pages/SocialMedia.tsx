@@ -45,7 +45,7 @@ const SocialMedia = () => {
         showError(error.message);
       } else {
         showSuccess("Redes sociais salvas com sucesso!");
-        navigate("/health");
+        navigate("/address");
       }
     } else {
       showError("Usuário não encontrado. Faça o login novamente.");

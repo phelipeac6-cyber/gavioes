@@ -95,7 +95,7 @@ const Address = () => {
       showError(error.message);
     } else {
       showSuccess("Endereço salvo com sucesso!");
-      navigate("/");
+      navigate("/health");
     }
     setLoading(false);
   };
