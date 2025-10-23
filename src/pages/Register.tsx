@@ -147,12 +147,7 @@ const Register = () => {
     }
 
     showSuccess("Cadastro realizado com sucesso!");
-    // Se houver código, redireciona para a raiz dessa pulseira; caso contrário, completar endereço
-    if (code) {
-      navigate(`/${code}`);
-    } else {
-      navigate("/address");
-    }
+    navigate("/address");
     setLoading(false);
   };
 
