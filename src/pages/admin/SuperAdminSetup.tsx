@@ -18,18 +18,24 @@ const SuperAdminSetup = () => {
 
   const handleCreate = async () => {
     setLoading(true);
-    const { data, error } = await supabase.functions.invoke("create-super-admin", {
-      body: { email, password, pulseira_id: pulse },
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke("create-super-admin", {
+        body: { email, password, pulseira_id: pulse },
+      });
 
-    if (error) {
-      showError(`Erro: ${error.message}`);
-    } else if (data?.ok) {
-      showSuccess("Super Admin criado com sucesso!");
-    } else {
-      showError("Falha ao criar Super Admin.");
+      if (error) {
+        showError(`Erro: ${error.message}`);
+        return;
+      }
+
+      if (data?.ok) {
+        showSuccess("Super Admin criado com sucesso!");
+      } else {
+        showError("Falha ao criar Super Admin.");
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
