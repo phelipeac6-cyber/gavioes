@@ -11,7 +11,7 @@ import { Shield, Users, Key, Database, Activity, AlertTriangle, CheckCircle, Men
 import { supabase } from '@/integrations/supabase/client';
 import { useSuperAdmin } from '@/hooks/useSuperAdmin';
 import { showSuccess, showError } from '@/utils/toast';
-import { cn } from '@/lib/utils';
+import { DashboardLayout } from '@/components/admin/DashboardLayout';
 
 type UserProfile = {
   id: string;
@@ -30,62 +30,6 @@ type SystemStats = {
   totalAdmins: number;
   totalPulses: number;
   recentActivity: number;
-};
-
-const DashboardLayout = ({ children, pageTitle }: { children: React.ReactNode; pageTitle: string }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed top-0 left-0 z-40 h-full w-64 bg-black text-white flex flex-col",
-          "transition-transform duration-300 ease-in-out md:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <div className="p-4 flex items-center justify-between flex-shrink-0">
-          <span className="font-bold text-lg">MENU</span>
-          <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-md hover:bg-gray-800 md:hidden">
-            <X size={24} />
-          </button>
-        </div>
-        <div className="flex-grow overflow-y-auto px-4">
-          <nav className="space-y-2">
-            <a href="/dashboard" className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
-              <Menu size={20} />
-              <span className="font-semibold">Dashboard</span>
-            </a>
-            <a href="/dashboard/super-admin" className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-teal-500 text-white transition-colors">
-              <Shield size={20} />
-              <span className="font-semibold">Super Admin</span>
-            </a>
-          </nav>
-        </div>
-      </aside>
-
-      {/* Backdrop for mobile */}
-      <div
-        className={cn(
-          "fixed inset-0 z-30 bg-black/50 transition-opacity md:hidden",
-          sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        onClick={() => setSidebarOpen(false)}
-      />
-
-      <div className="md:ml-64">
-        {/* Mobile Header */}
-        <header className="p-4 flex items-center justify-between md:hidden sticky top-0 bg-white shadow-sm z-20">
-          <h1 className="text-xl font-bold text-gray-800">{pageTitle}</h1>
-          <button onClick={() => setSidebarOpen(true)} className="p-2">
-            <Menu size={24} />
-          </button>
-        </header>
-        {children}
-      </div>
-    </div>
-  );
 };
 
 const SuperAdminDashboard = () => {
