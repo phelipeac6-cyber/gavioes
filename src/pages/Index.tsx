@@ -16,7 +16,7 @@ const Index = () => {
   const continuePath = loading ? "#" : generateProfileUrl();
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans flex flex-col items-center justify-between p-8 text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-[#1800AD] text-center p-4">
       <PwaInstallPrompt />
       <div className="w-full mt-8">
         <h1 className="text-5xl font-extrabold leading-tight">
@@ -39,7 +39,7 @@ const Index = () => {
       </div>
 
       <div className="w-full max-w-sm space-y-6">
-        <Button asChild className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14">
+        <Button asChild className="w-full bg-white text-[#1800AD] hover:bg-gray-100">
           <Link to={continuePath}>Continuar</Link>
         </Button>
         <img
