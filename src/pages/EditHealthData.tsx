@@ -80,11 +80,11 @@ const EditHealthData = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
       <img src={registerBg} alt="Gaviões da Fiel background" className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0" />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2"><ArrowLeft size={24} /></button>
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20 border-b border-[#1800AD]/20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]"><ArrowLeft size={24} /></button>
           <h1 className="text-xl font-bold">Editar Dados de Saúde</h1>
         </header>
         <main className="flex-grow p-6">
@@ -97,33 +97,33 @@ const EditHealthData = () => {
             <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="tipoSanguineo">Tipo Sanguíneo</Label>
-                <Input id="tipoSanguineo" placeholder="Ex: O+" value={tipoSanguineo} onChange={(e) => setTipoSanguineo(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="tipoSanguineo" placeholder="Ex: O+" value={tipoSanguineo} onChange={(e) => setTipoSanguineo(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="diabetes">Diabetes</Label>
-                <Input id="diabetes" placeholder="Sim ou Não" value={diabetes} onChange={(e) => setDiabetes(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="diabetes" placeholder="Sim ou Não" value={diabetes} onChange={(e) => setDiabetes(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cardiaco">Problema Cardíaco</Label>
-                <Input id="cardiaco" placeholder="Sim ou Não" value={cardiaco} onChange={(e) => setCardiaco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="cardiaco" placeholder="Sim ou Não" value={cardiaco} onChange={(e) => setCardiaco(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pressao">Pressão</Label>
-                <Input id="pressao" placeholder="Ex: Alta, Baixa, Normal" value={pressao} onChange={(e) => setPressao(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="pressao" placeholder="Ex: Alta, Baixa, Normal" value={pressao} onChange={(e) => setPressao(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="remedios">Uso de Remédios</Label>
-                <Input id="remedios" placeholder="Quais?" value={remedios} onChange={(e) => setRemedios(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="remedios" placeholder="Quais?" value={remedios} onChange={(e) => setRemedios(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="alergia">Alergia a Medicamento</Label>
-                <Input id="alergia" placeholder="Qual?" value={alergia} onChange={(e) => setAlergia(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="alergia" placeholder="Qual?" value={alergia} onChange={(e) => setAlergia(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="laudo">Laudo em PDF</Label>
-                <Input id="laudo" placeholder="Link para o arquivo" value={laudo} onChange={(e) => setLaudo(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="laudo" placeholder="Link para o arquivo" value={laudo} onChange={(e) => setLaudo(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-14 !mt-8">
                 {loading ? <Loader2 className="animate-spin" /> : "Salvar Alterações"}
               </Button>
             </form>

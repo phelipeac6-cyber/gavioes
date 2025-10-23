@@ -92,9 +92,9 @@ const PrivacySettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10 border-b border-gray-800">
-        <button onClick={() => navigate(-1)} className="p-2">
+    <div className="min-h-screen bg-white text-[#1800AD]">
+      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-10 border-b border-[#1800AD]/20">
+        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-bold">Privacidade</h1>
@@ -102,7 +102,7 @@ const PrivacySettings = () => {
 
       <main className="p-4 space-y-6">
         {/* Visibilidade do Perfil */}
-        <div className="bg-gray-900/50 rounded-lg p-4 space-y-4">
+        <div className="bg-[#1800AD]/10 rounded-lg p-4 space-y-4">
           <div className="flex items-center space-x-3">
             <Eye className="text-red-500" size={20} />
             <h2 className="text-lg font-semibold">Visibilidade do Perfil</h2>
@@ -134,7 +134,7 @@ const PrivacySettings = () => {
         </div>
 
         {/* Informações de Contato */}
-        <div className="bg-gray-900/50 rounded-lg p-4 space-y-4">
+        <div className="bg-[#1800AD]/10 rounded-lg p-4 space-y-4">
           <div className="flex items-center space-x-3">
             <Lock className="text-red-500" size={20} />
             <h2 className="text-lg font-semibold">Informações de Contato</h2>
@@ -196,7 +196,7 @@ const PrivacySettings = () => {
         </div>
 
         {/* Notificações */}
-        <div className="bg-gray-900/50 rounded-lg p-4 space-y-4">
+        <div className="bg-[#1800AD]/10 rounded-lg p-4 space-y-4">
           <div className="flex items-center space-x-3">
             <Bell className="text-red-500" size={20} />
             <h2 className="text-lg font-semibold">Notificações</h2>
@@ -258,7 +258,7 @@ const PrivacySettings = () => {
         </div>
 
         {/* Dados e Localização */}
-        <div className="bg-gray-900/50 rounded-lg p-4 space-y-4">
+        <div className="bg-[#1800AD]/10 rounded-lg p-4 space-y-4">
           <div className="flex items-center space-x-3">
             <Shield className="text-red-500" size={20} />
             <h2 className="text-lg font-semibold">Dados e Localização</h2>
@@ -302,7 +302,7 @@ const PrivacySettings = () => {
         </div>
 
         {/* Informações Adicionais */}
-        <div className="bg-gray-900/50 rounded-lg p-4">
+        <div className="bg-[#1800AD]/10 rounded-lg p-4">
           <h3 className="text-sm font-semibold mb-3">Sobre suas configurações</h3>
           <p className="text-xs text-gray-400 leading-relaxed">
             Suas configurações de privacidade são salvas de forma segura e podem ser alteradas a qualquer momento. 
@@ -314,7 +314,7 @@ const PrivacySettings = () => {
         <Button
           onClick={handleSave}
           disabled={loading}
-          className="w-full bg-red-600 hover:bg-red-700 text-white h-12"
+          className="w-full bg-[#1800AD] hover:bg-[#1800AD]/90 text-white h-12"
         >
           {loading ? 'Salvando...' : 'Salvar Configurações'}
         </Button>

@@ -8,7 +8,7 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children, bgImage }: MainLayoutProps) => {
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative">
       {bgImage && (
         <img
           src={bgImage}
@@ -17,7 +17,7 @@ export const MainLayout = ({ children, bgImage }: MainLayoutProps) => {
         />
       )}
       <div className="relative z-10">
-        <div className="pb-24"> {/* Padding for the fixed bottom nav */}
+        <div className="pb-24">
           {children}
           <footer className="pt-8 pb-4 flex justify-center">
             <img

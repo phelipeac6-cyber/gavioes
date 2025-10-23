@@ -82,9 +82,9 @@ const ChatList = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2">
+      <div className="min-h-screen bg-white text-[#1800AD]">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-10 border-b border-[#1800AD]/20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
             <ArrowLeft size={24} />
           </button>
           <h1 className="text-2xl font-bold">Conversas</h1>
@@ -106,9 +106,9 @@ const ChatList = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10 border-b border-gray-800">
-        <button onClick={() => navigate(-1)} className="p-2">
+    <div className="min-h-screen bg-white text-[#1800AD]">
+      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-10 border-b border-[#1800AD]/20">
+        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold">Conversas</h1>
@@ -116,12 +116,12 @@ const ChatList = () => {
 
       <div className="p-4">
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-[#1800AD]/60" />
           <Input
             placeholder="Buscar conversas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-400"
+            className="pl-10 bg-transparent border-2 border-[#1800AD] text-[#1800AD] placeholder:text-[#1800AD]/60"
           />
         </div>
 

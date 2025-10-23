@@ -39,8 +39,8 @@ const News = () => {
 
   return (
     <MainLayout>
-      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10 border-b border-gray-800">
-        <button onClick={() => navigate(-1)} className="p-2">
+      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-10 border-b border-[#1800AD]/20">
+        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold">Notícias</h1>
@@ -75,7 +75,7 @@ const News = () => {
                 <h2 className="text-lg font-bold leading-tight">{item.title}</h2>
               </div>
             )}
-            <Separator className="mt-6 bg-gray-800" />
+            <Separator className="mt-6 bg-[#1800AD]/20" />
           </div>
         ))}
       </div>

@@ -101,15 +101,15 @@ const Address = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
       <img
         src={registerBg}
         alt="Gaviões da Fiel background"
         className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
       />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20 border-b border-[#1800AD]/20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
             <ArrowLeft size={24} />
           </button>
           <h1 className="text-xl font-bold">Endereço</h1>
@@ -117,15 +117,15 @@ const Address = () => {
 
         <main className="flex-grow p-6">
           <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
-            <Input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} maxLength={9} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Número" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
-            <Input placeholder="Estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+            <Input placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} maxLength={9} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
+            <Input placeholder="Endereço" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
+            <Input placeholder="Número" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
+            <Input placeholder="Complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
+            <Input placeholder="Bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
+            <Input placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
+            <Input placeholder="Estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
             
-            <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+            <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-14 !mt-8">
               {loading ? "Salvando..." : "Salvar"}
             </Button>
           </form>

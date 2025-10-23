@@ -94,11 +94,11 @@ const EditAddress = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
       <img src={registerBg} alt="Gaviões da Fiel background" className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0" />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2"><ArrowLeft size={24} /></button>
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20 border-b border-[#1800AD]/20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]"><ArrowLeft size={24} /></button>
           <h1 className="text-xl font-bold">Editar Endereço</h1>
         </header>
         <main className="flex-grow p-6">
@@ -111,33 +111,33 @@ const EditAddress = () => {
             <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="cep">CEP</Label>
-                <Input id="cep" placeholder="00000-000" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={handleCepBlur} maxLength={9} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="cep" placeholder="00000-000" value={cep} onChange={(e) => setCep(e.target.value)} onBlur={handleCepBlur} maxLength={9} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="endereco">Endereço</Label>
-                <Input id="endereco" placeholder="Sua rua ou avenida" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="endereco" placeholder="Sua rua ou avenida" value={endereco} onChange={(e) => setEndereco(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="numero">Número</Label>
-                <Input id="numero" placeholder="Ex: 123" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="numero" placeholder="Ex: 123" value={numero} onChange={(e) => setNumero(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="complemento">Complemento</Label>
-                <Input id="complemento" placeholder="Apto, bloco, etc." value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="complemento" placeholder="Apto, bloco, etc." value={complemento} onChange={(e) => setComplemento(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bairro">Bairro</Label>
-                <Input id="bairro" placeholder="Seu bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="bairro" placeholder="Seu bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cidade">Cidade</Label>
-                <Input id="cidade" placeholder="Sua cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="cidade" placeholder="Sua cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="estado">Estado</Label>
-                <Input id="estado" placeholder="Seu estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" />
+                <Input id="estado" placeholder="Seu estado" value={estado} onChange={(e) => setEstado(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+              <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-14 !mt-8">
                 {loading ? <Loader2 className="animate-spin" /> : "Salvar Alterações"}
               </Button>
             </form>

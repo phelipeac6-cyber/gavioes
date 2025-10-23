@@ -83,15 +83,15 @@ const EditSocialMedia = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
       <img
         src={registerBg}
         alt="Gaviões da Fiel background"
         className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
       />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20 border-b border-[#1800AD]/20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
             <ArrowLeft size={24} />
           </button>
           <h1 className="text-xl font-bold">Editar Redes Sociais</h1>
@@ -111,30 +111,30 @@ const EditSocialMedia = () => {
             <form onSubmit={handleSave} className="w-full max-w-sm mx-auto space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="facebook">Facebook</Label>
-                <Input id="facebook" placeholder="Link do seu perfil" value={facebook} onChange={(e) => setFacebook(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={facebookDisabled} />
-                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-facebook" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={facebookDisabled} onCheckedChange={(checked) => setFacebookDisabled(!!checked)} /><label htmlFor="no-facebook" className="text-sm font-medium">Não desejo colocar</label></div>
+                <Input id="facebook" placeholder="Link do seu perfil" value={facebook} onChange={(e) => setFacebook(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" disabled={facebookDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-facebook" className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white" checked={facebookDisabled} onCheckedChange={(checked) => setFacebookDisabled(!!checked)} /><label htmlFor="no-facebook" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="instagram">Instagram</Label>
-                <Input id="instagram" placeholder="Link do seu perfil" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={instagramDisabled} />
-                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-instagram" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={instagramDisabled} onCheckedChange={(checked) => setInstagramDisabled(!!checked)} /><label htmlFor="no-instagram" className="text-sm font-medium">Não desejo colocar</label></div>
+                <Input id="instagram" placeholder="Link do seu perfil" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" disabled={instagramDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-instagram" className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white" checked={instagramDisabled} onCheckedChange={(checked) => setInstagramDisabled(!!checked)} /><label htmlFor="no-instagram" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="whatsapp">Whatsapp</Label>
-                <Input id="whatsapp" placeholder="Seu número com DDD" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={whatsappDisabled} />
-                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-whatsapp" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={whatsappDisabled} onCheckedChange={(checked) => setWhatsappDisabled(!!checked)} /><label htmlFor="no-whatsapp" className="text-sm font-medium">Não desejo colocar</label></div>
+                <Input id="whatsapp" placeholder="Seu número com DDD" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" disabled={whatsappDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-whatsapp" className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white" checked={whatsappDisabled} onCheckedChange={(checked) => setWhatsappDisabled(!!checked)} /><label htmlFor="no-whatsapp" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="site">Site</Label>
-                <Input id="site" placeholder="URL do seu site" value={site} onChange={(e) => setSite(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={siteDisabled} />
-                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-site" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={siteDisabled} onCheckedChange={(checked) => setSiteDisabled(!!checked)} /><label htmlFor="no-site" className="text-sm font-medium">Não desejo colocar</label></div>
+                <Input id="site" placeholder="URL do seu site" value={site} onChange={(e) => setSite(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" disabled={siteDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-site" className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white" checked={siteDisabled} onCheckedChange={(checked) => setSiteDisabled(!!checked)} /><label htmlFor="no-site" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pix">Chave Pix</Label>
-                <Input id="pix" placeholder="Sua chave pix" value={pix} onChange={(e) => setPix(e.target.value)} className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base" disabled={pixDisabled} />
-                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-pix" className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black" checked={pixDisabled} onCheckedChange={(checked) => setPixDisabled(!!checked)} /><label htmlFor="no-pix" className="text-sm font-medium">Não desejo colocar</label></div>
+                <Input id="pix" placeholder="Sua chave pix" value={pix} onChange={(e) => setPix(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]" disabled={pixDisabled} />
+                <div className="flex items-center space-x-2 pt-1"><Checkbox id="no-pix" className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white" checked={pixDisabled} onCheckedChange={(checked) => setPixDisabled(!!checked)} /><label htmlFor="no-pix" className="text-sm font-medium">Não desejo colocar</label></div>
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-10">
+              <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-14 !mt-10">
                 {loading ? <Loader2 className="animate-spin" /> : "Salvar Alterações"}
               </Button>
             </form>

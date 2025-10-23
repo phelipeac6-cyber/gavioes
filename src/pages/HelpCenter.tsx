@@ -98,9 +98,9 @@ const HelpCenter = () => {
   }, {} as Record<string, FAQ[]>);
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10 border-b border-gray-800">
-        <button onClick={() => navigate(-1)} className="p-2">
+    <div className="min-h-screen bg-white text-[#1800AD]">
+      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-10 border-b border-[#1800AD]/20">
+        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-bold">Central de Ajuda</h1>
@@ -109,28 +109,28 @@ const HelpCenter = () => {
       <main className="p-4 space-y-6">
         {/* Busca */}
         <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-[#1800AD]/60" />
           <Input
             placeholder="Buscar ajuda..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-400"
+            className="pl-10 bg-transparent border-2 border-[#1800AD] text-[#1800AD] placeholder:text-[#1800AD]/60"
           />
         </div>
 
         {/* Contato Rápido */}
         <div className="grid grid-cols-1 gap-4">
-          <Button className="bg-red-600 hover:bg-red-700 text-white h-14 flex items-center justify-center space-x-2">
+          <Button className="bg-[#1800AD] hover:bg-[#1800AD]/90 text-white h-14 flex items-center justify-center space-x-2">
             <MessageCircle size={20} />
             <span>Chat com Suporte</span>
           </Button>
           
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800 h-12">
+            <Button variant="outline" className="border-2 border-[#1800AD] text-[#1800AD] hover:bg-[#1800AD]/10 h-12">
               <Phone size={18} className="mr-2" />
               Telefone
             </Button>
-            <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800 h-12">
+            <Button variant="outline" className="border-2 border-[#1800AD] text-[#1800AD] hover:bg-[#1800AD]/10 h-12">
               <Mail size={18} className="mr-2" />
               E-mail
             </Button>
@@ -142,10 +142,10 @@ const HelpCenter = () => {
           <h2 className="text-lg font-bold">Perguntas Frequentes</h2>
           
           {Object.entries(groupedFaqs).map(([category, faqs]) => (
-            <div key={category} className="bg-gray-900/50 rounded-lg overflow-hidden">
+            <div key={category} className="bg-[#1800AD]/10 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleCategory(category)}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-[#1800AD]/20 transition-colors"
               >
                 <h3 className="font-semibold">{category}</h3>
                 {expandedCategory === category ? (
@@ -158,7 +158,7 @@ const HelpCenter = () => {
               {expandedCategory === category && (
                 <div className="px-4 pb-4 space-y-3">
                   {faqs.map((faq) => (
-                    <div key={faq.id} className="border-l-2 border-red-600 pl-4">
+                    <div key={faq.id} className="border-l-2 border-[#1800AD] pl-4">
                       <h4 className="font-medium mb-2">{faq.question}</h4>
                       <p className="text-sm text-gray-300">{faq.answer}</p>
                     </div>
@@ -173,17 +173,17 @@ const HelpCenter = () => {
         <div className="space-y-4">
           <h2 className="text-lg font-bold">Links Úteis</h2>
           <div className="space-y-2">
-            <Link to="/estatuto" className="block p-3 bg-gray-900/50 rounded-lg hover:bg-gray-800/50 transition-colors">
+            <Link to="/estatuto" className="block p-3 bg-[#1800AD]/10 rounded-lg hover:bg-[#1800AD]/20 transition-colors">
               <h3 className="font-medium">Estatuto do Sócio</h3>
               <p className="text-sm text-gray-400">Leia o estatuto completo da torcida</p>
             </Link>
             
-            <Link to="/historia" className="block p-3 bg-gray-900/50 rounded-lg hover:bg-gray-800/50 transition-colors">
+            <Link to="/historia" className="block p-3 bg-[#1800AD]/10 rounded-lg hover:bg-[#1800AD]/20 transition-colors">
               <h3 className="font-medium">Nossa História</h3>
               <p className="text-sm text-gray-400">Conheça a história dos Gaviões da Fiel</p>
             </Link>
             
-            <Link to="/socio" className="block p-3 bg-gray-900/50 rounded-lg hover:bg-gray-800/50 transition-colors">
+            <Link to="/socio" className="block p-3 bg-[#1800AD]/10 rounded-lg hover:bg-[#1800AD]/20 transition-colors">
               <h3 className="font-medium">Seja Sócio</h3>
               <p className="text-sm text-gray-400">Informações sobre como se associar</p>
             </Link>
@@ -191,26 +191,26 @@ const HelpCenter = () => {
         </div>
 
         {/* Contato Direto */}
-        <div className="bg-gray-900/50 rounded-lg p-4 space-y-4">
+        <div className="bg-[#1800AD]/10 rounded-lg p-4 space-y-4">
           <h2 className="text-lg font-bold">Precisa de ajuda pessoal?</h2>
-          <p className="text-gray-300">Nossa equipe está disponível para ajudar:</p>
+          <p className="text-[#1800AD]">Nossa equipe está disponível para ajudar:</p>
           
           <div className="space-y-2 text-sm">
             <div className="flex items-center space-x-2">
-              <Phone size={16} className="text-red-500" />
+              <Phone size={16} className="text-[#1800AD]" />
               <span>(11) 3003-XXXX</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Mail size={16} className="text-red-500" />
+              <Mail size={16} className="text-[#1800AD]" />
               <span>suporte@gavioes.com.br</span>
             </div>
             <div className="flex items-center space-x-2">
-              <MessageCircle size={16} className="text-red-500" />
+              <MessageCircle size={16} className="text-[#1800AD]" />
               <span>Chat disponível 24/7</span>
             </div>
           </div>
           
-          <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+          <Button className="w-full bg-[#1800AD] hover:bg-[#1800AD]/90 text-white">
             Falar com Suporte Agora
           </Button>
         </div>

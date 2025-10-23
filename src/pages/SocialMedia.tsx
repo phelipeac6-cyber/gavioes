@@ -55,15 +55,15 @@ const SocialMedia = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
       <img
         src={registerBg}
         alt="Gaviões da Fiel background"
         className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
       />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20 border-b border-gray-800">
-          <button onClick={() => navigate(-1)} className="p-2">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20 border-b border-[#1800AD]/20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
             <ArrowLeft size={24} />
           </button>
           <h1 className="text-xl font-bold">Redes Sociais</h1>
@@ -76,13 +76,13 @@ const SocialMedia = () => {
                 placeholder="Link Facebook"
                 value={facebook}
                 onChange={(e) => setFacebook(e.target.value)}
-                className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
+                className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]"
                 disabled={facebookDisabled}
               />
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="no-facebook"
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white"
                   checked={facebookDisabled}
                   onCheckedChange={(checked) => setFacebookDisabled(!!checked)}
                 />
@@ -95,13 +95,13 @@ const SocialMedia = () => {
                 placeholder="Link Instagram"
                 value={instagram}
                 onChange={(e) => setInstagram(e.target.value)}
-                className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
+                className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]"
                 disabled={instagramDisabled}
               />
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="no-instagram"
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white"
                   checked={instagramDisabled}
                   onCheckedChange={(checked) => setInstagramDisabled(!!checked)}
                 />
@@ -114,13 +114,13 @@ const SocialMedia = () => {
                 placeholder="Celular Whatsapp"
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(e.target.value)}
-                className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
+                className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]"
                 disabled={whatsappDisabled}
               />
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="no-whatsapp"
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white"
                   checked={whatsappDisabled}
                   onCheckedChange={(checked) => setWhatsappDisabled(!!checked)}
                 />
@@ -133,13 +133,13 @@ const SocialMedia = () => {
                 placeholder="Site"
                 value={site}
                 onChange={(e) => setSite(e.target.value)}
-                className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
+                className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]"
                 disabled={siteDisabled}
               />
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="no-site"
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white"
                   checked={siteDisabled}
                   onCheckedChange={(checked) => setSiteDisabled(!!checked)}
                 />
@@ -152,13 +152,13 @@ const SocialMedia = () => {
                 placeholder="Chave Pix"
                 value={pix}
                 onChange={(e) => setPix(e.target.value)}
-                className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
+                className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-[#1800AD]/60 text-base text-[#1800AD]"
                 disabled={pixDisabled}
               />
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="no-pix"
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  className="border-[#1800AD] data-[state=checked]:bg-[#1800AD] data-[state=checked]:text-white"
                   checked={pixDisabled}
                   onCheckedChange={(checked) => setPixDisabled(!!checked)}
                 />
@@ -166,7 +166,7 @@ const SocialMedia = () => {
               </div>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-10">
+            <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-14 !mt-10">
               {loading ? "Salvando..." : "Salvar"}
             </Button>
           </form>

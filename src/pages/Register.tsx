@@ -152,15 +152,15 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
       <img
         src={registerBg}
         alt="Gaviões da Fiel background"
         className="absolute inset-0 w-full h-full object-cover object-center opacity-20 z-0"
       />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black/80 backdrop-blur-sm z-20">
-          <button onClick={() => navigate(-1)} className="p-2">
+        <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20">
+          <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
             <ArrowLeft size={24} />
           </button>
           <h1 className="text-xl font-bold">Cadastro</h1>
@@ -194,10 +194,10 @@ const Register = () => {
 
             <form onSubmit={handleRegister} className="w-full space-y-4 text-left">
               <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Nome" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
-                <Input placeholder="Sobrenome" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
+                <Input placeholder="Nome" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60" />
+                <Input placeholder="Sobrenome" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60" />
               </div>
-              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-white rounded-lg placeholder:text-gray-400" />
+              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60" />
               
               <div>
                 <Label htmlFor="bio" className="text-sm text-gray-400">Bio</Label>
@@ -207,7 +207,7 @@ const Register = () => {
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   maxLength={80}
-                  className="bg-transparent border-white rounded-lg mt-1 placeholder:text-gray-400"
+                  className="bg-transparent border-2 border-[#1800AD] rounded-lg mt-1 placeholder:text-[#1800AD]/60"
                 />
                 <p className="text-right text-xs text-gray-500 mt-1">
                   {bio.length}/80
@@ -220,9 +220,9 @@ const Register = () => {
                   placeholder="Senha" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
+                  className="bg-transparent border-2 border-[#1800AD] rounded-lg pr-10 placeholder:text-[#1800AD]/60" 
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-[#1800AD]">
                   {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                 </button>
               </div>
@@ -233,9 +233,9 @@ const Register = () => {
                   placeholder="Confirma Senha" 
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="bg-transparent border-white rounded-lg pr-10 placeholder:text-gray-400" 
+                  className="bg-transparent border-2 border-[#1800AD] rounded-lg pr-10 placeholder:text-[#1800AD]/60" 
                 />
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400">
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center text-[#1800AD]">
                   {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                 </button>
               </div>
@@ -275,7 +275,7 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-12 !mt-8">
+              <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-12 !mt-8">
                 {loading ? "Salvando..." : "Salvar"}
               </Button>
             </form>
