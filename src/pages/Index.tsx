@@ -20,9 +20,9 @@ const Index = () => {
       <PwaInstallPrompt />
       <div className="w-full mt-8">
         <h1 className="text-5xl font-extrabold leading-tight">
-          Bem Vindo à
+          Bem Vindo
           <br />
-          Feel One
+          à Feel One
         </h1>
         <p className="mt-4 text-gray-300 max-w-xs mx-auto">
           A pulseira exclusiva, pensada para segurança de nossos Gaviões.
