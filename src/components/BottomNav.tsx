@@ -44,7 +44,7 @@ export const BottomNav = () => {
   }, [profile]);
 
   const getLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `transition-colors ${isActive ? "text-red-600" : "text-gray-900 hover:text-red-500"}`;
+    `transition-colors flex items-center justify-center text-white ${isActive ? "opacity-100" : "opacity-80 hover:opacity-100"}`;
 
   const generateProfileUrl = () => {
     if (!profile) return "/login";
@@ -60,12 +60,12 @@ export const BottomNav = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 z-20 flex items-end justify-center pointer-events-none">
-      <nav className="relative w-full max-w-md h-16 bg-white rounded-t-3xl shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-around pointer-events-auto">
+      <nav className="relative w-full max-w-md h-16 bg-[#1800AD] rounded-t-3xl shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-around pointer-events-auto">
         
         {/* Botão Central - Carteirinha de Emergência */}
         <NavLink
           to={generateEmergencyCardUrl()}
-          className="absolute left-1/2 -translate-x-1/2 -top-8 w-20 h-20 bg-red-600 rounded-full flex items-center justify-center border-4 border-black shadow-lg transition-transform hover:scale-105"
+          className="absolute left-1/2 -translate-x-1/2 -top-8 w-20 h-20 bg-red-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg transition-transform hover:scale-105"
           aria-label="Carteirinha de Emergência"
         >
           <HeartPulse size={32} className="text-white" />
@@ -92,7 +92,7 @@ export const BottomNav = () => {
           
           {/* Menu Configurações com submenu */}
           <div className="relative group">
-            <button className="relative p-2 text-gray-900 hover:text-red-500 transition-colors">
+            <button className="relative p-2 text-white transition-colors">
               <User size={28} fill="currentColor" />
               {unreadCount > 0 && (
                 <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 border-2 border-white" />
