@@ -109,7 +109,7 @@ const Login = () => {
         <img
           src={feelOneLogo}
           alt="FeelOne Logo"
-          className="w-32 md:w-40 h-auto mx-auto mb-10"
+          className="w-[24rem] md:w-[30rem] h-auto mx-auto mb-10"
         />
 
         <div className="w-full max-w-sm text-left">
