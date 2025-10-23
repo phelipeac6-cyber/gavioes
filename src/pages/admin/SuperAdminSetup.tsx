@@ -24,16 +24,25 @@ const SuperAdminSetup = () => {
       });
 
       if (error) {
-        // Tentar extrair detalhes do corpo retornado pela função
-        const ctx: any = (error as any)?.context;
         let detailed = error.message;
-        const rawBody = ctx?.body;
-        if (rawBody) {
+        const resp = (error as any)?.context?.response;
+        if (resp) {
           try {
-            const parsed = typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody;
-            if (parsed?.error) detailed = parsed.error;
+            const text = await resp.text();
+            try {
+              const parsed = JSON.parse(text);
+              if (parsed?.error) {
+                detailed = parsed.error;
+              } else if (parsed?.message) {
+                detailed = parsed.message;
+              } else if (text) {
+                detailed = text;
+              }
+            } catch {
+              if (text) detailed = text;
+            }
           } catch {
-            detailed = String(rawBody);
+            // ignore
           }
         }
         showError(`Erro: ${detailed}`);
