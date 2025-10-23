@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     getSession();
 
     // Listener for auth changes
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session ?? null);
       if (session?.user) {
         setUser(session.user);
@@ -128,15 +128,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setProfile(null);
         setWristbandCode(null);
       }
-      if (event === 'SIGNED_IN') {
-        navigate('/');
-      } else if (event === 'SIGNED_OUT') {
-        navigate('/');
+
+      // Apenas após login redireciona para a Home; ao sair, deixe o RouteGuard decidir o destino
+      if (event === "SIGNED_IN") {
+        navigate("/");
       }
     });
 
     return () => {
-      // Cleanup subscription if needed
+      // Cleanup da inscrição do listener
+      authListener.subscription?.unsubscribe();
     };
   }, []);
 
