@@ -26,7 +26,7 @@ const Index = () => {
 
   return (
     <div className="flex flex-col items-center justify-between min-h-screen bg-white text-center p-4">
-      <PwaInstallprompt />
+      <PwaInstallPrompt />
       <div className="w-full mt-8">
         <h1 className="text-5xl font-extrabold leading-tight">
           Bem Vindo
