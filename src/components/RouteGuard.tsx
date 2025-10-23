@@ -11,23 +11,18 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, loading: authLoading } = useAuth();
-  const { wristbandCode } = useAuth();
+  const { profile, loading: authLoading, wristbandCode } = useAuth();
 
   // Permitir a rota de setup do super admin incondicionalmente
   const isSuperAdminSetupRouteNow = location.pathname === '/dashboard/super-admin-setup';
 
   useEffect(() => {
-    if (authLoading || isMobile === undefined) {
-      return;
-    }
-
+    // Com isMobile sempre boolean, não precisamos aguardar authLoading para decidir navegação
+    // Evita UI presa no "Carregando..."
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
     const isSuperAdminSetupRoute = location.pathname === '/dashboard/super-admin-setup';
-    // Perfil: '/:slug' onde slug é UUID (36 chars com hífens)
     const isProfileRoute = /^\/[0-9a-fA-F-]{36}$/.test(location.pathname);
-    // Carteirinha: '/s/:slug' com UUID
     const isEmergencyCardRoute = /^\/s\/[0-9a-fA-F-]{36}$/.test(location.pathname);
     const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
 
@@ -36,7 +31,6 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
       return;
     }
 
-    // --- Lógica para Desktop ---
     if (!isMobile) {
       if (isDashboardRoute && !isDashboardLoginRoute && !isSuperAdminSetupRoute && !profile) {
         navigate('/dashboard/login', { replace: true });
@@ -46,41 +40,26 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         navigate('/dashboard', { replace: true });
         return;
       }
-      // Permite apenas dashboard, perfil '/UUID' e emergência '/s/UUID' no desktop
       if (!isDashboardRoute && !isProfileRoute && !isEmergencyCardRoute) {
         navigate('/dashboard', { replace: true });
         return;
       }
-    }
-    // --- Lógica para Mobile ---
-    else {
-      // Permitir acesso público à página de setup do super admin
+    } else {
       if (isDashboardRoute && !isSuperAdminSetupRoute) {
         if (wristbandCode) {
-          // Redireciona para rota correta de perfil (/:slug) usando a pulseira atribuída
           navigate(`/${wristbandCode}`, { replace: true });
         } else {
           navigate('/register', { replace: true });
         }
       }
     }
-  }, [isMobile, location.pathname, navigate, profile, authLoading, wristbandCode]);
+  }, [isMobile, location.pathname, navigate, profile, wristbandCode]);
 
   // Se estiver na rota de setup do super admin, sempre renderizar os children
   if (isSuperAdminSetupRouteNow) {
     return <>{children}</>;
   }
 
-  if (authLoading || isMobile === undefined) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="flex items-center space-x-3">
-          <div className="h-5 w-5 border-2 border-white/60 border-t-transparent rounded-full animate-spin" />
-          <span>Carregando...</span>
-        </div>
-      </div>
-    );
-  }
-
+  // Remover bloqueio por authLoading: renderiza a UI e deixa o efeito cuidar da navegação
   return <>{children}</>;
 };

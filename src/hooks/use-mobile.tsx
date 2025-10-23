@@ -2,15 +2,14 @@ import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
-export function useIsMobile(): boolean | undefined {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(() => {
-    // Se window estiver disponível, inicializa o estado sincronamente para evitar undefined no primeiro render
-    if (typeof window === "undefined") return undefined;
+export function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = React.useState<boolean>(() => {
+    // Fallback seguro: se não houver window, considera desktop (false)
+    if (typeof window === "undefined") return false;
     return window.innerWidth < MOBILE_BREAKPOINT;
   });
 
   React.useEffect(() => {
-    // Se window não estiver disponível por alguma razão, mantemos undefined até o ambiente ficar pronto
     if (typeof window === "undefined") {
       return;
     }
@@ -20,15 +19,12 @@ export function useIsMobile(): boolean | undefined {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
 
-    // Compatibilidade: alguns navegadores implementam addEventListener no MediaQueryList,
-    // outros ainda usam addListener / removeListener.
     if (typeof mql.addEventListener === "function") {
       mql.addEventListener("change", onChange);
     } else if (typeof (mql as any).addListener === "function") {
       (mql as any).addListener(onChange);
     }
 
-    // Ajusta imediatamente para garantir que o estado está correto após montar
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
 
     return () => {
@@ -40,6 +36,5 @@ export function useIsMobile(): boolean | undefined {
     };
   }, []);
 
-  // Retorna o valor (agora tipado como boolean | undefined para compatibilidade com o resto do código)
   return isMobile;
 }
