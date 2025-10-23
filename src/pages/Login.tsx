@@ -14,6 +14,55 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Garante que o perfil existe; se não existir, cria/atualiza com dados mínimos
+  const ensureProfile = async (userId: string, meta: any) => {
+    const { data: profileData, error: selectError } = await supabase
+      .from("profiles")
+      .select("id, pulseira_id, first_name, last_name")
+      .eq("id", userId)
+      .single();
+
+    if (!selectError && profileData) {
+      return profileData;
+    }
+
+    const pulseiraId =
+      "pulseira-" +
+      Math.floor(Date.now() / 1000)
+        .toString()
+        .slice(0, 8) +
+      userId.slice(0, 4);
+
+    const first = meta?.first_name ?? "";
+    const last = meta?.last_name ?? "";
+    const username = meta?.username ?? `user_${userId.slice(0, 8)}`;
+
+    const { error: upsertError } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          id: userId,
+          first_name: first,
+          last_name: last,
+          username,
+          pulseira_id: pulseiraId,
+        },
+        { onConflict: "id" }
+      );
+
+    if (upsertError) {
+      return null;
+    }
+
+    const { data: profileAfterUpsert } = await supabase
+      .from("profiles")
+      .select("id, pulseira_id, first_name, last_name")
+      .eq("id", userId)
+      .single();
+
+    return profileAfterUpsert ?? null;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -26,21 +75,24 @@ const Login = () => {
       showError(error.message);
     } else if (loginData.user) {
       showSuccess("Login realizado com sucesso!");
-      
-      // Fetch the profile to get the pulseira_id and name
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("pulseira_id, first_name, last_name")
-        .eq("id", loginData.user.id)
-        .single();
-      
-      if (profileError || !profileData) {
-        showError("Não foi possível carregar seu perfil. Redirecionando para a página inicial.");
-        navigate("/");
+
+      // Garante que o perfil existe e tem os dados mínimos
+      const ensuredProfile = await ensureProfile(
+        loginData.user.id,
+        loginData.user.user_metadata
+      );
+
+      if (!ensuredProfile || !ensuredProfile.pulseira_id) {
+        showError(
+          "Não foi possível carregar seu perfil. Complete seu cadastro."
+        );
+        navigate("/address");
       } else {
-        const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+        const fullName = `${ensuredProfile.first_name || ""} ${
+          ensuredProfile.last_name || ""
+        }`.trim();
         const encodedName = encodeURIComponent(fullName);
-        navigate(`/id=${profileData.pulseira_id}/${encodedName}`);
+        navigate(`/id=${ensuredProfile.pulseira_id}/${encodedName}`);
       }
     } else {
       showError("Ocorreu um erro inesperado. Tente novamente.");
