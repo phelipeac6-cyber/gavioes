@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import gavioesLogo from "@/assets/gavioes-logo.png";
+import feelOneLogo from "@/assets/feel-one-logo.png";
+import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 
@@ -97,22 +98,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col font-sans">
-      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-black z-10">
-        <button onClick={() => navigate(-1)} className="p-2">
+    <div className="min-h-screen bg-white text-[#1800AD] flex flex-col font-sans">
+      <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-10">
+        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
           <ArrowLeft size={24} />
         </button>
       </header>
 
       <main className="flex-grow flex flex-col items-center p-6">
         <img
-          src={gavioesLogo}
-          alt="Gaviões da Fiel Logo"
-          className="w-40 h-auto mx-auto mb-10"
+          src={feelOneLogo}
+          alt="FeelOne Logo"
+          className="w-32 md:w-40 h-auto mx-auto mb-10"
         />
 
         <div className="w-full max-w-sm text-left">
-          <h1 className="text-4xl font-bold mb-8">Login</h1>
+          <h1 className="text-4xl font-bold mb-8 text-[#1800AD]">Login</h1>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <Input
@@ -120,7 +121,7 @@ const Login = () => {
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-transparent border-white rounded-lg h-14 placeholder:text-gray-400 text-base"
+              className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 placeholder:text-gray-500 text-base text-[#1800AD] focus-visible:ring-[#1800AD]"
             />
 
             <div className="relative">
@@ -129,36 +130,42 @@ const Login = () => {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-transparent border-white rounded-lg h-14 pr-12 placeholder:text-gray-400 text-base"
+                className="bg-transparent border-2 border-[#1800AD] rounded-lg h-14 pr-12 placeholder:text-gray-500 text-base text-[#1800AD] focus-visible:ring-[#1800AD]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400"
+                className="absolute inset-y-0 right-0 px-4 flex items-center text-[#1800AD]"
               >
                 {showPassword ? <Eye size={22} /> : <EyeOff size={22} />}
               </button>
             </div>
 
             <div className="flex items-center justify-between text-sm pt-2">
-              <span className="text-gray-300">Lembrar senha</span>
-              <Link to="#" className="font-semibold text-red-500 hover:underline">
+              <span className="text-[#1800AD]">Lembrar senha</span>
+              <Link to="#" className="font-semibold text-[#1800AD] hover:underline">
                 Esqueceu sua senha
               </Link>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 h-14 !mt-8">
+            <Button type="submit" disabled={loading} className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-14 !mt-8">
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
 
-          <p className="text-sm text-center text-gray-400 mt-8">
+          <p className="text-sm text-center text-[#1800AD] mt-8">
             Não tem uma conta?{" "}
-            <Link to="/register" className="font-bold text-white hover:underline">
+            <Link to="/register" className="font-bold text-[#1800AD] hover:underline">
               Cadastrar
             </Link>
           </p>
         </div>
+
+        <img
+          src={esportesDaSorteLogo}
+          alt="Esportes da Sorte Logo"
+          className="w-48 md:w-56 h-auto mx-auto mt-8"
+        />
       </main>
     </div>
   );
