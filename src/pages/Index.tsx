@@ -1,22 +1,32 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import feelonelogo from "@/assets/feel-one-logo.png";
+import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import { useMemo } from "react";
 
 const Index = () => {
-  const { profile, loading, wristbandCode } = useAuth();
+  const location = useLocation();
+  const { wristbandCode } = useAuth();
 
-  const generateProfileUrl = () => {
-    if (!profile || !wristbandCode) return "/login";
-    return `/${wristbandCode}`;
-  };
-
-  const continuePath = loading ? "#" : generateProfileUrl();
+  const continuePath = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const codeFromParams = params.get("wristbandCode");
+    if (codeFromParams) {
+      return `/${codeFromParams}`;
+    }
+    if (wristbandCode) {
+      return `/${wristbandCode}`;
+    }
+    return "/login";
+  }, [location.search, wristbandCode]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-[#1800AD] text-center p-4">
-      <PwaInstallPrompt />
+    <div className="flex flex-col items-center justify-between min-h-screen bg-white text-center p-4">
+      <PwaInstallprompt />
       <div className="w-full mt-8">
         <h1 className="text-5xl font-extrabold leading-tight">
           Bem Vindo
@@ -38,8 +48,12 @@ const Index = () => {
         <Button asChild className="w-full bg-[#1800AD] text-white hover:bg-[#1800AD]/90">
           <Link to={continuePath}>Continuar</Link>
         </Button>
-        <div className="w-full bg-[#FF0000] text-black text-center py-4">
-          Patrocinador
+        <div className="w-full text-center py-4">
+          <img
+            src={esportesDaSorteLogo}
+            alt="Esportes da Sorte Logo"
+            className="w-48 h-auto mx-auto"
+          />
         </div>
       </div>
     </div>
