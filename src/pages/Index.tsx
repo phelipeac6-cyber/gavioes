@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import gavioesLogo from "@/assets/gavioes-logo.png";
+import feelonelogo from "@/assets/feel-one-logo.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
