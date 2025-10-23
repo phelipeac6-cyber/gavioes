@@ -340,8 +340,8 @@ const SuperAdminDashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Database className="h-5 w-5" />
-                  <CardTitle>Log de Auditoria</CardTitle>
-                </CardHeader>
+                  <span>Log de Auditoria</span>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-gray-600">
