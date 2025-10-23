@@ -13,6 +13,9 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const navigate = useNavigate();
   const { profile, loading: authLoading } = useAuth();
 
+  // Permitir a rota de setup do super admin incondicionalmente
+  const isSuperAdminSetupRouteNow = location.pathname === '/dashboard/super-admin-setup';
+
   useEffect(() => {
     if (authLoading || isMobile === undefined) {
       return;
@@ -59,6 +62,11 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
       }
     }
   }, [isMobile, location.pathname, navigate, profile, authLoading]);
+
+  // Se estiver na rota de setup do super admin, sempre renderizar os children
+  if (isSuperAdminSetupRouteNow) {
+    return <>{children}</>;
+  }
 
   if (authLoading || isMobile === undefined) {
     return null;
