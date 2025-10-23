@@ -109,6 +109,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listener for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session ?? null);
+
+      // Assim que receber a sessão inicial, encerra o loading para liberar a UI
+      if (event === "INITIAL_SESSION") {
+        setLoading(false);
+      }
+
       if (session?.user) {
         setUser(session.user);
         // Fetch profile and assigned wristband
@@ -123,15 +129,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .limit(1)
           .maybeSingle();
         setWristbandCode((wristband as any)?.id ?? null);
+
+        // Ao logar, libera a UI e redireciona
+        if (event === "SIGNED_IN") {
+          setLoading(false);
+          navigate("/");
+        }
       } else {
         setUser(null);
         setProfile(null);
         setWristbandCode(null);
-      }
 
-      // Apenas após login redireciona para a Home; ao sair, deixe o RouteGuard decidir o destino
-      if (event === "SIGNED_IN") {
-        navigate("/");
+        // Ao sair, libera a UI; o RouteGuard decide para onde ir
+        if (event === "SIGNED_OUT") {
+          setLoading(false);
+        }
       }
     });
 
