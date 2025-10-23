@@ -58,11 +58,21 @@ const Register = () => {
         variant: "destructive",
       });
     } else if (data.user) {
-      toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Verifique seu e-mail para confirmar sua conta.",
-      });
-      navigate("/social-media");
+      if (!data.session) {
+        // Confirmação de e-mail exigida: orientar usuário e ir para login
+        toast({
+          title: "Cadastro realizado!",
+          description: "Verifique seu e-mail para confirmar sua conta antes de continuar.",
+        });
+        navigate("/login");
+      } else {
+        // Sem confirmação exigida: seguir para próxima etapa do cadastro
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Vamos continuar seu cadastro.",
+        });
+        navigate("/social");
+      }
     }
     setLoading(false);
   };
