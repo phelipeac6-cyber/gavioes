@@ -12,6 +12,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { profile, loading: authLoading } = useAuth();
+  const { wristbandCode } = useAuth();
 
   // Permitir a rota de setup do super admin incondicionalmente
   const isSuperAdminSetupRouteNow = location.pathname === '/dashboard/super-admin-setup';
@@ -55,9 +56,9 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     else {
       // Permitir acesso público à página de setup do super admin
       if (isDashboardRoute && !isSuperAdminSetupRoute) {
-        if (profile?.pulseira_id) {
-          // Redireciona para rota correta de perfil (/:slug)
-          navigate(`/${profile.pulseira_id}`, { replace: true });
+        if (wristbandCode) {
+          // Redireciona para rota correta de perfil (/:slug) usando a pulseira atribuída
+          navigate(`/${wristbandCode}`, { replace: true });
         } else {
           navigate('/login', { replace: true });
         }

@@ -16,22 +16,15 @@ const Login = () => {
 
   // Garante que o perfil existe; se não existir, cria/atualiza com dados mínimos
   const ensureProfile = async (userId: string, meta: any) => {
-    const { data: profileData, error: selectError } = await supabase
+    const { data: profileData } = await supabase
       .from("profiles")
-      .select("id, pulseira_id, first_name, last_name")
+      .select("id, first_name, last_name")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
-    if (!selectError && profileData) {
+    if (profileData?.id) {
       return profileData;
     }
-
-    const pulseiraId =
-      "pulseira-" +
-      Math.floor(Date.now() / 1000)
-        .toString()
-        .slice(0, 8) +
-      userId.slice(0, 4);
 
     const first = meta?.first_name ?? "";
     const last = meta?.last_name ?? "";
@@ -45,7 +38,6 @@ const Login = () => {
           first_name: first,
           last_name: last,
           username,
-          pulseira_id: pulseiraId,
         },
         { onConflict: "id" }
       );
@@ -56,9 +48,9 @@ const Login = () => {
 
     const { data: profileAfterUpsert } = await supabase
       .from("profiles")
-      .select("id, pulseira_id, first_name, last_name")
+      .select("id, first_name, last_name")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     return profileAfterUpsert ?? null;
   };
@@ -82,17 +74,20 @@ const Login = () => {
         loginData.user.user_metadata
       );
 
-      if (!ensuredProfile || !ensuredProfile.pulseira_id) {
-        showError(
-          "Não foi possível carregar seu perfil. Complete seu cadastro."
-        );
+      // Buscar a pulseira atribuída ao usuário (status 'atribuida')
+      const { data: wb } = await supabase
+        .from("pulseira")
+        .select("id, status")
+        .eq("assigned_profile_id", loginData.user.id)
+        .order("assigned_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!ensuredProfile || !wb || wb.status !== "atribuida") {
+        showError("Não foi possível carregar seu perfil. Complete seu cadastro.");
         navigate("/address");
       } else {
-        const fullName = `${ensuredProfile.first_name || ""} ${
-          ensuredProfile.last_name || ""
-        }`.trim();
-        const encodedName = encodeURIComponent(fullName);
-        navigate(`/id=${ensuredProfile.pulseira_id}/${encodedName}`);
+        navigate(`/${(wb as any).id}`);
       }
     } else {
       showError("Ocorreu um erro inesperado. Tente novamente.");
