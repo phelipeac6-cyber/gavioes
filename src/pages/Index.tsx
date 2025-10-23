@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import gavioesLogo from "@/assets/gavioes-logo.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { useAuth } from "@/context/AuthContext";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 
 const Index = () => {
   const { profile, loading, wristbandCode } = useAuth();
@@ -16,6 +17,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans flex flex-col items-center justify-between p-8 text-center">
+      <PwaInstallPrompt />
       <div className="w-full mt-8">
         <h1 className="text-5xl font-extrabold leading-tight">
           Bem Vindo

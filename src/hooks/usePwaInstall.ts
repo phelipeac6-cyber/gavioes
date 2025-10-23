@@ -15,21 +15,33 @@ export const usePwaInstall = () => {
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
+      // Intercepta o banner nativo
       event.preventDefault();
       setInstallPromptEvent(event as BeforeInstallPromptEvent);
-      
-      // Verifica se o app já está rodando em modo standalone (instalado)
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+      // Detecta se já está instalado (standalone em Android/desktop e iOS)
+      const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        // @ts-expect-error - propriedade específica do iOS Safari
+        (window.navigator && (window.navigator as any).standalone === true);
+
       if (!isStandalone) {
         setShowInstallPrompt(true);
       }
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    const handleAppInstalled = () => {
+      // App instalado: esconde prompt e limpa evento
+      setShowInstallPrompt(false);
+      setInstallPromptEvent(null);
+    };
 
-    // Limpa o evento ao desmontar o componente
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -37,11 +49,8 @@ export const usePwaInstall = () => {
     if (!installPromptEvent) {
       return;
     }
-    // Mostra o prompt de instalação do navegador
-    installPromptEvent.prompt();
-    // Aguarda a escolha do usuário
+    await installPromptEvent.prompt();
     await installPromptEvent.userChoice;
-    // Limpa o evento para que não seja mostrado novamente
     setInstallPromptEvent(null);
     setShowInstallPrompt(false);
   };
