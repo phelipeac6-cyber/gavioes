@@ -93,28 +93,27 @@ const Register = () => {
           await supabase.from("profiles").update({ gender }).eq("id", data.user.id);
         } else {
           // Se não houver sessão (projeto com confirmação), tentar login imediato
-          const { error: loginErr } = await supabase.auth.signInWithPassword({
+          const { data: signInData, error: loginErr } = await supabase.auth.signInWithPassword({
             email,
             password,
           });
           if (loginErr) {
             toast({
               title: "Confirmação necessária",
-              description: "Verifique seu e-mail para confirmar o cadastro ou tente fazer login.",
+              description: "Verifique seu e-mail para confirmar o cadastro. Você pode continuar o fluxo agora e finalizar depois.",
             });
-            // Mesmo sem sessão, manter fluxo claro
-            setLoading(false);
-            return;
+            // Continua o fluxo, mesmo sem sessão
+          } else if (signInData?.user) {
+            // Com sessão criada pelo signIn, atualizar perfil
+            await supabase.from("profiles").update({ gender }).eq("id", data.user.id);
           }
-          // Com sessão criada pelo signIn, atualizar perfil
-          await supabase.from("profiles").update({ gender }).eq("id", data.user.id);
         }
 
         toast({
           title: "Cadastro realizado com sucesso!",
           description: "Vamos continuar seu cadastro.",
         });
-        navigate("/social");
+        navigate("/social", { replace: true });
       }
     } catch (err: any) {
       toast({
