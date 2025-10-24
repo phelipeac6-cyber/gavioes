@@ -8,6 +8,7 @@ import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 import { useEffect } from "react";
+import { ensureProfile, getUsername } from "@/utils/auth";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,22 +17,18 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redireciona se já estiver autenticado ao abrir /login
+  // Redireciona automaticamente se já estiver autenticado ao abrir /login
   useEffect(() => {
     const redirectIfAuthenticated = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Busca username e redireciona para o perfil
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileData?.username) {
+      // Garante profile/username e redireciona
+      const ensured = await ensureProfile(user.id, user.user_metadata);
+      const username = ensured?.username ?? (await getUsername(user.id));
+      if (username) {
         showSuccess("Você já está logado.");
-        navigate(`/${profileData.username}`, { replace: true });
+        navigate(`/${username}`, { replace: true });
       }
     };
     redirectIfAuthenticated();
@@ -90,21 +87,24 @@ const Login = () => {
       if (error) {
         showError(error.message);
         return;
-      } else if (loginData.user) {
-        showSuccess("Login realizado com sucesso!");
+      }
 
-        const ensuredProfile = await ensureProfile(
-          loginData.user.id,
-          loginData.user.user_metadata
-        );
-
-        if (ensuredProfile?.username) {
-          navigate(`/${ensuredProfile.username}`, { replace: true });
-        } else {
-          navigate("/", { replace: true });
-        }
-      } else {
+      const user = loginData.user;
+      if (!user) {
         showError("Ocorreu um erro inesperado. Tente novamente.");
+        navigate("/", { replace: true });
+        return;
+      }
+
+      showSuccess("Login realizado com sucesso!");
+
+      // Garante profile/username e navega com replace
+      const ensured = await ensureProfile(user.id, user.user_metadata);
+      const username = ensured?.username ?? (await getUsername(user.id));
+
+      if (username) {
+        navigate(`/${username}`, { replace: true });
+      } else {
         navigate("/", { replace: true });
       }
     } finally {
