@@ -74,7 +74,6 @@ const Register = () => {
             last_name: lastName,
             bio,
             gender,
-            // avatar_url será configurado futuramente via upload (preview local por enquanto)
           },
         },
       });
@@ -89,20 +88,20 @@ const Register = () => {
       }
 
       if (data?.user) {
-        if (!data.session) {
-          // Supabase exige confirmação por e-mail
-          toast({
-            title: "Cadastro realizado!",
-            description: "Verifique seu e-mail para confirmar sua conta antes de continuar.",
-          });
-          navigate("/login");
-        } else {
-          toast({
-            title: "Cadastro realizado com sucesso!",
-            description: "Vamos continuar seu cadastro.",
-          });
-          navigate("/social");
+        // Se houver sessão (autoconfirm), já atualiza o perfil com o gênero
+        if (data.session) {
+          await supabase
+            .from("profiles")
+            .update({ gender })
+            .eq("id", data.user.id);
         }
+
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Vamos continuar seu cadastro.",
+        });
+        // Seguir direto para Redes Sociais
+        navigate("/social");
       }
     } catch (err: any) {
       toast({
