@@ -19,7 +19,7 @@ const Login = () => {
   const ensureProfile = async (userId: string, meta: any) => {
     const { data: profileData } = await supabase
       .from("profiles")
-      .select("id, first_name, last_name")
+      .select("id, first_name, last_name, username")
       .eq("id", userId)
       .maybeSingle();
 
@@ -49,7 +49,7 @@ const Login = () => {
 
     const { data: profileAfterUpsert } = await supabase
       .from("profiles")
-      .select("id, first_name, last_name")
+      .select("id, first_name, last_name, username")
       .eq("id", userId)
       .maybeSingle();
 
@@ -59,42 +59,38 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { data: loginData, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data: loginData, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      showError(error.message);
-    } else if (loginData.user) {
-      showSuccess("Login realizado com sucesso!");
+      if (error) {
+        showError(error.message);
+        return;
+      } else if (loginData.user) {
+        showSuccess("Login realizado com sucesso!");
 
-      // Garante que o perfil existe e tem os dados mínimos
-      const ensuredProfile = await ensureProfile(
-        loginData.user.id,
-        loginData.user.user_metadata
-      );
+        // Garante que o perfil existe e tem os dados mínimos (inclui username)
+        const ensuredProfile = await ensureProfile(
+          loginData.user.id,
+          loginData.user.user_metadata
+        );
 
-      // Buscar a pulseira atribuída ao usuário (status 'atribuida')
-      const { data: wb } = await supabase
-        .from("pulseira")
-        .select("id, status")
-        .eq("assigned_profile_id", loginData.user.id)
-        .order("assigned_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (!ensuredProfile || !wb || wb.status !== "atribuida") {
-        showError("Não foi possível carregar seu perfil. Complete seu cadastro.");
-        navigate("/address");
+        // Ir direto para a página de perfil usando o username
+        if (ensuredProfile?.username) {
+          navigate(`/${ensuredProfile.username}`);
+        } else {
+          // Fallback caso username não esteja disponível
+          navigate("/profile");
+        }
       } else {
-        navigate(`/${(wb as any).id}`);
+        showError("Ocorreu um erro inesperado. Tente novamente.");
+        navigate("/");
       }
-    } else {
-      showError("Ocorreu um erro inesperado. Tente novamente.");
-      navigate("/");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
