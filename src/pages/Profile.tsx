@@ -21,7 +21,7 @@ type PublicProfile = {
 };
 
 const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
-  <Link to={to} className="font-bold text-lg hover:text-red-500 transition-colors">
+  <Link to={to} className="font-bold text-lg text-primary hover:text-primary/80 transition-colors">
     {children}
   </Link>
 );
@@ -131,9 +131,9 @@ const Profile = () => {
   if (!profile) {
     return (
       <MainLayout bgImage={profileBg}>
-        <div className="min-h-screen flex flex-col items-center justify-center text-white text-center p-4">
+        <div className="min-h-screen flex flex-col items-center justify-center text-primary text-center p-4">
           <h1 className="text-2xl font-bold mb-2">Perfil não disponível</h1>
-          <p className="text-gray-300 mb-4">Verifique o link ou tente novamente mais tarde.</p>
+          <p className="mb-4">Verifique o link ou tente novamente mais tarde.</p>
           <Button onClick={() => navigate("/")} className="bg-white text-black hover:bg-gray-200">Voltar para o Início</Button>
         </div>
       </MainLayout>
@@ -142,7 +142,7 @@ const Profile = () => {
 
   return (
     <MainLayout bgImage={profileBg}>
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-6rem)] text-center p-6 space-y-5 text-white">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-6rem)] text-center p-6 space-y-5 text-primary">
         <div className="relative">
           <Avatar className="w-32 h-32 border-4 border-white">
             <AvatarImage src={profile.avatar_url || ""} alt={`${profile.first_name || ""} ${profile.last_name || ""}`} />
@@ -155,7 +155,7 @@ const Profile = () => {
         
         <div className="space-y-1">
           <h1 className="text-4xl font-bold">{profile.first_name} {profile.last_name}</h1>
-          <p className="text-gray-400">{profile.sub_sede || "Sub-Sede não informada"}</p>
+          <p className="">{profile.sub_sede || "Sub-Sede não informada"}</p>
         </div>
         
         <p className="font-semibold text-lg">{profile.bio || "Gavião da Fiel"}</p>
@@ -196,7 +196,7 @@ const Profile = () => {
 
 const ProfileSkeleton = () => (
   <MainLayout bgImage={profileBg}>
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-6rem)] text-center p-6 space-y-5 text-white animate-pulse">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-6rem)] text-center p-6 space-y-5 text-primary animate-pulse">
       <div className="relative">
         <Skeleton className="w-32 h-32 rounded-full border-4 border-gray-700" />
         <Skeleton className="w-8 h-8 rounded-full absolute -bottom-2 -right-2" />
