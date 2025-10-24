@@ -88,19 +88,32 @@ const Register = () => {
       }
 
       if (data?.user) {
-        // Se houver sessão (autoconfirm), já atualiza o perfil com o gênero
+        // Se já houver sessão (autoconfirm), atualizar perfil
         if (data.session) {
-          await supabase
-            .from("profiles")
-            .update({ gender })
-            .eq("id", data.user.id);
+          await supabase.from("profiles").update({ gender }).eq("id", data.user.id);
+        } else {
+          // Se não houver sessão (projeto com confirmação), tentar login imediato
+          const { error: loginErr } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (loginErr) {
+            toast({
+              title: "Confirmação necessária",
+              description: "Verifique seu e-mail para confirmar o cadastro ou tente fazer login.",
+            });
+            // Mesmo sem sessão, manter fluxo claro
+            setLoading(false);
+            return;
+          }
+          // Com sessão criada pelo signIn, atualizar perfil
+          await supabase.from("profiles").update({ gender }).eq("id", data.user.id);
         }
 
         toast({
           title: "Cadastro realizado com sucesso!",
           description: "Vamos continuar seu cadastro.",
         });
-        // Seguir direto para Redes Sociais
         navigate("/social");
       }
     } catch (err: any) {

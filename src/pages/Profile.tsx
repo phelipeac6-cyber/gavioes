@@ -7,6 +7,7 @@ import { Instagram, Facebook, MessageSquare, User, CheckCircle2 } from "lucide-r
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import profileBg from "@/assets/bg.png";
+import { supabase } from "@/integrations/supabase/client";
 
 type PublicProfile = {
   first_name: string | null;
@@ -32,6 +33,9 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const isUuid = (s: string) =>
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(s);
+
     const resolveAndLoad = async () => {
       if (!slug) {
         setLoading(false);
@@ -40,49 +44,80 @@ const Profile = () => {
       }
       setLoading(true);
 
-      // Primeiro resolver se existe e se está atribuída
-      const res = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/resolve-pulseira", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uuid: slug }),
-      });
-      const info = await res.json();
+      // Se for UUID, manter o fluxo atual (pulseira/edge functions)
+      if (isUuid(slug)) {
+        const res = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/resolve-pulseira", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uuid: slug }),
+        });
+        const info = await res.json();
 
-      if (!res.ok) {
-        toast.error(info?.error || "Erro ao resolver pulseira.");
-        setLoading(false);
-        return;
-      }
-      if (!info.exists) {
-        toast.error("Pulseira não encontrada.");
-        setLoading(false);
-        return;
-      }
-      if (["desativada", "extraviada"].includes(info.status)) {
-        toast.error("Pulseira inativa ou extraviada.");
-        setLoading(false);
-        return;
-      }
-      if (!info.assigned) {
-        // Redireciona para cadastro com code
-        navigate(`/register?code=${slug}`);
+        if (!res.ok) {
+          toast.error(info?.error || "Erro ao resolver pulseira.");
+          setLoading(false);
+          return;
+        }
+        if (!info.exists) {
+          toast.error("Pulseira não encontrada.");
+          setLoading(false);
+          return;
+        }
+        if (["desativada", "extraviada"].includes(info.status)) {
+          toast.error("Pulseira inativa ou extraviada.");
+          setLoading(false);
+          return;
+        }
+        if (!info.assigned) {
+          navigate(`/register?code=${slug}`);
+          setLoading(false);
+          return;
+        }
+
+        const res2 = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/public-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uuid: slug }),
+        });
+        const data = await res2.json();
+        if (!res2.ok || !data?.ok) {
+          toast.error(data?.error || "Não foi possível carregar o perfil.");
+          setLoading(false);
+          return;
+        }
+        setProfile(data.data);
         setLoading(false);
         return;
       }
 
-      // Carregar dados públicos do perfil
-      const res2 = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/public-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uuid: slug }),
-      });
-      const data = await res2.json();
-      if (!res2.ok || !data?.ok) {
-        toast.error(data?.error || "Não foi possível carregar o perfil.");
+      // Caso contrário, tratar como username (perfil do usuário)
+      const { data: prof, error } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, avatar_url, sub_sede, bio, instagram_url, facebook_url, whatsapp_number")
+        .eq("username", slug)
+        .maybeSingle();
+
+      if (error) {
+        toast.error(error.message || "Erro ao carregar perfil.");
         setLoading(false);
         return;
       }
-      setProfile(data.data);
+      if (!prof) {
+        navigate("/not-found");
+        setLoading(false);
+        return;
+      }
+
+      setProfile({
+        first_name: prof.first_name,
+        last_name: prof.last_name,
+        avatar_url: prof.avatar_url,
+        sub_sede: prof.sub_sede,
+        bio: prof.bio,
+        instagram_url: prof.instagram_url,
+        facebook_url: prof.facebook_url,
+        whatsapp_number: prof.whatsapp_number,
+      });
       setLoading(false);
     };
 
