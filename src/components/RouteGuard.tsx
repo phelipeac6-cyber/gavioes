@@ -22,7 +22,8 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
     const isSuperAdminSetupRoute = location.pathname === '/dashboard/super-admin-setup';
-    const isProfileRoute = /^\/[0-9a-fA-F-]{36}$/.test(location.pathname);
+    // Perfil pode ser por username (slug) ou por UUID (compatibilidade antiga)
+    const isProfileRoute = /^\/([a-zA-Z0-9._-]+|[0-9a-fA-F-]{36})$/.test(location.pathname);
     const isEmergencyCardRoute = /^\/s\/[0-9a-fA-F-]{36}$/.test(location.pathname);
     const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
 

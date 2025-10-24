@@ -130,10 +130,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .maybeSingle();
         setWristbandCode((wristband as any)?.id ?? null);
 
-        // Ao logar, libera a UI e redireciona
+        // Ao logar, libera a UI (não redirecionar; a página de Login cuida de ir ao perfil)
         if (event === "SIGNED_IN") {
           setLoading(false);
-          navigate("/");
+          // REMOVED: navigate("/");
         }
       } else {
         setUser(null);
