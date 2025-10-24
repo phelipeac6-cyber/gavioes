@@ -105,11 +105,11 @@ const Login = () => {
         </button>
       </header>
 
-      <main className="flex-grow flex flex-col items-center p-6">
+      <main className="flex-grow flex flex-col items-center px-6 pt-2 pb-6">
         <img
           src={feelOneLogo}
           alt="FeelOne Logo"
-          className="w-[24rem] md:w-[30rem] h-auto mx-auto mb-10"
+          className="w-[24rem] md:w-[30rem] h-auto mx-auto mb-4"
         />
 
         <div className="w-full max-w-sm text-left">
