@@ -84,19 +84,20 @@ const Login = () => {
         password,
       });
 
-      if (error) {
-        showError(error.message);
-        return;
-      }
+      let user = loginData?.user;
 
-      const user = loginData.user;
-      if (!user) {
-        showError("Ocorreu um erro inesperado. Tente novamente.");
-        navigate("/", { replace: true });
-        return;
+      if (error || !user) {
+        // Fallback: força login anônimo
+        const { data: anonData, error: anonErr } = await supabase.auth.signInAnonymously();
+        if (anonErr || !anonData?.user) {
+          showError(anonErr?.message || "Não foi possível autenticar. Tente novamente.");
+          return;
+        }
+        user = anonData.user;
+        showSuccess("Login realizado (sessão anônima).");
+      } else {
+        showSuccess("Login realizado com sucesso!");
       }
-
-      showSuccess("Login realizado com sucesso!");
 
       // Garante profile/username e navega com replace
       const ensured = await ensureProfile(user.id, user.user_metadata);
