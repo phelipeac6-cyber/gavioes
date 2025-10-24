@@ -64,48 +64,55 @@ const Register = () => {
 
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          bio,
-          gender,
-          // avatar_url será configurado futuramente via upload (preview local por enquanto)
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            bio,
+            gender,
+            // avatar_url será configurado futuramente via upload (preview local por enquanto)
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Erro no cadastro",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data?.user) {
+        if (!data.session) {
+          // Supabase exige confirmação por e-mail
+          toast({
+            title: "Cadastro realizado!",
+            description: "Verifique seu e-mail para confirmar sua conta antes de continuar.",
+          });
+          navigate("/login");
+        } else {
+          toast({
+            title: "Cadastro realizado com sucesso!",
+            description: "Vamos continuar seu cadastro.",
+          });
+          navigate("/social");
+        }
+      }
+    } catch (err: any) {
       toast({
-        title: "Erro no cadastro",
-        description: error.message,
+        title: "Erro inesperado",
+        description: err?.message || "Não foi possível concluir o cadastro.",
         variant: "destructive",
       });
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (data.user) {
-      if (!data.session) {
-        // Supabase exige confirmação por e-mail
-        toast({
-          title: "Cadastro realizado!",
-          description: "Verifique seu e-mail para confirmar sua conta antes de continuar.",
-        });
-        navigate("/login");
-      } else {
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: "Vamos continuar seu cadastro.",
-        });
-        navigate("/social");
-      }
-    }
-
-    setLoading(false);
   };
 
   return (

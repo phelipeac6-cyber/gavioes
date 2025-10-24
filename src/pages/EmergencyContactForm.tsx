@@ -54,7 +54,7 @@ const EmergencyContactForm = () => {
           showError("Não foi possível encontrar seu perfil. Por favor, faça o login.");
           navigate("/login");
         } else if (profileData?.username) {
-          navigate(`/profile/${profileData.username}`);
+          navigate(`/${profileData.username}`);
         } else {
           showError("Username não encontrado. Por favor, faça o login.");
           navigate("/login");
