@@ -7,6 +7,7 @@ import feelOneLogo from "@/assets/feel-one-logo.png";
 import esportesDaSorteLogo from "@/assets/esportes-da-sorte-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +15,27 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redireciona se já estiver autenticado ao abrir /login
+  useEffect(() => {
+    const redirectIfAuthenticated = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Busca username e redireciona para o perfil
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileData?.username) {
+        showSuccess("Você já está logado.");
+        navigate(`/${profileData.username}`, { replace: true });
+      }
+    };
+    redirectIfAuthenticated();
+  }, [navigate]);
 
   // Garante que o perfil existe; se não existir, cria/atualiza com dados mínimos
   const ensureProfile = async (userId: string, meta: any) => {
@@ -71,22 +93,19 @@ const Login = () => {
       } else if (loginData.user) {
         showSuccess("Login realizado com sucesso!");
 
-        // Garante que o perfil existe e tem os dados mínimos (inclui username)
         const ensuredProfile = await ensureProfile(
           loginData.user.id,
           loginData.user.user_metadata
         );
 
-        // Ir direto para a página de perfil usando o username
         if (ensuredProfile?.username) {
-          navigate(`/${ensuredProfile.username}`);
+          navigate(`/${ensuredProfile.username}`, { replace: true });
         } else {
-          // Fallback caso username não esteja disponível
-          navigate("/profile");
+          navigate("/", { replace: true });
         }
       } else {
         showError("Ocorreu um erro inesperado. Tente novamente.");
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } finally {
       setLoading(false);
