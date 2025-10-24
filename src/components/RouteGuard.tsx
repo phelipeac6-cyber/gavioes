@@ -17,8 +17,6 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const isSuperAdminSetupRouteNow = location.pathname === '/dashboard/super-admin-setup';
 
   useEffect(() => {
-    // Com isMobile sempre boolean, não precisamos aguardar authLoading para decidir navegação
-    // Evita UI presa no "Carregando..."
     const isDashboardRoute = location.pathname.startsWith('/dashboard');
     const isDashboardLoginRoute = location.pathname === '/dashboard/login';
     const isSuperAdminSetupRoute = location.pathname === '/dashboard/super-admin-setup';
@@ -26,6 +24,16 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const isProfileRoute = /^\/([a-zA-Z0-9._-]+|[0-9a-fA-F-]{36})$/.test(location.pathname);
     const isEmergencyCardRoute = /^\/s\/[0-9a-fA-F-]{36}$/.test(location.pathname);
     const isChatRoute = location.pathname.startsWith('/channels') || location.pathname.startsWith('/chat/');
+
+    // Rotas públicas/onboarding liberadas no desktop
+    const allowedPublicRoutes = new Set([
+      '/login',
+      '/register',
+      '/social',
+      '/address',
+      '/health',
+      '/emergency-contact-form',
+    ]);
 
     if (isChatRoute && !profile) {
       navigate('/login', { replace: true });
@@ -41,7 +49,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         navigate('/dashboard', { replace: true });
         return;
       }
-      if (!isDashboardRoute && !isProfileRoute && !isEmergencyCardRoute) {
+      if (!isDashboardRoute && !isProfileRoute && !isEmergencyCardRoute && !allowedPublicRoutes.has(location.pathname)) {
         navigate('/dashboard', { replace: true });
         return;
       }

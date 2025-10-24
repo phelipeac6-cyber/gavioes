@@ -28,6 +28,42 @@ const EmergencyContactForm = () => {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
+      // 1) Garante que o profile exista e obtenha o username
+      const { data: existingProfile, error: selectErr } = await supabase
+        .from("profiles")
+        .select("id, username")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      let ensuredUsername: string | null = existingProfile?.username ?? null;
+
+      if (!existingProfile) {
+        const fallbackUsername =
+          (user.user_metadata && (user.user_metadata.username as string)) ||
+          `user_${String(user.id).slice(0, 8)}`;
+
+        const { data: inserted, error: insertErr } = await supabase
+          .from("profiles")
+          .insert({
+            id: user.id,
+            username: fallbackUsername,
+          })
+          .select("id, username")
+          .single();
+
+        if (insertErr) {
+          showError("Erro ao criar seu perfil: " + insertErr.message);
+          setLoading(false);
+          return;
+        }
+        ensuredUsername = inserted?.username ?? fallbackUsername;
+      } else if (selectErr) {
+        showError("Erro ao carregar perfil: " + selectErr.message);
+        setLoading(false);
+        return;
+      }
+
+      // 2) Atualiza os dados de contato de emergência
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -40,24 +76,28 @@ const EmergencyContactForm = () => {
 
       if (error) {
         showError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      showSuccess("Contato de emergência salvo com sucesso!");
+
+      // 3) Navega para o perfil usando o username garantido
+      if (ensuredUsername) {
+        navigate(`/${ensuredUsername}`);
       } else {
-        showSuccess("Contato de emergência salvo com sucesso!");
-        
-        // Fetch the profile to get the username
+        // Fallback: tenta buscar o username se não conseguiu garantir
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("username")
           .eq("id", user.id)
           .single();
 
-        if (profileError) {
+        if (profileError || !profileData?.username) {
           showError("Não foi possível encontrar seu perfil. Por favor, faça o login.");
           navigate("/login");
-        } else if (profileData?.username) {
-          navigate(`/${profileData.username}`);
         } else {
-          showError("Username não encontrado. Por favor, faça o login.");
-          navigate("/login");
+          navigate(`/${profileData.username}`);
         }
       }
     } else {
