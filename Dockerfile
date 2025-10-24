@@ -1,30 +1,27 @@
-# Estágio 1: Construir a aplicação React
-FROM node:20-alpine AS build
-
-# Define o diretório de trabalho
+# Etapa de build: compila o app com Vite
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copia os arquivos de dependência e instala
-COPY package*.json ./
+# Instala dependências
+COPY package.json package-lock*.json ./
 RUN npm install
 
-# Copia o restante do código da aplicação
+# Copia o código e gera a build
 COPY . .
-
-# Constrói a aplicação para produção
 RUN npm run build
 
-# Estágio 2: Servir a aplicação com Nginx
-FROM nginx:alpine
+# Etapa de runtime: Nginx servindo os arquivos estáticos
+FROM nginx:alpine AS runner
 
-# Copia os arquivos construídos do estágio anterior para o diretório do Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copia o arquivo de configuração do Nginx
+# Copia a configuração do Nginx do projeto para o container
+# Certifique-se de que seu nginx.conf esteja configurado para escutar na porta 3000
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copia a build gerada para o diretório público do Nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expõe a porta 3000
 EXPOSE 3000
 
-# Comando para iniciar o Nginx
+# Inicializa o Nginx em primeiro plano
 CMD ["nginx", "-g", "daemon off;"]
