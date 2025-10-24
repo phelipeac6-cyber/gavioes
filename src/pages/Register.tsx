@@ -1,33 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SubSedeCombobox } from "@/components/SubSedeCombobox";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Campos do formulário
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [subSede, setSubSede] = useState("");
-  const [gender, setGender] = useState("");
+  const [bio, setBio] = useState("");
+  const [gender, setGender] = useState<"" | "masculino" | "feminino">("");
+
+  // Avatar (preview local)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Estados de UI
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       toast({
         title: "Erro",
@@ -36,7 +61,9 @@ const Register = () => {
       });
       return;
     }
+
     setLoading(true);
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -44,9 +71,9 @@ const Register = () => {
         data: {
           first_name: firstName,
           last_name: lastName,
-          username,
-          sub_sede: subSede,
+          bio,
           gender,
+          // avatar_url será configurado futuramente via upload (preview local por enquanto)
         },
       },
     });
@@ -57,16 +84,19 @@ const Register = () => {
         description: error.message,
         variant: "destructive",
       });
-    } else if (data.user) {
+      setLoading(false);
+      return;
+    }
+
+    if (data.user) {
       if (!data.session) {
-        // Confirmação de e-mail exigida: orientar usuário e ir para login
+        // Supabase exige confirmação por e-mail
         toast({
           title: "Cadastro realizado!",
           description: "Verifique seu e-mail para confirmar sua conta antes de continuar.",
         });
         navigate("/login");
       } else {
-        // Sem confirmação exigida: seguir para próxima etapa do cadastro
         toast({
           title: "Cadastro realizado com sucesso!",
           description: "Vamos continuar seu cadastro.",
@@ -74,22 +104,54 @@ const Register = () => {
         navigate("/social");
       }
     }
+
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-white text-[#1800AD] font-sans relative overflow-x-hidden">
+      {/* Cabeçalho */}
       <header className="p-4 flex items-center space-x-4 sticky top-0 bg-white z-20">
-        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]">
+        <button onClick={() => navigate(-1)} className="p-2 text-[#1800AD]" aria-label="Voltar">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-bold">Cadastro</h1>
       </header>
+
       <main className="p-6">
         <form onSubmit={handleRegister} className="space-y-4">
+          {/* Avatar com botão de câmera */}
+          <div className="flex items-center justify-center">
+            <div className="relative">
+              <Avatar className="h-20 w-20 border-2 border-[#1800AD] bg-white">
+                {avatarPreview ? (
+                  <AvatarImage src={avatarPreview} alt="Avatar" />
+                ) : (
+                  <AvatarFallback className="bg-muted text-[#1800AD]">IMG</AvatarFallback>
+                )}
+              </Avatar>
+              <button
+                type="button"
+                onClick={handleAvatarClick}
+                className="absolute -bottom-1 -right-1 bg-black/80 text-white rounded-md p-1.5 shadow"
+                aria-label="Alterar foto"
+              >
+                <Camera size={16} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
+            </div>
+          </div>
+
+          {/* Nome e Sobrenome */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="firstName" className="text-sm text-[#1800AD]/80">Nome</Label>
+              <Label htmlFor="firstName" className="text-sm text-[#1800AD]">Nome</Label>
               <Input
                 id="firstName"
                 placeholder="Nome"
@@ -100,7 +162,7 @@ const Register = () => {
               />
             </div>
             <div>
-              <Label htmlFor="lastName" className="text-sm text-[#1800AD]/80">Sobrenome</Label>
+              <Label htmlFor="lastName" className="text-sm text-[#1800AD]">Sobrenome</Label>
               <Input
                 id="lastName"
                 placeholder="Sobrenome"
@@ -111,19 +173,10 @@ const Register = () => {
               />
             </div>
           </div>
+
+          {/* E-mail */}
           <div>
-            <Label htmlFor="username" className="text-sm text-[#1800AD]/80">Nome de usuário</Label>
-            <Input
-              id="username"
-              placeholder="Nome de usuário"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60 mt-1"
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="email" className="text-sm text-[#1800AD]/80">E-mail</Label>
+            <Label htmlFor="email" className="text-sm text-[#1800AD]">E-mail</Label>
             <Input
               id="email"
               type="email"
@@ -134,12 +187,66 @@ const Register = () => {
               required
             />
           </div>
-          <div>
-            <Label htmlFor="subSede" className="text-sm text-[#1800AD]/80">Sub-Sede</Label>
-            <SubSedeCombobox value={subSede} onChange={setSubSede} />
+
+          {/* Senha */}
+          <div className="relative">
+            <Label htmlFor="password" className="text-sm text-[#1800AD]">Senha</Label>
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60 mt-1 pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute bottom-3 right-3 text-[#1800AD]"
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
           </div>
+
+          {/* Confirmar Senha */}
+          <div className="relative">
+            <Label htmlFor="confirmPassword" className="text-sm text-[#1800AD]">Confirma Senha</Label>
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirma Senha"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60 mt-1 pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute bottom-3 right-3 text-[#1800AD]"
+              aria-label={showConfirmPassword ? "Ocultar confirmação" : "Mostrar confirmação"}
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {/* Biografia */}
           <div>
-            <Label className="text-sm text-[#1800AD]/80">Gênero</Label>
+            <Label htmlFor="bio" className="text-sm text-[#1800AD]">Biografia</Label>
+            <Textarea
+              id="bio"
+              placeholder="Biografia"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60 mt-1"
+            />
+          </div>
+
+          {/* Gênero */}
+          <div>
+            <Label className="text-sm text-[#1800AD]">Gênero</Label>
             <div className="grid grid-cols-2 gap-4 mt-1">
               <Button
                 type="button"
@@ -152,7 +259,7 @@ const Register = () => {
                     : "bg-transparent border-2 border-[#1800AD] text-[#1800AD] hover:bg-[#1800AD]/10"
                 )}
               >
-                Masculino
+                Homem
               </Button>
               <Button
                 type="button"
@@ -165,55 +272,27 @@ const Register = () => {
                     : "bg-transparent border-2 border-[#1800AD] text-[#1800AD] hover:bg-[#1800AD]/10"
                 )}
               >
-                Feminino
+                Mulher
               </Button>
             </div>
           </div>
-          <div className="relative">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60 mt-1"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute bottom-3 right-3 text-[#1800AD]"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-          <div className="relative">
-            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-            <Input
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirmar Senha"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="bg-transparent border-2 border-[#1800AD] rounded-lg placeholder:text-[#1800AD]/60 mt-1"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute bottom-3 right-3 text-[#1800AD]"
-            >
-              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
+
+          {/* Salvar */}
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-12 !mt-8"
+            className="w-full bg-[#1800AD] text-white font-bold rounded-lg text-lg hover:bg-[#1800AD]/90 h-12 !mt-2"
           >
             {loading ? "Salvando..." : "Salvar"}
           </Button>
+
+          {/* Link de login */}
+          <div className="flex items-center justify-between text-sm text-[#1800AD]">
+            <span>Já tem uma conta?</span>
+            <Link to="/login" className="font-semibold hover:underline">
+              Entrar
+            </Link>
+          </div>
         </form>
       </main>
     </div>
