@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const location = useLocation();
+  const wristCode = (new URLSearchParams(location.search).get("code") || "").trim();
 
   // Campos do formulário
   const [firstName, setFirstName] = useState("");
@@ -52,6 +54,15 @@ const Register = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!wristCode) {
+      toast({
+        title: "Código da pulseira ausente",
+        description: "Não encontramos o código da pulseira na URL.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast({
@@ -109,10 +120,41 @@ const Register = () => {
           }
         }
 
+        // Tenta obter token da sessão para enviar no Authorization (edge function exige header)
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+
+        // Invoca o edge function para atribuir a pulseira ao usuário
+        const resp = await fetch("https://esckspxnezngxhnqmznc.supabase.co/functions/v1/assign-pulseira", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // O edge function só checa a existência do header; usa o token se existir
+            Authorization: `Bearer ${token || "placeholder"}`,
+          },
+          body: JSON.stringify({
+            uuid: wristCode,
+            user_id: data.user.id,
+          }),
+        });
+
+        const result = await resp.json();
+
+        if (!resp.ok) {
+          toast({
+            title: "Não foi possível atribuir a pulseira",
+            description: result?.error || "Tente novamente com um código válido.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
           title: "Cadastro realizado com sucesso!",
-          description: "Vamos continuar seu cadastro.",
+          description: "Pulseira atribuída. Vamos continuar seu cadastro.",
         });
+
+        // Avança para a próxima etapa do fluxo
         navigate("/social", { replace: true });
       }
     } catch (err: any) {
